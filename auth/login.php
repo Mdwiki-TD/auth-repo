@@ -12,19 +12,31 @@ $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
 $conf->setUserAgent($gUserAgent);
 $client = new Client($conf);
 
-function make_callback_url($url)
+function create_callback_url($url)
 {
+    //---
     $state = array();
     // ?action=login&cat=RTT&depth=1&code=&type=lead
-
-    $return_to = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    //---
+    // $return_to = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    $return_to = '';
+    //---
+    $allowed_domains = ['mdwiki.toolforge.org', 'localhost'];
+    //---
+    if (isset($_SERVER['HTTP_REFERER'])) {
+        $parsed = parse_url($_SERVER['HTTP_REFERER']);
+        if (in_array($parsed['host'], $allowed_domains)) {
+            $return_to = $_SERVER['HTTP_REFERER'];
+        }
+    }
     //---
     if (!empty($return_to)) {
         $state['return_to'] = $return_to;
     }
     //---
     foreach (['cat', 'code', 'type', 'test', 'doit'] as $key) {
-        $da = $_GET[$key] ?? '';
+        // $da = $_GET[$key] ?? '';
+        $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
         if (!empty($da)) {
             $state[$key] = $da;
         }
@@ -42,7 +54,7 @@ function make_callback_url($url)
     return $oauth_call;
 }
 // ---
-$call_back_url = make_callback_url('https://mdwiki.toolforge.org/auth/index.php?a=callback');
+$call_back_url = create_callback_url('https://mdwiki.toolforge.org/auth/index.php?a=callback');
 // ---
 $client->setCallback($call_back_url);
 

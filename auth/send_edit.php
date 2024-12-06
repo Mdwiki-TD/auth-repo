@@ -4,9 +4,9 @@ namespace OAuth\SendEdit;
 /*
 Usage:
 include_once __DIR__ . '/send_edit.php';
-use function OAuth\SendEdit\auth_do_edit;
+use function OAuth\SendEdit\auth_make_edit;
 use function OAuth\SendEdit\do_edit;
-use function OAuth\SendEdit\get_edits_token;
+use function OAuth\SendEdit\get_edits_tokens;
 */
 
 include_once __DIR__ . '/../vendor_load.php';
@@ -15,7 +15,7 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
-use function OAuth\Helps\get_from_cookie;
+use function OAuth\Helps\get_from_cookies;
 
 // Output the demo as plain text, for easier formatting.
 // header( 'Content-type: text/plain' );
@@ -24,7 +24,7 @@ use function OAuth\Helps\get_from_cookie;
 include_once __DIR__ . '/config.php';
 include_once __DIR__ . '/helps.php';
 
-function get_edits_token($client, $accessToken, $apiUrl)
+function get_edits_tokens($client, $accessToken, $apiUrl)
 {
     $response = $client->makeOAuthCall($accessToken, "$apiUrl?action=query&meta=tokens&format=json");
     // ---
@@ -32,14 +32,14 @@ function get_edits_token($client, $accessToken, $apiUrl)
     // ---
     if ($data == null || !isset($data->query->tokens->csrftoken)) {
         // Handle error
-        echo "<br>get_edits_token Error: " . json_last_error() . " " . json_last_error_msg();
+        echo "<br>get_edits_tokens Error: " . json_last_error() . " " . json_last_error_msg();
         return null;
     }
     // ---
     return $data->query->tokens->csrftoken;
 }
 
-function auth_do_edit($title, $text, $summary, $wiki, $access_key, $access_secret)
+function auth_make_edit($title, $text, $summary, $wiki, $access_key, $access_secret)
 {
     global $gUserAgent, $consumerKey, $consumerSecret;
     // ---
@@ -54,7 +54,7 @@ function auth_do_edit($title, $text, $summary, $wiki, $access_key, $access_secre
     // ---
     $accessToken = new Token($access_key, $access_secret);
     // ---
-    $editToken = get_edits_token($client, $accessToken, $apiUrl);
+    $editToken = get_edits_tokens($client, $accessToken, $apiUrl);
     // ---
     $apiParams = [
         'action' => 'edit',

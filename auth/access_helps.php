@@ -4,26 +4,26 @@ namespace OAuth\AccessHelps;
 /*
 Usage:
 include_once __DIR__ . '/access_helps.php';
-use function OAuth\AccessHelps\get_access_from_db;
-use function OAuth\AccessHelps\del_access_from_db;
-use function OAuth\AccessHelps\add_access_to_db;
+use function OAuth\AccessHelps\get_access_from_dbs;
+use function OAuth\AccessHelps\del_access_from_dbs;
+use function OAuth\AccessHelps\add_access_to_dbs;
 */
 
 include_once __DIR__ . '/mdwiki_sql.php';
 include_once __DIR__ . '/config.php';
 include_once __DIR__ . '/helps.php';
 
-use function OAuth\MdwikiSql\execute_query;
-use function OAuth\MdwikiSql\fetch_query;
-use function OAuth\Helps\decode_value;
-use function OAuth\Helps\encode_value;
+use function OAuth\MdwikiSql\execute_queries;
+use function OAuth\MdwikiSql\fetch_queries;
+use function OAuth\Helps\de_code_value;
+use function OAuth\Helps\en_code_value;
 
-function add_access_to_db($user, $access_key, $access_secret)
+function add_access_to_dbs($user, $access_key, $access_secret)
 {
     $t = [
         trim($user),
-        encode_value($access_key),
-        encode_value($access_secret)
+        en_code_value($access_key),
+        en_code_value($access_secret)
     ];
     //---
     $query = <<<SQL
@@ -34,15 +34,15 @@ function add_access_to_db($user, $access_key, $access_secret)
             access_secret = VALUES(access_secret);
     SQL;
     //---
-    execute_query($query, $t);
+    execute_queries($query, $t);
 };
 
-function get_access_from_db($user)
+function get_access_from_dbs($user)
 {
-    // تأكد من تنسيق اسم المستخدم
+    // Validate and sanitize username
     $user = trim($user);
 
-    // SQL للاستعلام عن access_key و access_secret بناءً على اسم المستخدم
+    // Query to get access_key and access_secret for the user
     $query = <<<SQL
         SELECT access_key, access_secret
         FROM access_keys
@@ -50,22 +50,24 @@ function get_access_from_db($user)
     SQL;
 
     // تنفيذ الاستعلام وتمرير اسم المستخدم كمعامل
-    $result = fetch_query($query, [$user]);
+    $result = fetch_queries($query, [$user]);
 
     // التحقق مما إذا كان قد تم العثور على نتائج
-    if ($result) {
-        $result = $result[0];
-        return [
-            'access_key' => decode_value($result['access_key']),
-            'access_secret' => decode_value($result['access_secret'])
-        ];
-    } else {
+
+    if (!$result) {
         // إذا لم يتم العثور على نتيجة، إرجاع null أو يمكنك تخصيص رد معين
         return null;
     }
+
+    $result = $result[0];
+    // ---
+    return [
+        'access_key' => de_code_value($result['access_key']),
+        'access_secret' => de_code_value($result['access_secret'])
+    ];
 }
 
-function del_access_from_db($user)
+function del_access_from_dbs($user)
 {
     $user = trim($user);
 
@@ -73,5 +75,5 @@ function del_access_from_db($user)
         DELETE FROM access_keys WHERE user_name = ?;
     SQL;
 
-    $result = execute_query($query, [$user]);
+    $result = execute_queries($query, [$user]);
 }

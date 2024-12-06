@@ -3,8 +3,8 @@
 namespace OAuth\MdwikiSql;
 /*
 Usage:
-use function OAuth\MdwikiSql\fetch_query;
-use function OAuth\MdwikiSql\execute_query;
+use function OAuth\MdwikiSql\fetch_queries;
+use function OAuth\MdwikiSql\execute_queries;
 */
 
 if (isset($_REQUEST['test'])) {
@@ -52,7 +52,7 @@ class Database
         }
     }
 
-    public function execute_query_old($sql_query)
+    public function execute_queries_old($sql_query)
     {
         try {
             $q = $this->db->prepare($sql_query);
@@ -64,7 +64,7 @@ class Database
             return array();
         }
     }
-    public function execute_query($sql_query, $params = null)
+    public function execute_queries($sql_query, $params = null)
     {
         try {
             $q = $this->db->prepare($sql_query);
@@ -90,7 +90,7 @@ class Database
         }
     }
 
-    public function fetch_query($sql_query, $params = null)
+    public function fetch_queries($sql_query, $params = null)
     {
         try {
             $q = $this->db->prepare($sql_query);
@@ -115,7 +115,7 @@ class Database
     }
 }
 
-function execute_query($sql_query, $params = null)
+function execute_queries($sql_query, $params = null)
 {
 
     // Create a new database object
@@ -123,9 +123,9 @@ function execute_query($sql_query, $params = null)
 
     // Execute a SQL query
     if ($params) {
-        $results = $db->execute_query($sql_query, $params);
+        $results = $db->execute_queries($sql_query, $params);
     } else {
-        $results = $db->execute_query($sql_query);
+        $results = $db->execute_queries($sql_query);
     }
 
     // Print the results
@@ -137,7 +137,7 @@ function execute_query($sql_query, $params = null)
     //---
     return $results;
 };
-function fetch_query($sql_query, $params = null)
+function fetch_queries($sql_query, $params = null)
 {
 
     // Create a new database object
@@ -145,9 +145,9 @@ function fetch_query($sql_query, $params = null)
 
     // Execute a SQL query
     if ($params) {
-        $results = $db->fetch_query($sql_query, $params);
+        $results = $db->fetch_queries($sql_query, $params);
     } else {
-        $results = $db->fetch_query($sql_query);
+        $results = $db->fetch_queries($sql_query);
     }
 
     // Print the results
