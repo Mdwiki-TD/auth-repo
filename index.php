@@ -5,8 +5,12 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 
-// if not $_GET
-if (empty($_GET)) {
+// length of $_GET == 1 and isset($_GET['test'])
+$ye = count($_GET) == 1 && isset($_GET['test']);
+
+// if not $_GET or only $_GET['test'] isset
+
+if (empty($_GET) || $ye ) {
     include_once __DIR__ . '/view.php';
 } else {
     require __DIR__ . '/auth/index.php';

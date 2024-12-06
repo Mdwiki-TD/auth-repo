@@ -12,7 +12,7 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
-use function OAuth\Helps\get_from_cookie;
+use function OAuth\Helps\get_from_cookies;
 
 // Output the demo as plain text, for easier formatting.
 // header( 'Content-type: text/plain' );
@@ -29,15 +29,15 @@ $client = new Client($conf);
 
 // Load the Access Token from the session.
 
-$access_key = get_from_cookie('accesskey');
-$access_secret = get_from_cookie('access_secret');
+$access_key = get_from_cookies('accesskey');
+$access_secret = get_from_cookies('access_secret');
 
 $accessToken = new Token($access_key, $access_secret);
 
 // Example 1: get the authenticated user's identity.
 $ident = $client->identify($accessToken);
 
-function get_edit_token()
+function get_edit_tokens()
 {
     global $client, $accessToken, $apiUrl;
     // Example 3: make an edit (getting the edit token first).
@@ -49,11 +49,11 @@ function get_edit_token()
     return $editToken;
 }
 
-function doApiQuery($Params, $addtoken = null)
+function do_Api_Query($Params, $addtoken = null)
 {
     global $client, $accessToken, $apiUrl;
     //---
-    if ($addtoken !== null) $Params['token'] = get_edit_token();
+    if ($addtoken !== null) $Params['token'] = get_edit_tokens();
     //---
     $Result = $client->makeOAuthCall(
         $accessToken,
@@ -67,6 +67,6 @@ function doApiQuery($Params, $addtoken = null)
 
 $post = $_GET;
 if (isset($post['action'])) {
-    $result = doApiQuery($post);
+    $result = do_Api_Query($post);
     echo json_encode($result, true);
 }

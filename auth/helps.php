@@ -3,10 +3,10 @@
 namespace OAuth\Helps;
 /*
 Usage:
-use function OAuth\Helps\add_to_cookie;
-use function OAuth\Helps\get_from_cookie;
-use function OAuth\Helps\decode_value;
-use function OAuth\Helps\encode_value;
+use function OAuth\Helps\add_to_cookies;
+use function OAuth\Helps\get_from_cookies;
+use function OAuth\Helps\de_code_value;
+use function OAuth\Helps\en_code_value;
 */
 
 include_once __DIR__ . '/../vendor_load.php';
@@ -14,7 +14,7 @@ include_once __DIR__ . '/config.php';
 
 use Defuse\Crypto\Crypto;
 
-function decode_value($value)
+function de_code_value($value)
 {
     global $cookie_key;
     try {
@@ -25,7 +25,7 @@ function decode_value($value)
     return $value;
 }
 
-function encode_value($value)
+function en_code_value($value)
 {
     global $cookie_key;
     try {
@@ -35,7 +35,7 @@ function encode_value($value)
     };
     return $value;
 }
-function add_to_cookie($key, $value, $age = 0)
+function add_to_cookies($key, $value, $age = 0)
 {
     global $domain;
     if ($age == 0) {
@@ -44,9 +44,9 @@ function add_to_cookie($key, $value, $age = 0)
     }
     $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
 
-    $value = encode_value($value);
+    $value = en_code_value($value);
 
-    // echo "add_to_cookie: value: $value<br>";
+    // echo "add_to_cookies: value: $value<br>";
     setcookie(
         $key,
         $value,
@@ -58,10 +58,10 @@ function add_to_cookie($key, $value, $age = 0)
     );
 }
 
-function get_from_cookie($key)
+function get_from_cookies($key)
 {
     if (isset($_COOKIE[$key])) {
-        $value = decode_value($_COOKIE[$key]);
+        $value = de_code_value($_COOKIE[$key]);
     } else {
         // echo "key: $key<br>";
         $value = "";
