@@ -11,5 +11,3 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 require __DIR__ . '/vendor/autoload.php'; // TD
-
-// require(__DIR__ . '/../../vendor/autoload.php');
