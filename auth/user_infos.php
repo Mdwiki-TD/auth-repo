@@ -60,5 +60,7 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
 	}
 }
 //---
+$global_username = $username;
+//---
 define('global_username', $username);
 
