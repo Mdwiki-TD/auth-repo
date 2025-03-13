@@ -7,6 +7,7 @@ use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\AccessHelps\add_access_to_dbs;
+use function OAuth\AccessHelps\sql_add_user;
 
 if (!isset($_GET['oauth_verifier'])) {
 	echo "This page should only be access after redirection back from the wiki.";
@@ -62,6 +63,8 @@ $_SESSION['username'] = $ident->username;
 $twoYears = time() + 60 * 60 * 24 * 365 * 2;
 
 add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
+
+sql_add_user($ident->username);
 
 add_to_cookies('username', $ident->username);
 

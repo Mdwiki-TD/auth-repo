@@ -77,3 +77,16 @@ function del_access_from_dbs($user)
 
     $result = execute_queries($query, [$user]);
 }
+
+function sql_add_user($user_name)
+{
+    $qua = <<<SQL
+        INSERT INTO users (username) SELECT ?
+        WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = ?)
+    SQL;
+    $params = [$user_name, $user_name];
+
+    $results = execute_queries($qua, $params);
+
+    return $results;
+}
