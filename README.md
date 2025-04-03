@@ -80,6 +80,97 @@ The authentication system follows a modular architecture:
 ## License
 
 ## Diagram
-```maidmer
+```mermaid
+flowchart TD
+    %% Client
+    Client["Client/User Request"]:::client
 
+    %% Web Entry Points
+    subgraph "Web Entry Points"
+        indexPhp["index.php"]:::frontend
+        viewPhp["view.php"]:::frontend
+    end
+
+    %% Authentication Module
+    subgraph "Authentication Module"
+        authLogin["login.php"]:::auth
+        authLogout["logout.php"]:::auth
+        authCallback["callback.php"]:::auth
+        authAPI["api.php"]:::auth
+        authGetUser["get_user.php"]:::auth
+        authUserInfos["user_infos.php"]:::auth
+        authOthers["(Other Auth Files)"]:::auth
+        authConfig["config.php"]:::config
+        authMdwiki["mdwiki_sql.php"]:::config
+    end
+
+    %% Dependency Management
+    subgraph "Dependency Management"
+        composerJson["composer.json"]:::dep
+        vendorLoad["vendor_load.php"]:::dep
+    end
+
+    %% CI/CD & Configuration
+    subgraph "CI/CD & Config Files"
+        coderabbit[".coderabbit.yaml"]:::cicd
+        gitattributes[".gitattributes"]:::cicd
+        gitignore[".gitignore"]:::cicd
+        githubWorkflow["update.yaml"]:::cicd
+    end
+
+    %% Relationships
+    Client -->|"HTTP_Request"| indexPhp
+    Client -->|"HTTP_Request"| viewPhp
+
+    indexPhp -->|"RoutesAuth"| authLogin
+    indexPhp -->|"RoutesAuth"| authLogout
+    indexPhp -->|"RoutesAuth"| authCallback
+    viewPhp  -->|"CallsAPI"| authAPI
+
+    authLogin -->|"OnSuccess"| authCallback
+    authCallback -->|"FetchUserInfo"| authGetUser
+    authCallback -->|"FetchUserInfo"| authUserInfos
+
+    %% Show usage of configuration in Auth Module
+    authLogin -->|"Uses"| authConfig
+    authLogout -->|"Uses"| authConfig
+    authCallback -->|"Uses"| authConfig
+    authAPI -->|"Uses"| authConfig
+    authGetUser -->|"Uses"| authConfig
+    authUserInfos -->|"Uses"| authConfig
+
+    %% Database interaction (implied by mdwiki_sql.php)
+    authGetUser -->|"DBQuery"| authMdwiki
+    authUserInfos -->|"DBQuery"| authMdwiki
+
+    %% Dependency Management integration
+    authAPI -->|"ExternalLibs"| vendorLoad
+    authLogin -->|"ExternalLibs"| vendorLoad
+    authAPI -->|"DependsOn"| composerJson
+
+    %% Styles
+    classDef client fill:#FFD700,stroke:#333,stroke-width:2px;
+    classDef frontend fill:#ADD8E6,stroke:#000,stroke-width:2px;
+    classDef auth fill:#90EE90,stroke:#000,stroke-width:2px;
+    classDef dep fill:#FFA07A,stroke:#000,stroke-width:2px;
+    classDef cicd fill:#D3D3D3,stroke:#000,stroke-width:2px;
+    classDef config fill:#E6E6FA,stroke:#000,stroke-width:2px;
+
+    %% Click Events
+    click indexPhp "https://github.com/mdwiki-td/auth-repo/blob/main/index.php"
+    click viewPhp "https://github.com/mdwiki-td/auth-repo/blob/main/view.php"
+    click authLogin "https://github.com/mdwiki-td/auth-repo/blob/main/auth/login.php"
+    click authLogout "https://github.com/mdwiki-td/auth-repo/blob/main/auth/logout.php"
+    click authCallback "https://github.com/mdwiki-td/auth-repo/blob/main/auth/callback.php"
+    click authAPI "https://github.com/mdwiki-td/auth-repo/blob/main/auth/api.php"
+    click authGetUser "https://github.com/mdwiki-td/auth-repo/blob/main/auth/get_user.php"
+    click authUserInfos "https://github.com/mdwiki-td/auth-repo/blob/main/auth/user_infos.php"
+    click composerJson "https://github.com/mdwiki-td/auth-repo/blob/main/composer.json"
+    click vendorLoad "https://github.com/mdwiki-td/auth-repo/blob/main/vendor_load.php"
+    click coderabbit "https://github.com/mdwiki-td/auth-repo/blob/main/.coderabbit.yaml"
+    click gitattributes "https://github.com/mdwiki-td/auth-repo/blob/main/.gitattributes"
+    click gitignore "https://github.com/mdwiki-td/auth-repo/blob/main/.gitignore"
+    click githubWorkflow "https://github.com/mdwiki-td/auth-repo/blob/main/.github/workflows/update.yaml"
+    click authConfig "https://github.com/mdwiki-td/auth-repo/blob/main/auth/config.php"
+    click authMdwiki "https://github.com/mdwiki-td/auth-repo/blob/main/auth/mdwiki_sql.php"
 ```
