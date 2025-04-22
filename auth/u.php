@@ -44,6 +44,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $fa = $_GET['test'] ?? '';
     // if ($fa != 'xx') {
     // Get the Request Token's details from the session and create a new Token object.
+    session_name("mdwikitoolforgeoauth");
     session_start();
     // ---
     $user = 'Mr. Ibrahem';
