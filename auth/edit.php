@@ -19,7 +19,7 @@ $summary = $_GET['summary'] ?? 'h!';
 // ---
 $username = get_from_cookies('username');
 // ---
-$access = get_access_from_dbs($_SESSION['username']);
+$access = get_access_from_dbs($username);
 // ---
 $access_key = $access['access_key'] ?? "";
 $access_secret = $access['access_secret'] ?? "";
