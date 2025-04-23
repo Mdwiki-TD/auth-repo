@@ -14,6 +14,7 @@ use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
+use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 
 // Output the demo as plain text, for easier formatting.
 // header( 'Content-type: text/plain' );
@@ -27,10 +28,14 @@ $conf = new ClientConfig($oauthUrl);
 $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
 $conf->setUserAgent($gUserAgent);
 $client = new Client($conf);
-
+// ---
 $username = get_from_cookies('username');
 // ---
-$access = get_access_from_dbs($username);
+$access = get_access_from_dbs_new($username);
+// ---
+if ($access == null) {
+    $access = get_access_from_dbs($username);
+}
 // ---
 $access_key = $access['access_key'] ?? "";
 $access_secret = $access['access_secret'] ?? "";
