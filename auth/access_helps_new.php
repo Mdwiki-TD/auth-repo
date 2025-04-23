@@ -30,7 +30,8 @@ function add_access_to_dbs_new($user, $access_key, $access_secret)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE
             a_k = VALUES(a_k),
-            a_s = VALUES(a_s);
+            a_s = VALUES(a_s),
+            created_at = NOW();
     SQL;
     //---
     execute_queries($query, $t);
