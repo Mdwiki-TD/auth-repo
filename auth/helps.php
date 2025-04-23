@@ -62,6 +62,7 @@ function get_from_cookies($key)
 {
     if (isset($_COOKIE[$key])) {
         $value = de_code_value($_COOKIE[$key]);
+        if ($_COOKIE[$key] == $value) return "";
     } else {
         // echo "key: $key<br>";
         $value = "";
