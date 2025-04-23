@@ -10,6 +10,7 @@ include_once __DIR__ . '/helps.php';
 use function OAuth\SendEdit\auth_make_edit;
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
+use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 
 $title   = $_GET['title'] ?? 'وب:ملعب';
 $text    = $_GET['text'] ?? 'new!new!';
@@ -19,7 +20,11 @@ $summary = $_GET['summary'] ?? 'h!';
 // ---
 $username = get_from_cookies('username');
 // ---
-$access = get_access_from_dbs($username);
+$access = get_access_from_dbs_new($username);
+// ---
+if ($access == null) {
+    $access = get_access_from_dbs($username);
+}
 // ---
 $access_key = $access['access_key'] ?? "";
 $access_secret = $access['access_secret'] ?? "";
