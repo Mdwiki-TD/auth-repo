@@ -46,11 +46,11 @@ function get_access_from_dbs_new($user)
     $query = <<<SQL
         SELECT a_k, a_s
         FROM keys_new
-        WHERE u_n = ?;
+        WHERE u_n in (?, ?);
     SQL;
 
     // تنفيذ الاستعلام وتمرير اسم المستخدم كمعامل
-    $result = fetch_queries($query, [en_code_value($user)]);
+    $result = fetch_queries($query, [en_code_value($user), $user]);
 
     // التحقق مما إذا كان قد تم العثور على نتائج
 
@@ -72,8 +72,8 @@ function del_access_from_dbs_new($user)
     $user = trim($user);
 
     $query = <<<SQL
-        DELETE FROM keys_new WHERE u_n = ?;
+        DELETE FROM keys_new WHERE u_n in (?, ?);
     SQL;
 
-    execute_queries($query, [en_code_value($user)]);
+    execute_queries($query, [en_code_value($user), $user]);
 }
