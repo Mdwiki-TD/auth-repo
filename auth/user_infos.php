@@ -9,9 +9,12 @@ use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 //---
 $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
+// ---
 if ($_SERVER['SERVER_NAME'] != 'localhost') {
-	session_name("mdwikitoolforgeoauth");
-	session_set_cookie_params(0, "/", $domain, $secure, $secure);
+	if (session_status() === PHP_SESSION_NONE) {
+		session_name("mdwikitoolforgeoauth");
+		session_set_cookie_params(0, "/", $domain, $secure, $secure);
+	}
 }
 //---
 function ba_alert($text)
