@@ -64,7 +64,7 @@ list($authUrl, $token) = $client->initiate();
 
 // Store the Request Token in the session. We will retrieve it from there when the user is sent back
 // from the wiki (see demo/callback.php).
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 $_SESSION['request_key'] = $token->key;
 $_SESSION['request_secret'] = $token->secret;
 

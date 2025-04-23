@@ -12,7 +12,7 @@ $allowed_u = [
     "Mr. Ibrahem"
 ];
 if ($u != '' && in_array($u, $allowed_u)) {
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) session_start();
     $_SESSION['username'] = $u;
     //---
     session_regenerate_id();
@@ -39,7 +39,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $fa = $_GET['test'] ?? '';
     // if ($fa != 'xx') {
     // Get the Request Token's details from the session and create a new Token object.
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) session_start();
     // ---
     $user = 'Mr. Ibrahem';
     $_SESSION['username'] = $user;

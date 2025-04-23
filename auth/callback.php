@@ -24,7 +24,7 @@ $conf->setUserAgent($gUserAgent);
 $client = new Client($conf);
 
 // Get the Request Token's details from the session and create a new Token object.
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 $requestToken = new Token(
 	$_SESSION['request_key'],
 	$_SESSION['request_secret']
