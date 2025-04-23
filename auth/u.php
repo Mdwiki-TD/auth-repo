@@ -6,9 +6,6 @@ if (isset($_REQUEST['test'])) {
 };
 //---
 include_once __DIR__ . '/helps.php';
-
-use function OAuth\Helps\add_to_cookies;
-
 $u = filter_input(INPUT_GET, 'u', FILTER_SANITIZE_SPECIAL_CHARS);
 $allowed_u = [
     "Mina karaca",
@@ -17,8 +14,6 @@ $allowed_u = [
 if ($u != '' && in_array($u, $allowed_u)) {
     session_start();
     $_SESSION['username'] = $u;
-    //---
-    add_to_cookies('username', $u);
     //---
     session_regenerate_id();
     //---
@@ -48,9 +43,6 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     // ---
     $user = 'Mr. Ibrahem';
     $_SESSION['username'] = $user;
-    $_COOKIE['username'] = $user;
-    //---
-    // add_to_cookies('username', $user);
     //---
     $return_to = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/Translation_Dashboard/index.php';
     //---

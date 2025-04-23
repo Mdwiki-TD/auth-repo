@@ -15,7 +15,6 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
-use function OAuth\Helps\get_from_cookies;
 
 // Output the demo as plain text, for easier formatting.
 // header( 'Content-type: text/plain' );

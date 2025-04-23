@@ -5,7 +5,6 @@ include_once __DIR__ . '/helps.php';
 //---
 require_once __DIR__ . '/access_helps.php';
 //---
-use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 //---
 $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
@@ -28,22 +27,18 @@ function ba_alert($text)
 	HTML;
 }
 //---
-$username = get_from_cookies('username');
+if (session_status() === PHP_SESSION_NONE) session_start();
 //---
-if ($_SERVER['SERVER_NAME'] == 'localhost') {
-	if (session_status() === PHP_SESSION_NONE) session_start();
-	$username = $_SESSION['username'] ?? '';
-} elseif (!empty($username)) {
-	// ---
-	$access_key = get_from_cookies('accesskey');
-	$access_secret = get_from_cookies('access_secret');
+$username = $_SESSION['username'] ?? '';
+//---
+if ($_SERVER['SERVER_NAME'] != 'localhost' && !empty($username)) {
 	// ---
 	$access = get_access_from_dbs($username);
 	// ---
-	if (empty($access_key) || empty($access_secret) || $access == null) {
+	if ($access == null) {
 		echo ba_alert("No access keys found. Login again.");
-		setcookie('username', '', time() - 3600, "/", $domain, true, true);
 		$username = '';
+		unset($_SESSION['username']);
 	}
 }
 //---

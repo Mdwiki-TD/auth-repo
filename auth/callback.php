@@ -5,7 +5,6 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
-use function OAuth\Helps\add_to_cookies;
 use function OAuth\AccessHelps\add_access_to_dbs;
 use function OAuth\AccessHelps\sql_add_user;
 
@@ -38,10 +37,8 @@ $accessToken1 = $client->complete($requestToken, $_GET['oauth_verifier']);
 // API requests to the wiki. You can store the Access Token in the session or other secure
 // user-specific storage and re-use it for future requests.
 // $_SESSION['accesskey'] = $accessToken1->key;
-add_to_cookies('accesskey', $accessToken1->key);
 
 // $_SESSION['access_secret'] = $accessToken1->secret;
-add_to_cookies('access_secret', $accessToken1->secret);
 
 // You also no longer need the Request Token.
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
@@ -69,8 +66,6 @@ $twoYears = time() + 60 * 60 * 24 * 365 * 2;
 add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
 
 sql_add_user($ident->username);
-
-add_to_cookies('username', $ident->username);
 
 echo "Continue to <a href='index.php?a=index'>index</a><br>";
 
