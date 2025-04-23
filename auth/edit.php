@@ -8,6 +8,7 @@ include_once __DIR__ . '/send_edit.php';
 include_once __DIR__ . '/helps.php';
 
 use function OAuth\SendEdit\auth_make_edit;
+use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 
 $title   = $_GET['title'] ?? 'وب:ملعب';
@@ -15,6 +16,8 @@ $text    = $_GET['text'] ?? 'new!new!';
 $lang    = $_GET['lang'] ?? 'ar';
 $summary = $_GET['summary'] ?? 'h!';
 
+// ---
+$username = get_from_cookies('username');
 // ---
 $access = get_access_from_dbs($_SESSION['username']);
 // ---

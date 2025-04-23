@@ -5,6 +5,7 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
+use function OAuth\Helps\add_to_cookies;
 use function OAuth\AccessHelps\add_access_to_dbs;
 use function OAuth\AccessHelps\sql_add_user;
 
@@ -66,6 +67,8 @@ $twoYears = time() + 60 * 60 * 24 * 365 * 2;
 add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
 
 sql_add_user($ident->username);
+
+add_to_cookies('username', $ident->username);
 
 echo "Continue to <a href='index.php?a=index'>index</a><br>";
 
