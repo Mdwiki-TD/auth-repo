@@ -15,7 +15,7 @@ $allowed_u = [
     "Mr. Ibrahem"
 ];
 if ($u != '' && in_array($u, $allowed_u)) {
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) session_start();
     $_SESSION['username'] = $u;
     //---
     add_to_cookies('username', $u);
@@ -44,13 +44,12 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $fa = $_GET['test'] ?? '';
     // if ($fa != 'xx') {
     // Get the Request Token's details from the session and create a new Token object.
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) session_start();
     // ---
     $user = 'Mr. Ibrahem';
     $_SESSION['username'] = $user;
-    $_COOKIE['username'] = $user;
     //---
-    // add_to_cookies('username', $user);
+    add_to_cookies('username', $user);
     //---
     $return_to = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/Translation_Dashboard/index.php';
     //---

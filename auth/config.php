@@ -54,5 +54,5 @@ $consumerSecrety_new = $ini['consumerSecrety_new'] ?? '';
 
 $domain = $_SERVER['SERVER_NAME'] ?? 'localhost';
 
-$cookie_key     = $ini['cookie_key'] ?? '';
-$cookie_key = Key::loadFromAsciiSafeString($cookie_key);
+$decrypt_key     = $ini['cookie_key'] ?? '';
+$decrypt_key = Key::loadFromAsciiSafeString($decrypt_key);

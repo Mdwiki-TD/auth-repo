@@ -16,9 +16,9 @@ use Defuse\Crypto\Crypto;
 
 function de_code_value($value)
 {
-    global $cookie_key;
+    global $decrypt_key;
     try {
-        $value = Crypto::decrypt($value, $cookie_key);
+        $value = Crypto::decrypt($value, $decrypt_key);
     } catch (\Exception $e) {
         $value = $value;
     }
@@ -27,9 +27,9 @@ function de_code_value($value)
 
 function en_code_value($value)
 {
-    global $cookie_key;
+    global $decrypt_key;
     try {
-        $value = Crypto::encrypt($value, $cookie_key);
+        $value = Crypto::encrypt($value, $decrypt_key);
     } catch (\Exception $e) {
         $value = $value;
     };

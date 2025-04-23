@@ -25,7 +25,7 @@ $conf->setUserAgent($gUserAgent);
 $client = new Client($conf);
 
 // Get the Request Token's details from the session and create a new Token object.
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 $requestToken = new Token(
 	$_SESSION['request_key'],
 	$_SESSION['request_secret']
@@ -38,10 +38,8 @@ $accessToken1 = $client->complete($requestToken, $_GET['oauth_verifier']);
 // API requests to the wiki. You can store the Access Token in the session or other secure
 // user-specific storage and re-use it for future requests.
 // $_SESSION['accesskey'] = $accessToken1->key;
-add_to_cookies('accesskey', $accessToken1->key);
 
 // $_SESSION['access_secret'] = $accessToken1->secret;
-add_to_cookies('access_secret', $accessToken1->secret);
 
 // You also no longer need the Request Token.
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
