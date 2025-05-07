@@ -20,9 +20,9 @@ use function OAuth\Helps\en_code_value;
 function add_access_to_dbs_new($user, $access_key, $access_secret)
 {
     $t = [
-        en_code_value(trim($user)),
-        en_code_value($access_key),
-        en_code_value($access_secret)
+        en_code_value(trim($user), "decrypt"),
+        en_code_value($access_key, "decrypt"),
+        en_code_value($access_secret, "decrypt")
     ];
     //---
     $query = <<<SQL
@@ -62,8 +62,8 @@ function get_access_from_dbs_new($user)
     $result = $result[0];
     // ---
     return [
-        'access_key' => de_code_value($result['a_k']),
-        'access_secret' => de_code_value($result['a_s'])
+        'access_key' => de_code_value($result['a_k'], "decrypt"),
+        'access_secret' => de_code_value($result['a_s'], "decrypt")
     ];
 }
 
