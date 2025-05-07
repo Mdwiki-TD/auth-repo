@@ -20,9 +20,9 @@ use function OAuth\Helps\en_code_value;
 function add_access_to_dbs_new($user, $access_key, $access_secret)
 {
     $t = [
-        en_code_value(trim($user), "decrypt"),
-        en_code_value($access_key, "decrypt"),
-        en_code_value($access_secret, "decrypt")
+        en_code_value(trim($user), $key_type = "decrypt"),
+        en_code_value($access_key, $key_type = "decrypt"),
+        en_code_value($access_secret, $key_type = "decrypt")
     ];
     //---
     $query = <<<SQL
@@ -50,7 +50,7 @@ function get_access_from_dbs_new($user)
     SQL;
 
     // تنفيذ الاستعلام وتمرير اسم المستخدم كمعامل
-    $result = fetch_queries($query, [en_code_value($user), $user]);
+    $result = fetch_queries($query, [en_code_value($user, $key_type = "decrypt"), $user]);
 
     // التحقق مما إذا كان قد تم العثور على نتائج
 
@@ -62,8 +62,8 @@ function get_access_from_dbs_new($user)
     $result = $result[0];
     // ---
     return [
-        'access_key' => de_code_value($result['a_k'], "decrypt"),
-        'access_secret' => de_code_value($result['a_s'], "decrypt")
+        'access_key' => de_code_value($result['a_k'], $key_type = "decrypt"),
+        'access_secret' => de_code_value($result['a_s'], $key_type = "decrypt")
     ];
 }
 
