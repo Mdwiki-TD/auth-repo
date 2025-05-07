@@ -53,9 +53,9 @@ function add_access_to_dbs_new($user, $access_key, $access_secret)
     //---
     if ($user_id) {
         $t = [
-            $user_id,
             en_code_value($access_key, $key_type = "decrypt"),
-            en_code_value($access_secret, $key_type = "decrypt")
+            en_code_value($access_secret, $key_type = "decrypt"),
+            $user_id,
         ];
         //---
         $query = <<<SQL
