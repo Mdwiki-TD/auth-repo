@@ -14,27 +14,42 @@ include_once __DIR__ . '/config.php';
 
 use Defuse\Crypto\Crypto;
 
-function de_code_value($value)
+function de_code_value($value, $key_type = "cookie")
 {
-    global $decrypt_key;
+    global $cookie_key, $decrypt_key;
+    // ---
+    if (empty(trim($value))) {
+        return "";
+    }
+    // ---
+    $use_key = ($key_type == "decrypt") ? $decrypt_key : $cookie_key;
+    // ---
     try {
-        $value = Crypto::decrypt($value, $decrypt_key);
+        $value = Crypto::decrypt($value, $use_key);
     } catch (\Exception $e) {
         $value = "";
     }
     return $value;
 }
 
-function en_code_value($value)
+function en_code_value($value, $key_type = "cookie")
 {
-    global $decrypt_key;
+    global $cookie_key, $decrypt_key;
+    // ---
+    $use_key = ($key_type == "decrypt") ? $decrypt_key : $cookie_key;
+    // ---
+    if (empty(trim($value))) {
+        return "";
+    }
+    // ---
     try {
-        $value = Crypto::encrypt($value, $decrypt_key);
+        $value = Crypto::encrypt($value, $use_key);
     } catch (\Exception $e) {
         $value = "";
     };
     return $value;
 }
+
 function add_to_cookies($key, $value, $age = 0)
 {
     global $domain;
