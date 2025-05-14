@@ -48,7 +48,7 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 
 // include_once __DIR__ . '/userinfo.php';
 // The demo continues in demo/edit.php
-echo "Continue to <a href='index.php?a=edit'>edit</a><br>";
+// echo "Continue to <a href='index.php?a=edit'>edit</a><br>";
 echo "Continue to <a href='index.php?a=index'>index</a><br>";
 
 // $accessToken = new Token($_SESSION['accesskey'], $_SESSION['access_secret']);
