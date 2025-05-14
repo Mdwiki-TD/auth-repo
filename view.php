@@ -16,7 +16,6 @@ if (defined('global_username') && global_username != '') {
 	$u_name = global_username;
 	$message = <<<HTML
 		You are authenticated as $u_name.<br />
-		Continue to <a href='/auth/index.php?a=edit'>edit</a><br>
 		<a href='/auth/index.php?a=logout'>logout</a>
 	HTML;
 };
