@@ -15,7 +15,7 @@ $client = new Client($conf);
 function create_callback_url($url)
 {
     //---
-    $state = array();
+    $state = [];
     // ?action=login&cat=RTT&depth=1&code=&type=lead
     //---
     // $return_to = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';

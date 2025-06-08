@@ -72,7 +72,7 @@ class Database
             return $result;
         } catch (PDOException $e) {
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return array();
+            return [];
         }
     }
     public function executequery($sql_query, $params = null)
@@ -95,11 +95,11 @@ class Database
                 return $result;
             } else {
                 // Otherwise, return null
-                return array();
+                return [];
             }
         } catch (PDOException $e) {
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return array();
+            return [];
         }
     }
 
@@ -120,7 +120,7 @@ class Database
             return $result;
         } catch (PDOException $e) {
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return array();
+            return [];
         }
     }
 
