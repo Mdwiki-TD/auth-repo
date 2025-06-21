@@ -18,7 +18,7 @@ if ($_SERVER['SERVER_NAME'] != 'localhost') {
 		session_set_cookie_params(0, "/", $domain, $secure, $secure);
 	}
 }
-//---
+
 function ba_alert($text)
 {
 	return <<<HTML

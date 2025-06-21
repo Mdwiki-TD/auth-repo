@@ -25,6 +25,7 @@ class Database
     private $user;
     private $password;
     private $dbname;
+    private $groupByModeDisabled = false;
 
     public function __construct($server_name)
     {
@@ -52,21 +53,39 @@ class Database
         }
     }
 
-    public function execute_queries_old($sql_query)
+    public function disableFullGroupByMode($sql_query)
+    {
+        // if the query contains "GROUP BY", disable ONLY_FULL_GROUP_BY, strtoupper() is for case insensitive
+        if (strpos(strtoupper($sql_query), 'GROUP BY') !== false && !$this->groupByModeDisabled) {
+            try {
+                // More precise SQL mode modification
+                $this->db->exec("SET SESSION sql_mode=(SELECT REPLACE(@@SESSION.sql_mode,'ONLY_FULL_GROUP_BY',''))");
+                $this->groupByModeDisabled = true;
+            } catch (PDOException $e) {
+                // Log error but don't fail the query
+                error_log("Failed to disable ONLY_FULL_GROUP_BY: " . $e->getMessage());
+            }
+        }
+    }
+    public function executequery_old($sql_query)
     {
         try {
+            $this->disableFullGroupByMode($sql_query);
+
             $q = $this->db->prepare($sql_query);
             $q->execute();
             $result = $q->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         } catch (PDOException $e) {
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return array();
+            return [];
         }
     }
-    public function execute_queries($sql_query, $params = null)
+    public function executequery($sql_query, $params = null)
     {
         try {
+            $this->disableFullGroupByMode($sql_query);
+
             $q = $this->db->prepare($sql_query);
             if ($params) {
                 $q->execute($params);
@@ -82,17 +101,19 @@ class Database
                 return $result;
             } else {
                 // Otherwise, return null
-                return array();
+                return [];
             }
         } catch (PDOException $e) {
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return array();
+            return [];
         }
     }
 
-    public function fetch_queries($sql_query, $params = null)
+    public function fetchquery($sql_query, $params = null)
     {
         try {
+            $this->disableFullGroupByMode($sql_query);
+
             $q = $this->db->prepare($sql_query);
             if ($params) {
                 $q->execute($params);
@@ -105,7 +126,7 @@ class Database
             return $result;
         } catch (PDOException $e) {
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return array();
+            return [];
         }
     }
 
@@ -123,9 +144,9 @@ function execute_queries($sql_query, $params = null)
 
     // Execute a SQL query
     if ($params) {
-        $results = $db->execute_queries($sql_query, $params);
+        $results = $db->executequery($sql_query, $params);
     } else {
-        $results = $db->execute_queries($sql_query);
+        $results = $db->executequery($sql_query);
     }
 
     // Print the results
@@ -145,9 +166,9 @@ function fetch_queries($sql_query, $params = null)
 
     // Execute a SQL query
     if ($params) {
-        $results = $db->fetch_queries($sql_query, $params);
+        $results = $db->fetchquery($sql_query, $params);
     } else {
-        $results = $db->fetch_queries($sql_query);
+        $results = $db->fetchquery($sql_query);
     }
 
     // Print the results
