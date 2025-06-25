@@ -3,3 +3,5 @@
 composer.lock
 test.php
 _test_.php
+vendor.zip
+composer1.lock
