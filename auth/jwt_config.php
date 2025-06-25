@@ -7,9 +7,11 @@ use function OAuth\JWT\verify_jwt;
 */
 
 include_once __DIR__ . '/../vendor_load.php';
+include_once __DIR__ . '/config.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
+use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\Key;
 
 function create_jwt(string $username): string
@@ -34,24 +36,25 @@ function create_jwt(string $username): string
 function verify_jwt(string $token)
 {
     global $jwt_key;
+    // [$verified, $error] = verify_jwt($text2);
 
     // Input validation
     if (empty($token) || empty($jwt_key)) {
         error_log('Token and JWT key are required');
-        return "";
+        return ["", 'Token and JWT key are required'];
     }
 
     try {
         $result = JWT::decode($token, new Key($jwt_key, 'HS256'));
-        return $result->username;
+        return [$result->username, ''];
     } catch (ExpiredException $e) {
         error_log('JWT token has expired');
-        return "";
-    } catch (Firebase\JWT\SignatureInvalidException $e) {
+        return ["", 'JWT token has expired'];
+    } catch (SignatureInvalidException $e) {
         error_log('JWT token signature is invalid');
-        return "";
+        return ["", 'JWT token signature is invalid'];
     } catch (\Exception $e) {
         error_log('Failed to verify JWT token: ' . $e->getMessage());
-        return "";
+        return ["", 'Failed to verify JWT token: ' . $e->getMessage()];
     }
 }
