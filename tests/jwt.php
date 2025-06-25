@@ -1,8 +1,15 @@
 <?php
 
+include_once __DIR__ . '/../auth/user_infos.php';
 include_once __DIR__ . '/../auth/jwt_config.php';
 
 use function OAuth\JWT\verify_jwt;
+
+if (!defined('global_username') || global_username !== 'Mr. Ibrahem') {
+    http_response_code(401);
+    echo json_encode(['message' => 'غير مصرح'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
