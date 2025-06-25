@@ -57,3 +57,5 @@ $cookie_key = Key::loadFromAsciiSafeString($cookie_key);
 
 $decrypt_key     = $ini['decrypt_key'] ?? '';
 $decrypt_key = Key::loadFromAsciiSafeString($decrypt_key);
+
+$jwt_key = $ini['jwt_key'] ?? '';

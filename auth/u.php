@@ -5,8 +5,10 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 include_once __DIR__ . '/helps.php';
+include_once __DIR__ . '/jwt_config.php';
 
 use function OAuth\Helps\add_to_cookies;
+use function OAuth\JWT\create_jwt;
 
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $fa = $_GET['test'] ?? '';
@@ -19,8 +21,12 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     //---
     add_to_cookies('username', $user);
     //---
+    $jwt = create_jwt($user);
+    add_to_cookies('jwt_token', $jwt);
+    //---
     $return_to = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/Translation_Dashboard/index.php';
     //---
     header("Location: $return_to");
+    //---
     exit(0);
 };
