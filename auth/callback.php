@@ -2,6 +2,7 @@
 require_once __DIR__ . '/access_helps.php';
 require_once __DIR__ . '/access_helps_new.php';
 
+use Firebase\JWT\JWT;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
@@ -59,6 +60,17 @@ $ident = $client->identify($accessToken);
 echo "You are authenticated as " . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . ".\n\n";
 //---
 $_SESSION['username'] = $ident->username;
+
+$payload = [
+    'iss' => 'mdwiki.toolforge.org',
+    'iat' => time(),
+    'exp' => time() + (60 * 60), // 1 ساعة مثلًا
+    'username' => $ident->username
+];
+
+$jwt = JWT::encode($payload, $jwt_key, 'HS256');
+
+add_to_cookies('jwt_token', $jwt);
 
 if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
 	$_SESSION['csrf_tokens'] = [];
