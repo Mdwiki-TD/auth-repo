@@ -69,9 +69,6 @@ if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
 	$_SESSION['csrf_tokens'] = [];
 }
 
-$twoYears = time() + 60 * 60 * 24 * 365 * 2;
-// ---
-
 add_access_to_dbs_new($ident->username, $accessToken1->key, $accessToken1->secret);
 add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
 
