@@ -1,7 +1,7 @@
 <?php
 
-include_once __DIR__ . '/../auth/user_infos.php';
-include_once __DIR__ . '/../auth/jwt_config.php';
+include_once __DIR__ . '/../oauth/user_infos.php';
+include_once __DIR__ . '/../oauth/jwt_config.php';
 
 use function OAuth\JWT\verify_jwt;
 

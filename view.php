@@ -5,7 +5,7 @@ if (strpos(__FILE__, "I:\\") !== false) {
 	include_once __DIR__ . '/../header.php';
 }
 
-include_once __DIR__ . '/auth/user_infos.php';
+include_once __DIR__ . '/oauth/user_infos.php';
 
 $message = <<<HTML
 	Go to this URL to authorize this tool:<br />

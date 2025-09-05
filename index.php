@@ -13,5 +13,5 @@ $ye = count($_GET) == 1 && isset($_GET['test']);
 if (empty($_GET) || $ye ) {
     include_once __DIR__ . '/view.php';
 } else {
-    require __DIR__ . '/auth/index.php';
+    require __DIR__ . '/oauth/index.php';
 }
