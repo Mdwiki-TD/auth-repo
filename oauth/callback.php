@@ -13,63 +13,75 @@ use function OAuth\AccessHelps\add_access_to_dbs;
 use function OAuth\AccessHelpsNew\add_access_to_dbs_new;
 use function OAuth\AccessHelps\sql_add_user;
 
+/**
+ * دالة لإظهار رسالة خطأ والخروج مع رابط اختياري
+ */
+function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
+    echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
+    echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+    if ($linkUrl && $linkText) {
+        echo "<br><a href='" . htmlspecialchars($linkUrl, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($linkText, ENT_QUOTES, 'UTF-8') . "</a>";
+    }
+    echo "</div>";
+    exit;
+}
+
+// --------- بدء الجلسة ----------
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 // --------- تحقق من وجود oauth_verifier ----------
 if (!isset($_GET['oauth_verifier'])) {
-    echo "This page should only be accessed after redirection back from the wiki.<br>";
-    echo "<a href='index.php?a=login'>Login</a>";
-    exit;
+    showErrorAndExit(
+        "This page should only be accessed after redirection back from the wiki.",
+        "index.php?a=login",
+        "Login"
+    );
 }
 
 // --------- تحقق من بيانات Request Token ----------
 if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
-    echo "OAuth session expired or invalid. Please start login again.<br>";
-    echo "<a href='index.php?a=login'>Login</a>";
-    exit;
+    showErrorAndExit(
+        "OAuth session expired or invalid. Please start login again.",
+        "index.php?a=login",
+        "Login"
+    );
 }
 
 // --------- تهيئة عميل OAuth ----------
-$client = null;
 try {
     $conf = new ClientConfig($oauthUrl);
     $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
-    echo "Failed to initialize OAuth client: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
-    exit;
+    showErrorAndExit("Failed to initialize OAuth client: " . $e->getMessage());
 }
 
 // --------- إنشاء Request Token ----------
-$requestToken = null;
 try {
     $requestToken = new Token($_SESSION['request_key'], $_SESSION['request_secret']);
 } catch (\Exception $e) {
-    echo "Invalid request token: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
-    exit;
+    showErrorAndExit("Invalid request token: " . $e->getMessage());
 }
 
 // --------- إكمال عملية OAuth للحصول على Access Token ----------
-$accessToken1 = null;
 try {
     $accessToken1 = $client->complete($requestToken, $_GET['oauth_verifier']);
     unset($_SESSION['request_key'], $_SESSION['request_secret']);
 } catch (\MediaWiki\OAuthClient\Exception $e) {
-    echo "OAuth authentication failed: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
-    echo "<br><a href='index.php?a=login'>Try again</a>";
-    exit;
+    showErrorAndExit(
+        "OAuth authentication failed: " . $e->getMessage(),
+        "index.php?a=login",
+        "Try again"
+    );
 }
 
-// --------- إنشاء Access Token و تحديد المستخدم ----------
-$accessToken = null;
-$ident = null;
+// --------- إنشاء Access Token وتحديد المستخدم ----------
 try {
     $accessToken = new Token($accessToken1->key, $accessToken1->secret);
     $ident = $client->identify($accessToken);
 } catch (\Exception $e) {
-    echo "Failed to identify user: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
-    exit;
+    showErrorAndExit("Failed to identify user: " . $e->getMessage());
 }
 
 // --------- تخزين معلومات الجلسة و JWT ----------
@@ -87,8 +99,7 @@ try {
     add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
     sql_add_user($ident->username);
 } catch (\Exception $e) {
-    echo "Failed to store user data: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
-    exit;
+    showErrorAndExit("Failed to store user data: " . $e->getMessage());
 }
 
 // --------- تحديد الرابط للعودة بعد تسجيل الدخول ----------
