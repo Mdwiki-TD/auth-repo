@@ -105,28 +105,21 @@ try {
 // --------- تحديد الرابط للعودة بعد تسجيل الدخول ----------
 $test = $_GET['test'] ?? '';
 $return_to = $_GET['return_to'] ?? '';
-$newurl = "/Translation_Dashboard/index.php"; // القيمة الافتراضية
-
-if (!empty($return_to)) {
-    $parsed = parse_url($return_to);
-    if (isset($parsed['path']) && str_contains($parsed['path'], '/auth/')) {
-        // إذا كان المسار يحتوي على /auth/، نعيد التوجيه إلى Translation_Dashboard
-        $newurl = "/Translation_Dashboard/index.php";
-    } else {
-        // خلاف ذلك، نستخدم return_to إذا كان URL صالح
-        $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : "/Translation_Dashboard/index.php";
-    }
+$newurl = "/Translation_Dashboard/index.php";
+if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
+    $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
+} elseif (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
+    $newurl = '/Translation_Dashboard/index.php';
 } else {
-    // معالجة الحالة العادية مع state من GET
     $state = [];
     foreach (['cat', 'code', 'type', 'doit'] as $key) {
         $da1 = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
         if (!empty($da1)) $state[$key] = $da1;
     }
-    if (!empty($state)) {
-        $newurl = "/Translation_Dashboard/index.php?" . http_build_query($state);
-    }
+    $state = http_build_query($state);
+    $newurl = "/Translation_Dashboard/index.php?$state";
 }
+
 // --------- إعادة التوجيه أو عرض الرابط ----------
 if (empty($test)) {
     header("Location: $newurl");
