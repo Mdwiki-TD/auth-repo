@@ -30,7 +30,7 @@ function create_callback_url($url)
         }
     }
     //---
-    if (!empty($return_to) && (strpos($return_to, '/auth/') === false ) {
+    if (!empty($return_to) && (strpos($return_to, '/auth/') === false )) {
         $state['return_to'] = $return_to;
     }
     //---
