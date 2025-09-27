@@ -14,7 +14,13 @@ use function OAuth\AccessHelpsNew\add_access_to_dbs_new;
 use function OAuth\AccessHelps\sql_add_user;
 
 /**
- * دالة لإظهار رسالة خطأ والخروج مع رابط اختياري
+ * Display a user-facing error message in a red-bordered box, optionally with a link, then terminate execution.
+ *
+ * Also records the shown message to the server error log for diagnostic purposes.
+ *
+ * @param string $message The message to display to the user.
+ * @param string|null $linkUrl Optional URL to include as a link beneath the message.
+ * @param string|null $linkText Optional text label for the link; ignored if $linkUrl is null.
  */
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
     // Log the error to server error log
