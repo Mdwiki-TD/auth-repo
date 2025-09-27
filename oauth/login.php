@@ -130,5 +130,5 @@ if ($_SERVER['SERVER_NAME'] !== 'localhost') {
     exit(0);
 } else {
     // For local development, show the link instead of auto-redirecting.
-    echo "Go to this URL to authorize this demo:<br /><a href='$authUrl'>$authUrl</a>";
+    echo "Go to this URL to authorize:<br /><a href='$authUrl'>$authUrl</a>";
 }
