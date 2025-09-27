@@ -17,6 +17,9 @@ use function OAuth\AccessHelps\sql_add_user;
  * دالة لإظهار رسالة خطأ والخروج مع رابط اختياري
  */
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
+    // Log the error to server error log
+    error_log("[OAuth Error] " . $message);
+    
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
     echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
     if ($linkUrl && $linkText) {
