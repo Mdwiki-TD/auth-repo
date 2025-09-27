@@ -13,6 +13,9 @@ include_once __DIR__ . '/u.php';
  * @param string|null $linkText Optional link text
  */
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
+    // Log the error to server error log
+    error_log("[OAuth Error] " . $message);
+    
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
     echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
     if ($linkUrl && $linkText) {
