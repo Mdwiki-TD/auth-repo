@@ -7,10 +7,13 @@ use MediaWiki\OAuthClient\Consumer;
 include_once __DIR__ . '/u.php';
 
 /**
- * Show error message and exit script
- * @param string $message The error message
- * @param string|null $linkUrl Optional link URL
- * @param string|null $linkText Optional link text
+ * Display a styled error block to the user and terminate execution.
+ *
+ * Also writes a log entry confirming that a user-facing error was shown.
+ *
+ * @param string $message The message to display to the user; HTML will be escaped.
+ * @param string|null $linkUrl Optional URL to include as a link; only used if `$linkText` is provided.
+ * @param string|null $linkText Optional text for the link; the link is rendered only when both `$linkUrl` and `$linkText` are non-null.
  */
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
     // The detailed error should be logged before calling this function.
@@ -39,6 +42,17 @@ try {
     showErrorAndExit("An internal error occurred while preparing the authentication service. Please try again later.");
 }
 
+/**
+ * Build a callback URL by appending selected state parameters.
+ *
+ * Constructs a query fragment from a sanitized subset of GET parameters
+ * (cat, code, type, test, doit) and, when the HTTP Referer is present and
+ * its host is one of mdwiki.toolforge.org or localhost and the referer path
+ * does not contain "/auth/", includes a `return_to` parameter with that referer.
+ *
+ * @param string $url Base callback URL to which state parameters will be appended.
+ * @return string The resulting callback URL including the serialized state query (or the original URL if no state added).
+ */
 function create_callback_url($url)
 {
     $state = [];
