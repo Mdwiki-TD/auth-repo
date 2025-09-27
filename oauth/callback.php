@@ -18,7 +18,9 @@ use function OAuth\AccessHelps\sql_add_user;
  */
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
     // Log the error to server error log
-    error_log("[OAuth Error] " . $message);
+    // The detailed message is logged before this function is called.
+    // This log entry provides context that a user-facing error was shown.
+    error_log("[OAuth Error] User was shown the following message: " . $message);
     
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
     echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
@@ -57,14 +59,20 @@ try {
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
-    showErrorAndExit("Failed to initialize OAuth client: " . $e->getMessage());
+    // Log the detailed, internal error message for debugging.
+    error_log("OAuth Error: Failed to initialize OAuth client: " . $e->getMessage());
+    // Show a generic, user-friendly error message.
+    showErrorAndExit("An internal error occurred while setting up authentication. Please try again later.");
 }
 
 // --------- إنشاء Request Token ----------
 try {
     $requestToken = new Token($_SESSION['request_key'], $_SESSION['request_secret']);
 } catch (\Exception $e) {
-    showErrorAndExit("Invalid request token: " . $e->getMessage());
+    // Log the detailed error.
+    error_log("OAuth Error: Invalid request token from session: " . $e->getMessage());
+    // Show a generic error.
+    showErrorAndExit("Your session contains an invalid token. Please try logging in again.");
 }
 
 // --------- إكمال عملية OAuth للحصول على Access Token ----------
@@ -72,8 +80,11 @@ try {
     $accessToken1 = $client->complete($requestToken, $_GET['oauth_verifier']);
     unset($_SESSION['request_key'], $_SESSION['request_secret']);
 } catch (\MediaWiki\OAuthClient\Exception $e) {
+    // Log the detailed error from the OAuth client.
+    error_log("OAuth Error: Authentication failed during client->complete(): " . $e->getMessage());
+    // Show a generic error with a link to retry.
     showErrorAndExit(
-        "OAuth authentication failed: " . $e->getMessage(),
+        "Authentication with the wiki failed. Please try again.",
         "index.php?a=login",
         "Try again"
     );
@@ -84,7 +95,10 @@ try {
     $accessToken = new Token($accessToken1->key, $accessToken1->secret);
     $ident = $client->identify($accessToken);
 } catch (\Exception $e) {
-    showErrorAndExit("Failed to identify user: " . $e->getMessage());
+    // Log the detailed error.
+    error_log("OAuth Error: Failed to identify user with access token: " . $e->getMessage());
+    // Show a generic error.
+    showErrorAndExit("Could not verify your identity after authentication. Please try again.");
 }
 
 // --------- تخزين معلومات الجلسة و JWT ----------
@@ -102,7 +116,10 @@ try {
     add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
     sql_add_user($ident->username);
 } catch (\Exception $e) {
-    showErrorAndExit("Failed to store user data: " . $e->getMessage());
+    // Log the detailed error.
+    error_log("OAuth Error: Failed to store user session data or update database: " . $e->getMessage());
+    // Show a generic error.
+    showErrorAndExit("An error occurred while saving your session. Please try logging in again.");
 }
 
 // --------- تحديد الرابط للعودة بعد تسجيل الدخول ----------
