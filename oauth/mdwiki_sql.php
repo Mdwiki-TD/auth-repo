@@ -154,6 +154,7 @@ function get_dbname($table_name)
         'mdwiki_new' => [
             "missing",
             "missing_by_qids",
+            "exists_by_qids",
             "publish_reports",
             "login_attempts",
             "logins",
@@ -162,13 +163,13 @@ function get_dbname($table_name)
         ],
         'mdwiki' => [] // default
     ];
-
-    foreach ($table_db_mapping as $db => $tables) {
-        if (in_array($table_name, $tables)) {
-            return $db;
+    if ($table_name) {
+        foreach ($table_db_mapping as $db => $tables) {
+            if (in_array($table_name, $tables)) {
+                return $db;
+            }
         }
     }
-
     return 'mdwiki'; // default
 }
 
