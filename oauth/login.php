@@ -15,11 +15,12 @@ include_once __DIR__ . '/u.php';
  * @param string|null $linkUrl Optional URL to include as a link; only used if `$linkText` is provided.
  * @param string|null $linkText Optional text for the link; the link is rendered only when both `$linkUrl` and `$linkText` are non-null.
  */
-function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
+function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null)
+{
     // The detailed error should be logged before calling this function.
     // This log entry confirms that a user-facing error was displayed.
     error_log("[OAuth Error] User was shown the following message: " . $message);
-    
+
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
     echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
     if ($linkUrl && $linkText) {
@@ -66,7 +67,7 @@ function create_callback_url($url)
         }
     }
 
-    if (!empty($return_to) && (strpos($return_to, '/auth/') === false )) {
+    if (!empty($return_to) && (strpos($return_to, '/auth/') === false)) {
         $state['return_to'] = $return_to;
     }
 
@@ -131,4 +132,3 @@ if ($_SERVER['SERVER_NAME'] !== 'localhost') {
     // For local development, show the link instead of auto-redirecting.
     echo "Go to this URL to authorize this demo:<br /><a href='$authUrl'>$authUrl</a>";
 }
-
