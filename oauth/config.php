@@ -33,7 +33,7 @@ if (
 $gUserAgent = 'mdwiki MediaWiki OAuth Client/1.0';
 // Load the user token (request or access) from the session
 //---
-// To get this demo working, you need to go to this wiki and register a new OAuth consumer.
+// To get this working, you need to go to this wiki and register a new OAuth consumer.
 // Not that this URL must be of the long form with 'title=Special:OAuth', and not a clean URL.
 $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
 
