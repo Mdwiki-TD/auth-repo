@@ -4,12 +4,7 @@ include_once __DIR__ . '/../vendor_load.php';
 //---
 use Defuse\Crypto\Key;
 //---
-$ROOT_PATH = explode('public_html', __FILE__)[0];
-//---
-// if root path find (I:\) then $ROOT_PATH = ""
-if (substr(__DIR__, 0, 2) == 'I:') {
-    $ROOT_PATH = "I:/mdwiki/mdwiki";
-}
+$ROOT_PATH = getenv("HOME") ?: 'I:/mdwiki/mdwiki';
 //---
 $inifile = $ROOT_PATH . '/confs/OAuthConfig.ini';
 //---
