@@ -1,45 +1,81 @@
 <?php
-require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
-require_once __DIR__ . '/jwt_config.php';
+/**
+ * OAuth Callback Handler.
+ *
+ * Handles the OAuth 1.0a callback after the user authorizes the application
+ * on Wikimedia. Exchanges the request token for an access token, retrieves
+ * the user's identity, stores credentials, and redirects to the application.
+ *
+ * @package    OAuth
+ * @author     MDWiki Team
+ * @copyright  2024 MDWiki
+ * @license    MIT
+ * @version    2.0.0
+ * @since      1.0.0
+ *
+ * @example Usage:
+ * ```
+ * GET /auth/index.php?a=callback&oauth_verifier=xxx&oauth_token=xxx
+ * ```
+ *
+ * @see login.php For initiating the OAuth flow.
+ * @see https://www.mediawiki.org/wiki/OAuth/For_Developers
+ */
 
-use function OAuth\JWT\create_jwt;
+declare(strict_types=1);
+
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
+use function OAuth\JWT\create_jwt;
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\AccessHelps\add_access_to_dbs;
 use function OAuth\AccessHelpsNew\add_access_to_dbs_new;
 use function OAuth\AccessHelps\sql_add_user;
 
+// Load dependencies
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/access_helps.php';
+require_once __DIR__ . '/access_helps_new.php';
+require_once __DIR__ . '/jwt_config.php';
+require_once __DIR__ . '/helps.php';
+
 /**
- * Display a user-facing error message in a red-bordered box, optionally with a link, then terminate execution.
+ * Display a styled error message and terminate execution.
  *
- * Also records the shown message to the server error log for diagnostic purposes.
+ * @param string      $message  The error message to display (HTML escaped).
+ * @param string|null $linkUrl  Optional URL for a help link.
+ * @param string|null $linkText Optional text for the help link.
  *
- * @param string $message The message to display to the user.
- * @param string|null $linkUrl Optional URL to include as a link beneath the message.
- * @param string|null $linkText Optional text label for the link; ignored if $linkUrl is null.
+ * @return never This function terminates execution.
  */
-function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null)
-{
-    // Log the error to server error log
-    // The detailed message is logged before this function is called.
-    // This log entry provides context that a user-facing error was shown.
-    error_log("[OAuth Error] User was shown the following message: " . $message);
+function showErrorAndExit(
+    string $message,
+    ?string $linkUrl = null,
+    ?string $linkText = null
+): never {
+    error_log("[OAuth Callback Error] User shown: " . $message);
 
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
-    echo $message;
-    if ($linkUrl && $linkText) {
-        echo "<br><a href='" . $linkUrl . "'>" . $linkText . "</a>";
+    echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+
+    if ($linkUrl !== null && $linkText !== null) {
+        echo "<br><a href='" . htmlspecialchars($linkUrl, ENT_QUOTES, 'UTF-8') . "'>";
+        echo htmlspecialchars($linkText, ENT_QUOTES, 'UTF-8');
+        echo "</a>";
     }
+
     echo "</div>";
-    exit;
+    exit(1);
 }
 
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Start session for request token retrieval
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Validate OAuth callback parameters
 if (!isset($_GET['oauth_verifier'])) {
     showErrorAndExit(
         "This page should only be accessed after redirection back from the wiki.",
@@ -48,6 +84,7 @@ if (!isset($_GET['oauth_verifier'])) {
     );
 }
 
+// Validate session has required request token
 if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
     showErrorAndExit(
         "OAuth session expired or invalid. Please start login again.",
@@ -56,34 +93,38 @@ if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
     );
 }
 
+// Initialize OAuth client
 try {
     $conf = new ClientConfig($oauthUrl);
     $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
-    // Log the detailed, internal error message for debugging.
-    error_log("OAuth Error: Failed to initialize OAuth client: " . $e->getMessage());
-    // Show a generic, user-friendly error message.
-    showErrorAndExit("An internal error occurred while setting up authentication. Please try again later.");
+    error_log("[callback.php] OAuth client init failed: " . $e->getMessage());
+    showErrorAndExit(
+        "An internal error occurred while setting up authentication. Please try again later."
+    );
 }
 
+// Reconstruct request token from session
 try {
-    $requestToken = new Token($_SESSION['request_key'], $_SESSION['request_secret']);
+    $requestToken = new Token(
+        $_SESSION['request_key'],
+        $_SESSION['request_secret']
+    );
 } catch (\Exception $e) {
-    // Log the detailed error.
-    error_log("OAuth Error: Invalid request token from session: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("Your session contains an invalid token. Please try logging in again.");
+    error_log("[callback.php] Invalid request token: " . $e->getMessage());
+    showErrorAndExit(
+        "Your session contains an invalid token. Please try logging in again."
+    );
 }
 
+// Exchange request token for access token
 try {
-    $accessToken1 = $client->complete($requestToken, $_GET['oauth_verifier']);
+    $accessToken = $client->complete($requestToken, $_GET['oauth_verifier']);
     unset($_SESSION['request_key'], $_SESSION['request_secret']);
 } catch (\MediaWiki\OAuthClient\Exception $e) {
-    // Log the detailed error from the OAuth client.
-    error_log("OAuth Error: Authentication failed during client->complete(): " . $e->getMessage());
-    // Show a generic error with a link to retry.
+    error_log("[callback.php] Token exchange failed: " . $e->getMessage());
     showErrorAndExit(
         "Authentication with the wiki failed. Please try again.",
         "index.php?a=login",
@@ -91,58 +132,111 @@ try {
     );
 }
 
+// Get user identity from access token
 try {
-    $accessToken = new Token($accessToken1->key, $accessToken1->secret);
-    $ident = $client->identify($accessToken);
+    $accessTokenObj = new Token($accessToken->key, $accessToken->secret);
+    $ident = $client->identify($accessTokenObj);
 } catch (\Exception $e) {
-    // Log the detailed error.
-    error_log("OAuth Error: Failed to identify user with access token: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("Could not verify your identity after authentication. Please try again.");
+    error_log("[callback.php] Identity retrieval failed: " . $e->getMessage());
+    showErrorAndExit(
+        "Could not verify your identity after authentication. Please try again."
+    );
 }
 
+// SECURITY: Regenerate session ID to prevent session fixation
+session_regenerate_id(true);
+
+// Generate CSRF token for this session
+$csrfToken = bin2hex(random_bytes(32));
+
+// Store user data in session and cookies
 try {
     $_SESSION['username'] = $ident->username;
+    $_SESSION['csrf_token'] = $csrfToken;
+
+    // Create and store JWT token
     $jwt = create_jwt($ident->username);
-    add_to_cookies('jwt_token', $jwt);
+    if ($jwt !== '') {
+        add_to_cookies('jwt_token', $jwt);
+    }
+
     add_to_cookies('username', $ident->username);
 
-    if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
-        $_SESSION['csrf_tokens'] = [];
-    }
+    // Store access tokens in both tables (legacy + new)
+    add_access_to_dbs_new($ident->username, $accessToken->key, $accessToken->secret);
+    add_access_to_dbs($ident->username, $accessToken->key, $accessToken->secret);
 
-    add_access_to_dbs_new($ident->username, $accessToken1->key, $accessToken1->secret);
-    add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
+    // Add user to users table
     sql_add_user($ident->username);
 } catch (\Exception $e) {
-    // Log the detailed error.
-    error_log("OAuth Error: Failed to store user session data or update database: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("An error occurred while saving your session. Please try logging in again.");
+    error_log("[callback.php] Data storage failed: " . $e->getMessage());
+    showErrorAndExit(
+        "An error occurred while saving your session. Please try logging in again."
+    );
 }
 
-$test = $_GET['test'] ?? '';
-$return_to = $_GET['return_to'] ?? '';
-$newurl = "/Translation_Dashboard/index.php";
+// Determine redirect URL with whitelist validation
+$returnTo = $_GET['return_to'] ?? '';
+$defaultUrl = "/Translation_Dashboard/index.php";
 
-if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
-    $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
-} elseif (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
-    $newurl = '/Translation_Dashboard/index.php';
-} else {
-    $state = [];
-    foreach (['cat', 'code', 'type', 'doit'] as $key) {
-        $da1 = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
-        if (!empty($da1)) $state[$key] = $da1;
+/** @var list<string> Allowed domains for redirect */
+$allowedRedirectDomains = ['mdwiki.toolforge.org', 'localhost'];
+
+/**
+ * Validate redirect URL against whitelist.
+ *
+ * @param string $url            The URL to validate.
+ * @param list<string> $allowedDomains List of allowed domains.
+ *
+ * @return string The validated URL or default if invalid.
+ */
+function validateRedirectUrl(string $url, array $allowedDomains): string
+{
+    // Must be a valid URL
+    if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+        return '';
     }
-    $state = http_build_query($state);
-    $newurl = "/Translation_Dashboard/index.php?$state";
+
+    $parsed = parse_url($url);
+
+    // Must have a host
+    if ($parsed === false || !isset($parsed['host'])) {
+        return '';
+    }
+
+    // Host must be in allowed list
+    if (!in_array($parsed['host'], $allowedDomains, true)) {
+        return '';
+    }
+
+    return $url;
 }
 
-echo "You are authenticated as " . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . ".<br>";
-echo "<a href='$newurl'>Continue</a>";
+if (!empty($returnTo)) {
+    // Validate URL against whitelist
+    $validatedUrl = validateRedirectUrl($returnTo, $allowedRedirectDomains);
 
-if (empty($test)) {
-    header("Location: $newurl");
-    exit;
+    if ($validatedUrl !== '' && strpos($validatedUrl, '/auth/') === false) {
+        $newUrl = $validatedUrl;
+    } else {
+        $newUrl = $defaultUrl;
+    }
+} else {
+    // Build URL from state parameters
+    $state = [];
+    $stateParams = ['cat', 'code', 'type', 'doit'];
+
+    foreach ($stateParams as $key) {
+        $value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+        if (!empty($value)) {
+            $state[$key] = $value;
+        }
+    }
+
+    $queryString = http_build_query($state);
+    $newUrl = "/Translation_Dashboard/index.php" . ($queryString ? "?{$queryString}" : "");
 }
+
+// Redirect to the application
+header("Location: {$newUrl}");
+exit(0);

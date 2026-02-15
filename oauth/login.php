@@ -1,134 +1,206 @@
 <?php
+/**
+ * OAuth Login Handler.
+ *
+ * Initiates the OAuth 1.0a authentication flow by redirecting the user
+ * to Wikimedia's OAuth authorization page. Stores the request token
+ * in the session for later verification during the callback.
+ *
+ * @package    OAuth
+ * @author     MDWiki Team
+ * @copyright  2024 MDWiki
+ * @license    MIT
+ * @version    2.0.0
+ * @since      1.0.0
+ *
+ * @example Usage:
+ * ```
+ * GET /auth/index.php?a=login
+ * GET /auth/index.php?a=login&return_to=/some/page
+ * ```
+ *
+ * @see callback.php For handling the OAuth response.
+ * @see https://www.mediawiki.org/wiki/OAuth/For_Developers
+ */
+
+declare(strict_types=1);
 
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
+use MediaWiki\OAuthClient\Token;
 
-include_once __DIR__ . '/u.php';
+/** @var string Path to vendor autoload */
+require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
- * Display a styled error block to the user and terminate execution.
+ * Display a styled error message and terminate execution.
  *
- * Also writes a log entry confirming that a user-facing error was shown.
+ * Outputs an error in a red-bordered box with optional link.
+ * Also logs the error message for debugging purposes.
  *
- * @param string $message The message to display to the user; HTML will be escaped.
- * @param string|null $linkUrl Optional URL to include as a link; only used if `$linkText` is provided.
- * @param string|null $linkText Optional text for the link; the link is rendered only when both `$linkUrl` and `$linkText` are non-null.
+ * @param string      $message  The error message to display (HTML escaped).
+ * @param string|null $linkUrl  Optional URL for a help link.
+ * @param string|null $linkText Optional text for the help link.
+ *
+ * @return never This function terminates execution with exit.
+ *
+ * @example
+ * ```php
+ * showErrorAndExit(
+ *     "Authentication failed. Please try again.",
+ *     "/auth/index.php?a=login",
+ *     "Retry Login"
+ * );
+ * ```
  */
-function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null)
-{
-    // The detailed error should be logged before calling this function.
-    // This log entry confirms that a user-facing error was displayed.
-    error_log("[OAuth Error] User was shown the following message: " . $message);
+function showErrorAndExit(
+    string $message,
+    ?string $linkUrl = null,
+    ?string $linkText = null
+): never {
+    error_log("[OAuth Login Error] User shown: " . $message);
 
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
     echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-    if ($linkUrl && $linkText) {
-        echo "<br><a href='" . htmlspecialchars($linkUrl, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($linkText, ENT_QUOTES, 'UTF-8') . "</a>";
+
+    if ($linkUrl !== null && $linkText !== null) {
+        $safeUrl = htmlspecialchars($linkUrl, ENT_QUOTES, 'UTF-8');
+        $safeText = htmlspecialchars($linkText, ENT_QUOTES, 'UTF-8');
+        echo "<br><a href='{$safeUrl}'>{$safeText}</a>";
     }
+
     echo "</div>";
-    exit;
+    exit(1);
 }
 
-// Configure the OAuth client with the URL and consumer details.
+/**
+ * Build a callback URL with preserved state parameters.
+ *
+ * Constructs the OAuth callback URL by appending selected GET parameters
+ * (cat, code, type, doit) and optionally a return_to URL from
+ * the HTTP Referer header (if from a trusted domain).
+ *
+ * @param string $baseUrl The base callback URL.
+ *
+ * @return string The callback URL with state parameters appended.
+ *
+ * @security Referer is validated against an allowlist of domains.
+ *           Only whitelisted GET parameters are preserved.
+ */
+function create_callback_url(string $baseUrl): string
+{
+    $state = [];
+    $returnTo = '';
+    $allowedDomains = ['mdwiki.toolforge.org', 'localhost'];
+
+    // Extract return_to from Referer if from trusted domain
+    if (isset($_SERVER['HTTP_REFERER'])) {
+        $parsed = parse_url($_SERVER['HTTP_REFERER']);
+
+        if (
+            $parsed !== false &&
+            isset($parsed['host']) &&
+            in_array($parsed['host'], $allowedDomains, true)
+        ) {
+            $returnTo = $_SERVER['HTTP_REFERER'];
+        }
+    }
+
+    // Add return_to if not pointing to auth pages
+    if (
+        !empty($returnTo) &&
+        strpos($returnTo, '/auth/') === false
+    ) {
+        $state['return_to'] = $returnTo;
+    }
+
+    // Preserve allowed state parameters
+    $allowedParams = ['cat', 'code', 'type', 'doit'];
+
+    foreach ($allowedParams as $key) {
+        $value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+
+        if (!empty($value)) {
+            $state[$key] = $value;
+        }
+    }
+
+    $queryString = !empty($state) ? '&' . http_build_query($state) : '';
+
+    return $baseUrl . $queryString;
+}
+
+// Load configuration (defines global OAuth settings)
+include_once __DIR__ . '/config.php';
+
+// Initialize OAuth client
 try {
     $conf = new ClientConfig($oauthUrl);
     $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
-    // Log the detailed, internal error message.
-    error_log("OAuth Error: Failed to initialize OAuth client: " . $e->getMessage());
-    // Show a generic, user-friendly error message.
-    showErrorAndExit("An internal error occurred while preparing the authentication service. Please try again later.");
+    error_log("[login.php] OAuth client init failed: " . $e->getMessage());
+    showErrorAndExit(
+        "An internal error occurred while preparing authentication. Please try again later."
+    );
 }
 
-/**
- * Build a callback URL by appending selected state parameters.
- *
- * Constructs a query fragment from a sanitized subset of GET parameters
- * (cat, code, type, test, doit) and, when the HTTP Referer is present and
- * its host is one of mdwiki.toolforge.org or localhost and the referer path
- * does not contain "/auth/", includes a `return_to` parameter with that referer.
- *
- * @param string $url Base callback URL to which state parameters will be appended.
- * @return string The resulting callback URL including the serialized state query (or the original URL if no state added).
- */
-function create_callback_url($url)
-{
-    $state = [];
-    $return_to = '';
-    $allowed_domains = ['mdwiki.toolforge.org', 'localhost'];
-
-    if (isset($_SERVER['HTTP_REFERER'])) {
-        $parsed = parse_url($_SERVER['HTTP_REFERER']);
-        if (isset($parsed['host']) && in_array($parsed['host'], $allowed_domains)) {
-            $return_to = $_SERVER['HTTP_REFERER'];
-        }
-    }
-
-    if (!empty($return_to) && (strpos($return_to, '/auth/') === false)) {
-        $state['return_to'] = $return_to;
-    }
-
-    foreach (['cat', 'code', 'type', 'test', 'doit'] as $key) {
-        $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
-        if (!empty($da)) {
-            $state[$key] = $da;
-        }
-    }
-
-    $sta = "";
-    if (!empty($state)) {
-        $sta = '&' . http_build_query($state);
-    }
-
-    return $url . $sta;
-}
-
-$call_back_url = create_callback_url('https://mdwiki.toolforge.org/auth/index.php?a=callback');
+// Build callback URL with state preservation
+$callbackUrl = create_callback_url(
+    'https://mdwiki.toolforge.org/auth/index.php?a=callback'
+);
 
 try {
-    $client->setCallback($call_back_url);
+    $client->setCallback($callbackUrl);
 } catch (\Exception $e) {
-    // Log the detailed error.
-    error_log("OAuth Error: Failed to set OAuth callback URL: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("An internal error occurred while configuring the authentication callback. Please try again.");
+    error_log("[login.php] Failed to set callback: " . $e->getMessage());
+    showErrorAndExit(
+        "An internal error occurred while configuring the authentication callback. Please try again."
+    );
 }
 
-// Send an HTTP request to the wiki to get the authorization URL and a Request Token.
+// Initiate OAuth flow - get request token and authorization URL
 try {
-    list($authUrl, $token) = $client->initiate();
-    if (!$authUrl || !$token) {
-        // Log this specific failure case.
-        error_log("OAuth Error: client->initiate() returned empty authUrl or token.");
-        showErrorAndExit("Failed to initiate the authentication process with the wiki. Please try again.");
+    [$authUrl, $token] = $client->initiate();
+
+    if (empty($authUrl) || empty($token)) {
+        error_log("[login.php] initiate() returned empty authUrl or token");
+        showErrorAndExit(
+            "Failed to initiate authentication with the wiki. Please try again."
+        );
     }
 } catch (\Exception $e) {
-    // Log the detailed exception.
-    error_log("OAuth Error: Exception during OAuth initiation: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("An error occurred while starting the authentication process. Please try again.");
+    error_log("[login.php] OAuth initiation failed: " . $e->getMessage());
+    showErrorAndExit(
+        "An error occurred while starting the authentication process. Please try again."
+    );
 }
 
-// Store the Request Token in the session.
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Store request token in session for callback verification
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 try {
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
 } catch (\Exception $e) {
-    // Log the detailed error.
-    error_log("OAuth Error: Failed to store request token in session: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("A session error occurred. Please ensure cookies are enabled and try again.");
+    error_log("[login.php] Session storage failed: " . $e->getMessage());
+    showErrorAndExit(
+        "A session error occurred. Please ensure cookies are enabled and try again."
+    );
 }
 
-// Redirect the user to the authorization URL.
-if ($_SERVER['SERVER_NAME'] !== 'localhost') {
-    header("Location: $authUrl");
+// Redirect user to authorization page
+if (($_SERVER['SERVER_NAME'] ?? '') !== 'localhost') {
+    header("Location: {$authUrl}");
     exit(0);
-} else {
-    // For local development, show the link instead of auto-redirecting.
-    echo "Go to this URL to authorize:<br /><a href='$authUrl'>$authUrl</a>";
 }
+
+// Development mode: show link instead of auto-redirect
+echo "Go to this URL to authorize:<br />";
+echo "<a href='" . htmlspecialchars($authUrl, ENT_QUOTES, 'UTF-8') . "'>";
+echo htmlspecialchars($authUrl, ENT_QUOTES, 'UTF-8');
+echo "</a>";
