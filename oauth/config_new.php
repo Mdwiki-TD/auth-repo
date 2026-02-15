@@ -13,19 +13,19 @@ $apiUrl = preg_replace('/index\.php.*/', 'api.php', $oauthUrl);
 
 // ----------------
 // ----------------
-$consumerKey        = $ini['consumerKey'] ?? '';
-$consumerSecret     = $ini['consumerSecret'] ?? '';
-$cookie_key_str     = $ini['cookie_key'] ?? '';
-$decrypt_key_str    = $ini['decrypt_key'] ?? '';
-$jwt_key            = $ini['jwt_key'] ?? '';
+$CONSUMER_KEY        = getenv("CONSUMER_KEY") ?? '';
+$CONSUMER_SECRET     = getenv("CONSUMER_SECRET") ?? '';
+$COOKIE_KEY          = getenv("COOKIE_KEY") ?? '';
+$DECRYPT_KEY         = getenv("DECRYPT_KEY") ?? '';
+$JWT_KEY             = getenv("JWT_KEY") ?? '';
 // ----------------
 // ----------------
 
-$decrypt_key = Key::loadFromAsciiSafeString($decrypt_key_str);
-$cookie_key = Key::loadFromAsciiSafeString($cookie_key_str);
-
-if (empty($consumerKey) || empty($consumerSecret)) {
+if (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET)) {
     header("HTTP/1.1 500 Internal Server Error");
     echo 'Required configuration directives not found in ini file';
     exit(0);
 }
+
+$decrypt_key = Key::loadFromAsciiSafeString($DECRYPT_KEY);
+$cookie_key = Key::loadFromAsciiSafeString($COOKIE_KEY);
