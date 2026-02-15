@@ -13,11 +13,11 @@ $apiUrl = preg_replace('/index\.php.*/', 'api.php', $oauthUrl);
 
 // ----------------
 // ----------------
-$CONSUMER_KEY        = getenv("CONSUMER_KEY") ?? '';
-$CONSUMER_SECRET     = getenv("CONSUMER_SECRET") ?? '';
-$COOKIE_KEY          = getenv("COOKIE_KEY") ?? '';
-$DECRYPT_KEY         = getenv("DECRYPT_KEY") ?? '';
-$JWT_KEY             = getenv("JWT_KEY") ?? '';
+$CONSUMER_KEY        = getenv("CONSUMER_KEY") ?: '';
+$CONSUMER_SECRET     = getenv("CONSUMER_SECRET") ?: '';
+$COOKIE_KEY          = getenv("COOKIE_KEY") ?: '';
+$DECRYPT_KEY         = getenv("DECRYPT_KEY") ?: '';
+$JWT_KEY             = getenv("JWT_KEY") ?: '';
 // ----------------
 // ----------------
 

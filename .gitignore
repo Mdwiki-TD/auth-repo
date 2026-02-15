@@ -3,3 +3,4 @@
 *.lock
 *.zip
 /auths_tests
+.env

@@ -1,8 +1,13 @@
 <?php
 //---
 include_once __DIR__ . '/../vendor_load.php';
-//---
 use Defuse\Crypto\Key;
+//---
+$env = getenv('APP_ENV') ?: 'development';
+
+if ($env === 'development') {
+    include_once __DIR__ . '/load_env.php';
+}
 //---
 $gUserAgent = 'mdwiki MediaWiki OAuth Client/1.0';
 $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
@@ -16,7 +21,8 @@ $ini = parse_ini_file($inifile);
 //---
 if ($ini === false) {
     header("HTTP/1.1 500 Internal Server Error");
-    echo "The ini file:($inifile) could not be read";
+    error_log("Failed to read ini file: $inifile");
+    echo "Server configuration error. Please contact the administrator.";
     exit(0);
 }
 
