@@ -33,7 +33,7 @@ function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $lin
 // Configure the OAuth client with the URL and consumer details.
 try {
     $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
+    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {

@@ -40,14 +40,14 @@ function get_edits_tokens($client, $accessToken, $apiUrl)
 
 function auth_make_edit($title, $text, $summary, $wiki, $access_key, $access_secret)
 {
-    global $gUserAgent, $consumerKey, $consumerSecret;
+    global $gUserAgent, $CONSUMER_KEY, $CONSUMER_SECRET;
     // ---
     $oauthUrl = "https://$wiki.wikipedia.org/w/index.php?title=Special:OAuth";
     $apiUrl = "https://$wiki.wikipedia.org/w/api.php";
     // ---
     // Configure the OAuth client with the URL and consumer details.
     $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
+    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
     // ---
