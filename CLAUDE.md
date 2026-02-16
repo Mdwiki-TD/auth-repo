@@ -51,7 +51,7 @@ php -S localhost:8000
 ### Configuration
 
 Configuration is loaded from an INI file located at `$HOME/confs/OAuthConfig.ini`. Required keys:
-- `agent`, `consumerKey`, `consumerSecret` - OAuth credentials
+- `agent`, `$CONSUMER_KEY`, `$CONSUMER_SECRET` - OAuth credentials
 - `cookie_key`, `decrypt_key` - Defuse encryption keys (ASCII-safe format)
 - `jwt_key` - Secret for JWT signing
 

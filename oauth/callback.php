@@ -58,7 +58,7 @@ if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
 
 try {
     $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
+    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {

@@ -426,8 +426,8 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 $gUserAgent = '...';
 $oauthUrl = '...';
 $apiUrl = '...';
-$consumerKey = '...';
-$consumerSecret = '...';
+$CONSUMER_KEY = '...';
+$CONSUMER_SECRET = '...';
 $cookie_key = '...';
 $decrypt_key = '...';
 $jwt_key = '...';
@@ -528,7 +528,7 @@ $allowed_domains = ['mdwiki.toolforge.org', 'localhost'];  // login.php:61, logo
 
 ```php
 $conf = new ClientConfig($oauthUrl);
-$conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
+$conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
 $client = new Client($conf);
 ```
 

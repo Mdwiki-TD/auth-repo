@@ -93,6 +93,11 @@ try {
 
     // Define whitelist of allowed keys
     $whitelist = [
+        'CONSUMER_KEY',
+        'CONSUMER_SECRET',
+        'COOKIE_KEY',
+        'DECRYPT_KEY',
+        'JWT_KEY',
         'DB_HOST',
         'TOOL_TOOLSDB_USER',
         'TOOL_TOOLSDB_PASSWORD',
