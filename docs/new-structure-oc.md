@@ -417,8 +417,8 @@ location / {
 class Config {
     public function __construct(array $env) {
         $this->oauthUrl = $env['OAUTH_URL'];
-        $this->consumerKey = $env['OAUTH_CONSUMER_KEY'];
-        $this->consumerSecret = $env['OAUTH_CONSUMER_SECRET'];
+        $this->CONSUMER_KEY = $env['OAUTH_CONSUMER_KEY'];
+        $this->CONSUMER_SECRET = $env['OAUTH_CONSUMER_SECRET'];
         $this->jwtSecret = $env['JWT_SECRET'];
         $this->cookieKey = Key::loadFromAsciiSafeString($env['COOKIE_KEY']);
         $this->database = [

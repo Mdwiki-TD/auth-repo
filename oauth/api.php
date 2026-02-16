@@ -24,7 +24,7 @@ include_once __DIR__ . '/helps.php';
 
 // Configure the OAuth client with the URL and consumer details.
 $conf = new ClientConfig($oauthUrl);
-$conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
+$conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
 $conf->setUserAgent($gUserAgent);
 $client = new Client($conf);
 // ---

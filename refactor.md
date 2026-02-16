@@ -165,8 +165,9 @@ if ($access == null) {
 $gUserAgent = '...';
 $oauthUrl = '...';
 $apiUrl = '...';
-$consumerKey = '...';
-$consumerSecret = '...';
+$CONSUMER_KEY        = getenv("CONSUMER_KEY") ?: '';
+$CONSUMER_SECRET     = getenv("CONSUMER_SECRET")
+?: '';
 $cookie_key = '...';
 $decrypt_key = '...';
 $jwt_key = '...';
@@ -357,7 +358,7 @@ namespace Auth\Config;
 
 class Config {
     private string $oauthUrl;
-    private string $consumerKey;
+    private string $CONSUMER_KEY;
     // ... other private properties
 
     public function __construct(string $environment) {
@@ -487,8 +488,8 @@ use Defuse\Crypto\Key;
 
 class Config {
     private string $oauthUrl;
-    private string $consumerKey;
-    private string $consumerSecret;
+    private string $CONSUMER_KEY;
+    private string $CONSUMER_SECRET;
     private Key $cookieKey;
     private Key $decryptKey;
     private string $jwtKey;
@@ -497,8 +498,8 @@ class Config {
 
     public function __construct(array $config) {
         $this->oauthUrl = $config['oauth_url'];
-        $this->consumerKey = $config['consumer_key'];
-        $this->consumerSecret = $config['consumer_secret'];
+        $this->CONSUMER_KEY = $config['consumer_key'];
+        $this->CONSUMER_SECRET = $config['consumer_secret'];
         $this->cookieKey = Key::loadFromAsciiSafeString($config['cookie_key']);
         $this->decryptKey = Key::loadFromAsciiSafeString($config['decrypt_key']);
         $this->jwtKey = $config['jwt_key'];
@@ -507,8 +508,8 @@ class Config {
     }
 
     public function getOAuthUrl(): string { return $this->oauthUrl; }
-    public function getConsumerKey(): string { return $this->consumerKey; }
-    public function getConsumerSecret(): string { return $this->consumerSecret; }
+    public function getConsumerKey(): string { return $this->CONSUMER_KEY; }
+    public function getConsumerSecret(): string { return $this->CONSUMER_SECRET; }
     public function getCookieKey(): Key { return $this->cookieKey; }
     public function getDecryptKey(): Key { return $this->decryptKey; }
     public function getJwtKey(): string { return $this->jwtKey; }
@@ -980,23 +981,24 @@ auth-repo/
 **Before:**
 ```php
 // oauth/config.php
-$consumerKey = $ini['consumerKey'] ?? '';
-$consumerSecret = $ini['consumerSecret'] ?? '';
+$CONSUMER_KEY        = getenv("CONSUMER_KEY") ?: '';
+$CONSUMER_SECRET     = getenv("CONSUMER_SECRET")
+?: '';
 
 // oauth/login.php
-global $consumerKey, $consumerSecret;
-$conf->setConsumer(new Consumer($consumerKey, $consumerSecret));
+global $CONSUMER_KEY, $CONSUMER_SECRET;
+$conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
 ```
 
 **After:**
 ```php
 // config/Config.php
 class Config {
-    private string $consumerKey;
-    private string $consumerSecret;
+    private string $CONSUMER_KEY;
+    private string $CONSUMER_SECRET;
 
     public function getConsumerKey(): string {
-        return $this->consumerKey;
+        return $this->CONSUMER_KEY;
     }
 }
 
