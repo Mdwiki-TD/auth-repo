@@ -30,7 +30,7 @@ php -S localhost:8000
 
 | File | Purpose |
 |------|---------|
-| `config.php` | Loads OAuth credentials from `~/confs/OAuthConfig.ini` |
+| `config.php` | Loads OAuth credentials from environment variables |
 | `login.php` | Initiates OAuth flow, redirects to Wikimedia |
 | `callback.php` | Handles OAuth callback, exchanges tokens, stores access tokens |
 | `logout.php` | Clears session and cookies |
@@ -50,7 +50,7 @@ php -S localhost:8000
 
 ### Configuration
 
-Configuration is loaded from an INI file located at `$HOME/confs/OAuthConfig.ini`. Required keys:
+Configuration is loaded from environment variables. Required keys:
 - `agent`, `$CONSUMER_KEY`, `$CONSUMER_SECRET` - OAuth credentials
 - `cookie_key`, `decrypt_key` - Defuse encryption keys (ASCII-safe format)
 - `jwt_key` - Secret for JWT signing
