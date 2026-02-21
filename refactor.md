@@ -44,7 +44,6 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 | Package | Version | Purpose |
 |---------|---------|---------|
 | mediawiki/oauthclient | ^1.2 | OAuth 1.0 client |
-| phpmailer/phpmailer | ^6.8 | Email (unused) |
 | defuse/php-encryption | ^2.4 | Symmetric encryption |
 | firebase/php-jwt | ^6.10 | JWT token generation |
 

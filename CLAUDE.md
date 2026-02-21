@@ -46,7 +46,6 @@ php -S localhost:8000
 - `mediawiki/oauthclient` - OAuth 1.0 client for MediaWiki
 - `firebase/php-jwt` - JWT token generation/validation
 - `defuse/php-encryption` - Symmetric encryption for cookies and stored tokens
-- `phpmailer/phpmailer` - Email (currently unused)
 
 ### Configuration
 
