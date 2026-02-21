@@ -4,7 +4,7 @@ use Defuse\Crypto\Key;
 //---
 include_once __DIR__ . '/../vendor_load.php';
 //---
-$env = getenv('APP_ENV') ?: 'development';
+$env = (getenv('APP_ENV') ?: $_ENV['APP_ENV'] ?? '') ?? 'development';
 
 if ($env === 'development' && file_exists(__DIR__ . '/load_env.php')) {
     include_once __DIR__ . '/load_env.php';
@@ -35,3 +35,4 @@ if ($env === "production" && (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET) ||
 
 $cookie_key  = $COOKIE_KEY ? Key::loadFromAsciiSafeString($COOKIE_KEY) : null;
 $decrypt_key = $DECRYPT_KEY ? Key::loadFromAsciiSafeString($DECRYPT_KEY) : null;
+$jwt_key     = $JWT_KEY;

@@ -1,5 +1,12 @@
 <?php
 
+include_once __DIR__ . '/config.php';
+
+global $domain;
+if (!isset($domain)) {
+    $domain = $_SERVER['SERVER_NAME'] ?? 'localhost';
+}
+
 session_start();
 session_destroy();
 setcookie('username', '', time() - 3600, "/", $domain, true, true);

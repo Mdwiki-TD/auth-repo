@@ -17,10 +17,9 @@ use function OAuth\MdwikiSql\fetch_queries;
 use function OAuth\Helps\de_code_value;
 use function OAuth\Helps\en_code_value;
 
-$user_ids_cache = [];
-
 function get_user_id($user)
 {
+    static $user_ids_cache = [];
     //---
     // Validate and sanitize username
     $user = trim($user);

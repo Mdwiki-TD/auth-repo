@@ -1,0 +1,13 @@
+parameters:
+    level: 5
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - src/
+
+    excludePaths:
+        - *_old.php
+
+    # Scan files for class definitions
+    scanFiles:
+        - src/vendor_load.php
+        - src/oauth/config.php

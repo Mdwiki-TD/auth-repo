@@ -15,7 +15,9 @@ $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
 if ($_SERVER['SERVER_NAME'] != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_name("mdwikitoolforgeoauth");
-		session_set_cookie_params(0, "/", $domain, $secure, $secure);
+		// Ensure $domain is defined, fallback to server name
+		$cookieDomain = $domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+		session_set_cookie_params(0, "/", $cookieDomain, $secure, $secure);
 	}
 }
 
@@ -46,7 +48,8 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
 	// ---
 	if ($access == null) {
 		echo ba_alert("No access keys found. Login again.");
-		setcookie('username', '', time() - 3600, "/", $domain, true, true);
+		$cookieDomain = $domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+		setcookie('username', '', time() - 3600, "/", $cookieDomain, true, true);
 		$username = '';
 		unset($_SESSION['username']);
 	}

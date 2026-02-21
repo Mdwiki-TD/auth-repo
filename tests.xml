@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="OAuth\Tests\HelpsTest" file="I:\mdwiki\auth_repo\tests\HelpsTest.php">
+   <testMethod id="OAuth\Tests\HelpsTest::testEnCodeValueReturnsEmptyStringForEmptyInput" name="testEnCodeValueReturnsEmptyStringForEmptyInput"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testDeCodeValueReturnsEmptyStringForEmptyInput" name="testDeCodeValueReturnsEmptyStringForEmptyInput"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testDeCodeValueReturnsEmptyStringForInvalidData" name="testDeCodeValueReturnsEmptyStringForInvalidData"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testEncryptionDecryptionRoundTrip" name="testEncryptionDecryptionRoundTrip"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testEncryptionWithDecryptKeyType" name="testEncryptionWithDecryptKeyType"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testGetFromCookiesReturnsEmptyForNonExistentCookie" name="testGetFromCookiesReturnsEmptyForNonExistentCookie"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testGetFromCookiesReplacesPlusInUsername" name="testGetFromCookiesReplacesPlusInUsername"/>
+   <testMethod id="OAuth\Tests\HelpsTest::testSpecialCharactersEncryption" name="testSpecialCharactersEncryption"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="OAuth\Tests\HelpsTest::testEnCodeValueReturnsEmptyStringForEmptyInput"/>
+   <test id="OAuth\Tests\HelpsTest::testDeCodeValueReturnsEmptyStringForEmptyInput"/>
+   <test id="OAuth\Tests\HelpsTest::testDeCodeValueReturnsEmptyStringForInvalidData"/>
+   <test id="OAuth\Tests\HelpsTest::testEncryptionDecryptionRoundTrip"/>
+   <test id="OAuth\Tests\HelpsTest::testEncryptionWithDecryptKeyType"/>
+   <test id="OAuth\Tests\HelpsTest::testGetFromCookiesReturnsEmptyForNonExistentCookie"/>
+   <test id="OAuth\Tests\HelpsTest::testGetFromCookiesReplacesPlusInUsername"/>
+   <test id="OAuth\Tests\HelpsTest::testSpecialCharactersEncryption"/>
+  </group>
+ </groups>
+</testSuite>

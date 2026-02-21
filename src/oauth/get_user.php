@@ -7,7 +7,7 @@ if (!headers_sent()) {
 //---
 include_once __DIR__ . '/user_infos.php';
 // ---
-$data = ["username" => global_username];
+$data = ["username" => $global_username ?? ''];
 // ---
 echo json_encode($data);
 

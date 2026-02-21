@@ -5,6 +5,13 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 
 include_once __DIR__ . '/u.php';
+include_once __DIR__ . '/config.php';
+
+// Ensure required OAuth variables are available
+global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
+if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined');
+}
 
 /**
  * Display a styled error block to the user and terminate execution.
@@ -29,6 +36,11 @@ function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $lin
     echo "</div>";
     exit;
 }
+
+// Initialize variables to satisfy static analysis
+$client = null;
+$authUrl = null;
+$token = null;
 
 // Configure the OAuth client with the URL and consumer details.
 try {
@@ -104,6 +116,11 @@ try {
         // Log this specific failure case.
         error_log("OAuth Error: client->initiate() returned empty authUrl or token.");
         showErrorAndExit("Failed to initiate the authentication process with the wiki. Please try again.");
+    } else {
+        // Store the Request Token in the session.
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION['request_key'] = $token->key;
+        $_SESSION['request_secret'] = $token->secret;
     }
 } catch (\Exception $e) {
     // Log the detailed exception.
@@ -112,16 +129,9 @@ try {
     showErrorAndExit("An error occurred while starting the authentication process. Please try again.");
 }
 
-// Store the Request Token in the session.
-if (session_status() === PHP_SESSION_NONE) session_start();
-try {
-    $_SESSION['request_key'] = $token->key;
-    $_SESSION['request_secret'] = $token->secret;
-} catch (\Exception $e) {
-    // Log the detailed error.
-    error_log("OAuth Error: Failed to store request token in session: " . $e->getMessage());
-    // Show a generic error.
-    showErrorAndExit("A session error occurred. Please ensure cookies are enabled and try again.");
+// Verify authentication was successful
+if ($client === null || $authUrl === null) {
+    showErrorAndExit("Authentication initialization failed. Please try again.");
 }
 
 // Redirect the user to the authorization URL.
