@@ -42,8 +42,7 @@ class ConfigTest extends TestCase
      */
     public function testOAuthUrlFormat(): void
     {
-        require_once __DIR__ . '/../src/oauth/config.php';
-        
+        // Config is already loaded by bootstrap.php
         $this->assertStringStartsWith('https://', $GLOBALS['oauthUrl']);
         $this->assertStringContainsString('Special:OAuth', $GLOBALS['oauthUrl']);
     }
@@ -53,8 +52,7 @@ class ConfigTest extends TestCase
      */
     public function testApiUrlIsDerivedFromOAuthUrl(): void
     {
-        require_once __DIR__ . '/../src/oauth/config.php';
-        
+        // Config is already loaded by bootstrap.php
         $this->assertStringContainsString('api.php', $GLOBALS['apiUrl']);
         $this->assertStringNotContainsString('index.php', $GLOBALS['apiUrl']);
     }
@@ -64,8 +62,7 @@ class ConfigTest extends TestCase
      */
     public function testDomainIsSet(): void
     {
-        require_once __DIR__ . '/../src/oauth/config.php';
-        
+        // Config is already loaded by bootstrap.php
         $this->assertNotEmpty($GLOBALS['domain']);
         $this->assertIsString($GLOBALS['domain']);
     }
@@ -75,8 +72,7 @@ class ConfigTest extends TestCase
      */
     public function testUserAgentIsSet(): void
     {
-        require_once __DIR__ . '/../src/oauth/config.php';
-        
+        // Config is already loaded by bootstrap.php
         $this->assertNotEmpty($GLOBALS['gUserAgent']);
         $this->assertStringContainsString('mdwiki', $GLOBALS['gUserAgent']);
     }
