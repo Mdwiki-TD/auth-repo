@@ -25,6 +25,6 @@
     "require": {
         "mediawiki/oauthclient": "^1.2",
         "defuse/php-encryption": "^2.4",
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "7.0.0"
     }
 }
