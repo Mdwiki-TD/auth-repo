@@ -26,7 +26,7 @@ $JWT_KEY             = getenv("JWT_KEY") ?: $_ENV['JWT_KEY'] ?? '';
 // ----------------
 // ----------------
 
-if ((empty($CONSUMER_KEY) || empty($CONSUMER_SECRET)) && getenv("APP_ENV") === "production") {
+if ($env === "production" && (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET) || empty($COOKIE_KEY) || empty($DECRYPT_KEY) || empty($JWT_KEY))) {
     header("HTTP/1.1 500 Internal Server Error");
     error_log("Required configuration directives not found in environment variables!");
     echo 'Required configuration directives not found';
