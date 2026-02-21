@@ -4,3 +4,4 @@
 *.zip
 /auths_tests
 .env
+.vscode/settings.json
