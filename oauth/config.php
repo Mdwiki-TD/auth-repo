@@ -26,11 +26,12 @@ $JWT_KEY             = getenv("JWT_KEY") ?: $_ENV['JWT_KEY'] ?? '';
 // ----------------
 // ----------------
 
-if (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET)) {
+if ($env === "production" && (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET) || empty($COOKIE_KEY) || empty($DECRYPT_KEY) || empty($JWT_KEY))) {
     header("HTTP/1.1 500 Internal Server Error");
     error_log("Required configuration directives not found in environment variables!");
+    echo 'Required configuration directives not found';
     exit(0);
 }
 
-$decrypt_key = Key::loadFromAsciiSafeString($DECRYPT_KEY);
-$cookie_key = Key::loadFromAsciiSafeString($COOKIE_KEY);
+$cookie_key  = $COOKIE_KEY ? Key::loadFromAsciiSafeString($COOKIE_KEY) : null;
+$decrypt_key = $DECRYPT_KEY ? Key::loadFromAsciiSafeString($DECRYPT_KEY) : null;

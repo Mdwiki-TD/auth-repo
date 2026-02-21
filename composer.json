@@ -1,8 +1,30 @@
 {
+    "name": "mdwiki/auth",
+    "type": "library",
+    "description": "OAuth client for MediaWiki",
+    "autoload": {
+        "psr-4": {},
+        "files": []
+    },
+    "authors": [
+        {
+            "name": "Mr. Ibrahem",
+            "email": "ibrahem.al-radaei@outlook.com"
+        }
+    ],
+    "scripts": {
+        "test": [
+            "vendor/bin/phpstan analyse",
+            "vendor/bin/phpunit tests --testdox --colors=always -c phpunit.xml"
+        ]
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.0"
+    },
     "require": {
         "mediawiki/oauthclient": "^1.2",
-        "phpmailer/phpmailer": "^6.8",
         "defuse/php-encryption": "^2.4",
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "7.0.0"
     }
 }
