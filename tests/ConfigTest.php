@@ -107,7 +107,7 @@ class ConfigTest extends TestCase
      */
     public function testKeyVariablesAreProperlyTyped(): void
     {
-        require_once __DIR__ . '/../src/oauth/config.php';
+        // Config is already loaded by bootstrap.php
         
         // cookie_key and decrypt_key should be Defuse\Crypto\Key objects or null
         $this->assertTrue(
@@ -126,8 +126,8 @@ class ConfigTest extends TestCase
      */
     public function testEmptyKeysResultInNull(): void
     {
+        // Config is already loaded by bootstrap.php
         // This test verifies behavior when COOKIE_KEY and DECRYPT_KEY are empty
-        require_once __DIR__ . '/../src/oauth/config.php';
         
         if (empty($GLOBALS['COOKIE_KEY'])) {
             $this->assertNull($GLOBALS['cookie_key']);
