@@ -1,0 +1,12 @@
+parameters:
+    level: 5
+    paths:
+        - src/
+
+    excludePaths:
+        - *_old.php
+
+    # Scan files for class definitions
+    scanFiles:
+        - src/vendor_load.php
+        - src/oauth/config.php
