@@ -6,14 +6,6 @@ namespace OAuth\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-// Note: bootstrap.php already loads config.php with test keys
-require_once __DIR__ . '/../src/oauth/access_helps_new.php';
-
-use function OAuth\AccessHelpsNew\get_user_id;
-use function OAuth\AccessHelpsNew\add_access_to_dbs_new;
-use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
-use function OAuth\AccessHelpsNew\del_access_from_dbs_new;
-
 /**
  * Tests for the access_helps_new.php database access functions
  * 
@@ -32,6 +24,12 @@ class AccessHelpsNewTest extends TestCase
     private string $testAccessKey = 'test_access_key_123';
     private string $testAccessSecret = 'test_access_secret_456';
 
+    protected function setUp(): void
+    {
+        // Load the source file after bootstrap has set up the environment
+        require_once __DIR__ . '/../src/oauth/access_helps_new.php';
+    }
+
     /**
      * Clean up test data after each test
      */
@@ -39,7 +37,7 @@ class AccessHelpsNewTest extends TestCase
     {
         // Clean up test user if exists
         try {
-            del_access_from_dbs_new($this->testUsername);
+            \OAuth\AccessHelpsNew\del_access_from_dbs_new($this->testUsername);
         } catch (\Exception $e) {
             // Ignore cleanup errors
         }
@@ -51,7 +49,7 @@ class AccessHelpsNewTest extends TestCase
     public function testGetUserIdReturnsNullForNonExistentUser(): void
     {
         $uniqueUsername = 'non_existent_user_' . time();
-        $userId = get_user_id($uniqueUsername);
+        $userId = \OAuth\AccessHelpsNew\get_user_id($uniqueUsername);
         
         $this->assertNull($userId);
     }
@@ -64,7 +62,7 @@ class AccessHelpsNewTest extends TestCase
         $usernameWithSpaces = '  test_user_trim  ';
         
         // This should not throw an error
-        $userId = get_user_id($usernameWithSpaces);
+        $userId = \OAuth\AccessHelpsNew\get_user_id($usernameWithSpaces);
         
         // Result can be null or an integer, but should not throw
         $this->assertTrue($userId === null || is_int($userId));
@@ -76,10 +74,10 @@ class AccessHelpsNewTest extends TestCase
     public function testGetUserIdCaching(): void
     {
         // First call - may hit database
-        $userId1 = get_user_id($this->testUsername);
+        $userId1 = \OAuth\AccessHelpsNew\get_user_id($this->testUsername);
         
         // Second call - should use cached value
-        $userId2 = get_user_id($this->testUsername);
+        $userId2 = \OAuth\AccessHelpsNew\get_user_id($this->testUsername);
         
         // Both should return the same result
         $this->assertEquals($userId1, $userId2);
@@ -94,7 +92,7 @@ class AccessHelpsNewTest extends TestCase
     {
         try {
             // Attempt to add access for a new user
-            add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
+            \OAuth\AccessHelpsNew\add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
             
             // If we get here without exception, the function executed
             $this->assertTrue(true);
@@ -115,7 +113,7 @@ class AccessHelpsNewTest extends TestCase
         $uniqueUsername = 'non_existent_user_' . time();
         
         try {
-            $access = get_access_from_dbs_new($uniqueUsername);
+            $access = \OAuth\AccessHelpsNew\get_access_from_dbs_new($uniqueUsername);
             $this->assertNull($access);
         } catch (\PDOException $e) {
             $this->markTestSkipped('Database not available: ' . $e->getMessage());
@@ -130,7 +128,7 @@ class AccessHelpsNewTest extends TestCase
         $usernameWithSpaces = '  test_user_trim  ';
         
         try {
-            $access = get_access_from_dbs_new($usernameWithSpaces);
+            $access = \OAuth\AccessHelpsNew\get_access_from_dbs_new($usernameWithSpaces);
             
             // Should not throw, result can be null or array
             $this->assertTrue($access === null || is_array($access));
@@ -147,7 +145,7 @@ class AccessHelpsNewTest extends TestCase
         $uniqueUsername = 'non_existent_user_' . time();
         
         try {
-            $result = del_access_from_dbs_new($uniqueUsername);
+            $result = \OAuth\AccessHelpsNew\del_access_from_dbs_new($uniqueUsername);
             $this->assertNull($result);
         } catch (\PDOException $e) {
             $this->markTestSkipped('Database not available: ' . $e->getMessage());
@@ -163,25 +161,25 @@ class AccessHelpsNewTest extends TestCase
     {
         try {
             // Step 1: Add access
-            add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
+            \OAuth\AccessHelpsNew\add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
             
             // Step 2: Get user ID (should exist now)
-            $userId = get_user_id($this->testUsername);
+            $userId = \OAuth\AccessHelpsNew\get_user_id($this->testUsername);
             $this->assertNotNull($userId, 'User ID should exist after adding access');
             $this->assertIsInt($userId);
             
             // Step 3: Get access
-            $access = get_access_from_dbs_new($this->testUsername);
+            $access = \OAuth\AccessHelpsNew\get_access_from_dbs_new($this->testUsername);
             $this->assertNotNull($access, 'Access should exist after adding');
             $this->assertIsArray($access);
             $this->assertArrayHasKey('access_key', $access);
             $this->assertArrayHasKey('access_secret', $access);
             
             // Step 4: Delete access
-            del_access_from_dbs_new($this->testUsername);
+            \OAuth\AccessHelpsNew\del_access_from_dbs_new($this->testUsername);
             
             // Step 5: Verify access is deleted
-            $accessAfterDelete = get_access_from_dbs_new($this->testUsername);
+            $accessAfterDelete = \OAuth\AccessHelpsNew\get_access_from_dbs_new($this->testUsername);
             $this->assertNull($accessAfterDelete, 'Access should be null after deletion');
             
         } catch (\PDOException $e) {
@@ -196,10 +194,10 @@ class AccessHelpsNewTest extends TestCase
     {
         try {
             // Add access
-            add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
+            \OAuth\AccessHelpsNew\add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
             
             // Get access
-            $access = get_access_from_dbs_new($this->testUsername);
+            $access = \OAuth\AccessHelpsNew\get_access_from_dbs_new($this->testUsername);
             
             if ($access !== null) {
                 // Verify the decrypted values match original
@@ -208,7 +206,7 @@ class AccessHelpsNewTest extends TestCase
             }
             
             // Clean up
-            del_access_from_dbs_new($this->testUsername);
+            \OAuth\AccessHelpsNew\del_access_from_dbs_new($this->testUsername);
             
         } catch (\PDOException $e) {
             $this->markTestSkipped('Database not available: ' . $e->getMessage());
@@ -225,19 +223,19 @@ class AccessHelpsNewTest extends TestCase
             $newSecret = 'updated_secret_012';
             
             // Add initial access
-            add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
+            \OAuth\AccessHelpsNew\add_access_to_dbs_new($this->testUsername, $this->testAccessKey, $this->testAccessSecret);
             
             // Update with new credentials
-            add_access_to_dbs_new($this->testUsername, $newKey, $newSecret);
+            \OAuth\AccessHelpsNew\add_access_to_dbs_new($this->testUsername, $newKey, $newSecret);
             
             // Verify update
-            $access = get_access_from_dbs_new($this->testUsername);
+            $access = \OAuth\AccessHelpsNew\get_access_from_dbs_new($this->testUsername);
             $this->assertNotNull($access);
             $this->assertEquals($newKey, $access['access_key']);
             $this->assertEquals($newSecret, $access['access_secret']);
             
             // Clean up
-            del_access_from_dbs_new($this->testUsername);
+            \OAuth\AccessHelpsNew\del_access_from_dbs_new($this->testUsername);
             
         } catch (\PDOException $e) {
             $this->markTestSkipped('Database not available: ' . $e->getMessage());
