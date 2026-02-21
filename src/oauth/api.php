@@ -22,6 +22,12 @@ use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 include_once __DIR__ . '/config.php';
 include_once __DIR__ . '/helps.php';
 
+// Ensure required variables are defined
+global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
+if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined');
+}
+
 // Configure the OAuth client with the URL and consumer details.
 $conf = new ClientConfig($oauthUrl);
 $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
@@ -80,5 +86,5 @@ function do_Api_Query($Params, $addtoken = null)
 $post = $_GET;
 if (isset($post['action'])) {
     $result = do_Api_Query($post);
-    echo json_encode($result, true);
+    echo json_encode($result, JSON_THROW_ON_ERROR);
 }

@@ -2,6 +2,13 @@
 require_once __DIR__ . '/access_helps.php';
 require_once __DIR__ . '/access_helps_new.php';
 require_once __DIR__ . '/jwt_config.php';
+require_once __DIR__ . '/config.php';
+
+// Ensure required variables are defined
+global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
+if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined');
+}
 
 use function OAuth\JWT\create_jwt;
 use MediaWiki\OAuthClient\Client;
