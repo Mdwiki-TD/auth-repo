@@ -6,14 +6,6 @@ namespace OAuth\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-// Note: bootstrap.php already loads config.php with test keys
-// We load helps.php here so it can access the keys set in bootstrap
-require_once __DIR__ . '/../src/oauth/helps.php';
-
-use function OAuth\Helps\de_code_value;
-use function OAuth\Helps\en_code_value;
-use function OAuth\Helps\get_from_cookies;
-
 /**
  * Tests for the helps.php utility functions
  * 
@@ -23,12 +15,18 @@ use function OAuth\Helps\get_from_cookies;
  */
 class HelpsTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        // Load the source file after bootstrap has set up the environment
+        require_once __DIR__ . '/../src/oauth/helps.php';
+    }
+
     /**
      * Test that en_code_value returns empty string for empty input
      */
     public function testEnCodeValueReturnsEmptyStringForEmptyInput(): void
     {
-        $result = en_code_value('');
+        $result = \OAuth\Helps\en_code_value('');
         $this->assertEquals('', $result);
     }
 
@@ -37,7 +35,7 @@ class HelpsTest extends TestCase
      */
     public function testDeCodeValueReturnsEmptyStringForEmptyInput(): void
     {
-        $result = de_code_value('');
+        $result = \OAuth\Helps\de_code_value('');
         $this->assertEquals('', $result);
     }
 
@@ -46,7 +44,7 @@ class HelpsTest extends TestCase
      */
     public function testDeCodeValueReturnsEmptyStringForInvalidData(): void
     {
-        $result = de_code_value('invalid_encrypted_data');
+        $result = \OAuth\Helps\de_code_value('invalid_encrypted_data');
         $this->assertEquals('', $result);
     }
 
@@ -58,14 +56,14 @@ class HelpsTest extends TestCase
         $original = 'test_value_123';
         
         // Encrypt the value
-        $encrypted = en_code_value($original);
+        $encrypted = \OAuth\Helps\en_code_value($original);
         
         // Should not be empty and should be different from original
         $this->assertNotEmpty($encrypted);
         $this->assertNotEquals($original, $encrypted);
         
         // Decrypt and verify
-        $decrypted = de_code_value($encrypted);
+        $decrypted = \OAuth\Helps\de_code_value($encrypted);
         $this->assertEquals($original, $decrypted);
     }
 
@@ -77,13 +75,13 @@ class HelpsTest extends TestCase
         $original = 'test_with_decrypt_key';
         
         // Encrypt with decrypt key type
-        $encrypted = en_code_value($original, 'decrypt');
+        $encrypted = \OAuth\Helps\en_code_value($original, 'decrypt');
         
         // Should not be empty
         $this->assertNotEmpty($encrypted);
         
         // Decrypt with same key type
-        $decrypted = de_code_value($encrypted, 'decrypt');
+        $decrypted = \OAuth\Helps\de_code_value($encrypted, 'decrypt');
         $this->assertEquals($original, $decrypted);
     }
 
@@ -92,7 +90,7 @@ class HelpsTest extends TestCase
      */
     public function testGetFromCookiesReturnsEmptyForNonExistentCookie(): void
     {
-        $result = get_from_cookies('non_existent_cookie');
+        $result = \OAuth\Helps\get_from_cookies('non_existent_cookie');
         $this->assertEquals('', $result);
     }
 
@@ -106,7 +104,7 @@ class HelpsTest extends TestCase
         
         // Since we can't easily mock de_code_value, we test the plus replacement logic
         // by checking if the function runs without error
-        $result = get_from_cookies('username');
+        $result = \OAuth\Helps\get_from_cookies('username');
         
         // Clean up
         unset($_COOKIE['username']);
@@ -130,8 +128,8 @@ class HelpsTest extends TestCase
         ];
 
         foreach ($specialStrings as $original) {
-            $encrypted = en_code_value($original);
-            $decrypted = de_code_value($encrypted);
+            $encrypted = \OAuth\Helps\en_code_value($original);
+            $decrypted = \OAuth\Helps\de_code_value($encrypted);
             $this->assertEquals($original, $decrypted, "Failed to encrypt/decrypt: $original");
         }
     }

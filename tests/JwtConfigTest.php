@@ -6,12 +6,6 @@ namespace OAuth\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-// Note: bootstrap.php already loads config.php with test keys
-require_once __DIR__ . '/../src/oauth/jwt_config.php';
-
-use function OAuth\JWT\create_jwt;
-use function OAuth\JWT\verify_jwt;
-
 /**
  * Tests for the jwt_config.php JWT functions
  * 
@@ -23,6 +17,12 @@ use function OAuth\JWT\verify_jwt;
  */
 class JwtConfigTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        // Load the source file after bootstrap has set up the environment
+        require_once __DIR__ . '/../src/oauth/jwt_config.php';
+    }
+
     private string $testUsername = 'test_user';
 
     /**
@@ -30,7 +30,7 @@ class JwtConfigTest extends TestCase
      */
     public function testCreateJwtReturnsNonEmptyString(): void
     {
-        $token = create_jwt($this->testUsername);
+        $token = \OAuth\JWT\create_jwt($this->testUsername);
         
         $this->assertNotEmpty($token);
         $this->assertIsString($token);
@@ -41,8 +41,8 @@ class JwtConfigTest extends TestCase
      */
     public function testVerifyJwtReturnsUsernameForValidToken(): void
     {
-        $token = create_jwt($this->testUsername);
-        list($username, $error) = verify_jwt($token);
+        $token = \OAuth\JWT\create_jwt($this->testUsername);
+        list($username, $error) = \OAuth\JWT\verify_jwt($token);
         
         $this->assertEquals($this->testUsername, $username);
         $this->assertEmpty($error);
@@ -53,7 +53,7 @@ class JwtConfigTest extends TestCase
      */
     public function testVerifyJwtReturnsErrorForEmptyToken(): void
     {
-        list($username, $error) = verify_jwt('');
+        list($username, $error) = \OAuth\JWT\verify_jwt('');
         
         $this->assertEmpty($username);
         $this->assertNotEmpty($error);
@@ -65,7 +65,7 @@ class JwtConfigTest extends TestCase
      */
     public function testVerifyJwtReturnsErrorForInvalidToken(): void
     {
-        list($username, $error) = verify_jwt('invalid_token_string');
+        list($username, $error) = \OAuth\JWT\verify_jwt('invalid_token_string');
         
         $this->assertEmpty($username);
         $this->assertNotEmpty($error);
@@ -76,12 +76,12 @@ class JwtConfigTest extends TestCase
      */
     public function testVerifyJwtReturnsErrorForTamperedToken(): void
     {
-        $token = create_jwt($this->testUsername);
+        $token = \OAuth\JWT\create_jwt($this->testUsername);
         
         // Tamper with the token by changing a character
         $tamperedToken = substr($token, 0, -5) . 'XXXXX';
         
-        list($username, $error) = verify_jwt($tamperedToken);
+        list($username, $error) = \OAuth\JWT\verify_jwt($tamperedToken);
         
         $this->assertEmpty($username);
         $this->assertNotEmpty($error);
@@ -92,7 +92,7 @@ class JwtConfigTest extends TestCase
      */
     public function testJwtTokenStructure(): void
     {
-        $token = create_jwt($this->testUsername);
+        $token = \OAuth\JWT\create_jwt($this->testUsername);
         $parts = explode('.', $token);
         
         $this->assertCount(3, $parts, 'JWT should have 3 parts: header, payload, signature');
@@ -103,8 +103,8 @@ class JwtConfigTest extends TestCase
      */
     public function testDifferentUsernamesProduceDifferentTokens(): void
     {
-        $token1 = create_jwt('user1');
-        $token2 = create_jwt('user2');
+        $token1 = \OAuth\JWT\create_jwt('user1');
+        $token2 = \OAuth\JWT\create_jwt('user2');
         
         $this->assertNotEquals($token1, $token2);
     }
@@ -114,9 +114,9 @@ class JwtConfigTest extends TestCase
      */
     public function testSameUsernameCanProduceDifferentTokens(): void
     {
-        $token1 = create_jwt($this->testUsername);
+        $token1 = \OAuth\JWT\create_jwt($this->testUsername);
         sleep(1); // Wait 1 second to ensure different timestamp
-        $token2 = create_jwt($this->testUsername);
+        $token2 = \OAuth\JWT\create_jwt($this->testUsername);
         
         $this->assertNotEquals($token1, $token2);
     }
@@ -135,7 +135,7 @@ class JwtConfigTest extends TestCase
         ];
 
         foreach ($malformedTokens as $token) {
-            list($username, $error) = verify_jwt($token);
+            list($username, $error) = \OAuth\JWT\verify_jwt($token);
             $this->assertEmpty($username, "Username should be empty for token: $token");
             $this->assertNotEmpty($error, "Error should not be empty for token: $token");
         }
@@ -149,8 +149,8 @@ class JwtConfigTest extends TestCase
         $usernames = ['user1', 'user2', 'test_user', 'admin', 'user@example.com'];
         
         foreach ($usernames as $username) {
-            $token = create_jwt($username);
-            list($verifiedUsername, $error) = verify_jwt($token);
+            $token = \OAuth\JWT\create_jwt($username);
+            list($verifiedUsername, $error) = \OAuth\JWT\verify_jwt($token);
             
             $this->assertEquals($username, $verifiedUsername, "Failed for username: $username");
             $this->assertEmpty($error, "Error should be empty for username: $username");
