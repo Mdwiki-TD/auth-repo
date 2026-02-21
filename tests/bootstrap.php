@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Set test environment first
+// Set test environment
 putenv('APP_ENV=testing');
 putenv('DB_HOST=localhost:3306');
 putenv('DB_NAME=s54732__mdwiki');
@@ -14,24 +14,11 @@ putenv('TOOL_TOOLSDB_PASSWORD=root11');
 $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['HTTP_HOST'] = 'localhost';
 
-// Load vendor autoloader first
+// Load vendor autoloader
 require_once __DIR__ . '/../src/vendor_load.php';
 
-use Defuse\Crypto\Key;
+// Note: Encryption keys are set in phpunit.xml via <env> tags
+// This ensures they're available before any test files are loaded
 
-// Generate test encryption keys BEFORE loading config
-$key = Key::createNewRandomKey();
-putenv('COOKIE_KEY=' . $key->saveToAsciiSafeString());
-$_ENV['COOKIE_KEY'] = $key->saveToAsciiSafeString();
-
-$key = Key::createNewRandomKey();
-putenv('DECRYPT_KEY=' . $key->saveToAsciiSafeString());
-$_ENV['DECRYPT_KEY'] = $key->saveToAsciiSafeString();
-
-// Generate a random JWT key
-$jwtKey = bin2hex(random_bytes(32));
-putenv('JWT_KEY=' . $jwtKey);
-$_ENV['JWT_KEY'] = $jwtKey;
-
-// Now load config which will pick up the keys
+// Load config which will pick up the environment variables
 require_once __DIR__ . '/../src/oauth/config.php';

@@ -7,6 +7,7 @@ namespace OAuth\Tests;
 use PHPUnit\Framework\TestCase;
 
 // Note: bootstrap.php already loads config.php with test keys
+// We load helps.php here so it can access the keys set in bootstrap
 require_once __DIR__ . '/../src/oauth/helps.php';
 
 use function OAuth\Helps\de_code_value;
