@@ -6,8 +6,6 @@ use function OAuth\JWT\create_jwt;
 use function OAuth\JWT\verify_jwt;
 */
 
-include_once __DIR__ . '/include_all.php';
-
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;

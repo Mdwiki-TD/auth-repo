@@ -5,8 +5,6 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 
-include_once __DIR__ . '/include_all.php';
-
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\JWT\create_jwt;
 
