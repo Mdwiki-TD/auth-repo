@@ -53,8 +53,8 @@ function en_code_value($value, $key_type = "cookie")
 function add_to_cookies($key, $value, $age = 0)
 {
     global $domain;
+    $twoYears = time() + 60 * 60 * 24 * 365 * 2;
     if ($age == 0) {
-        $twoYears = time() + 60 * 60 * 24 * 365 * 2;
         $age = $twoYears;
     }
     $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
@@ -65,7 +65,7 @@ function add_to_cookies($key, $value, $age = 0)
     setcookie(
         $key,
         $value,
-        $twoYears,
+        $age,
         "/",
         $domain, // "mdwiki.toolforge.org",
         $secure,  // only secure (https)

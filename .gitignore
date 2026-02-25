@@ -4,3 +4,6 @@
 *.zip
 /auths_tests
 .env
+.vscode/settings.json
+.phpunit.result.cache
+.phpunit.cache/test-results

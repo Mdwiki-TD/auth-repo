@@ -4,11 +4,17 @@ use Defuse\Crypto\Key;
 //---
 include_once __DIR__ . '/../vendor_load.php';
 //---
-$env = getenv('APP_ENV') ?: 'development';
+$env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 
 if ($env === 'development' && file_exists(__DIR__ . '/load_env.php')) {
     include_once __DIR__ . '/load_env.php';
 }
+
+// Declare all config variables as global so they can be accessed from anywhere
+global $domain, $gUserAgent, $oauthUrl, $apiUrl;
+global $CONSUMER_KEY, $CONSUMER_SECRET, $COOKIE_KEY, $DECRYPT_KEY, $JWT_KEY;
+global $cookie_key, $decrypt_key;
+
 $domain = $_SERVER['SERVER_NAME'] ?? 'localhost';
 $gUserAgent = 'mdwiki MediaWiki OAuth Client/1.0';
 $oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';

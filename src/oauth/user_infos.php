@@ -10,12 +10,16 @@ use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 //---
+global $domain;
+//---
 $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
+$cookieDomain = $domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
 // ---
 if ($_SERVER['SERVER_NAME'] != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_name("mdwikitoolforgeoauth");
-		session_set_cookie_params(0, "/", $domain, $secure, $secure);
+		// Ensure $domain is defined, fallback to server name
+		session_set_cookie_params(0, "/", $cookieDomain, $secure, $secure);
 	}
 }
 
@@ -46,7 +50,7 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
 	// ---
 	if ($access == null) {
 		echo ba_alert("No access keys found. Login again.");
-		setcookie('username', '', time() - 3600, "/", $domain, true, true);
+		setcookie('username', '', time() - 3600, "/", $cookieDomain, true, true);
 		$username = '';
 		unset($_SESSION['username']);
 	}

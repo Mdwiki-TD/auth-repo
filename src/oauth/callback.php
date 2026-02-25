@@ -2,6 +2,13 @@
 require_once __DIR__ . '/access_helps.php';
 require_once __DIR__ . '/access_helps_new.php';
 require_once __DIR__ . '/jwt_config.php';
+require_once __DIR__ . '/config.php';
+
+// Ensure required variables are defined
+global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
+if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined');
+}
 
 use function OAuth\JWT\create_jwt;
 use MediaWiki\OAuthClient\Client;
@@ -56,6 +63,12 @@ if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
     );
 }
 
+// Initialize variables to satisfy static analysis
+$client = null;
+$requestToken = null;
+$accessToken1 = null;
+$ident = null;
+
 try {
     $conf = new ClientConfig($oauthUrl);
     $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
@@ -96,9 +109,14 @@ try {
     $ident = $client->identify($accessToken);
 } catch (\Exception $e) {
     // Log the detailed error.
-    error_log("OAuth Error: Failed to identify user with access token: " . $e->getMessage());
+    error_log("OAuth Error: Failed during OAuth process: " . $e->getMessage());
     // Show a generic error.
     showErrorAndExit("Could not verify your identity after authentication. Please try again.");
+}
+
+// Verify all required objects were created
+if ($client === null || $accessToken1 === null || $ident === null) {
+    showErrorAndExit("Authentication failed. Please try logging in again.", "index.php?a=login", "Try again");
 }
 
 try {
