@@ -74,14 +74,25 @@ try {
     $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
     $conf->setUserAgent($gUserAgent);
     $client = new Client($conf);
-    
+} catch (\Exception $e) {
+    // Log the detailed, internal error message for debugging.
+    error_log("OAuth Error: Failed to initialize OAuth client: " . $e->getMessage());
+    // Show a generic, user-friendly error message.
+    showErrorAndExit("An internal error occurred while setting up authentication. Please try again later.");
+}
+
+try {
     $requestToken = new Token($_SESSION['request_key'], $_SESSION['request_secret']);
-    
+} catch (\Exception $e) {
+    // Log the detailed error.
+    error_log("OAuth Error: Invalid request token from session: " . $e->getMessage());
+    // Show a generic error.
+    showErrorAndExit("Your session contains an invalid token. Please try logging in again.");
+}
+
+try {
     $accessToken1 = $client->complete($requestToken, $_GET['oauth_verifier']);
     unset($_SESSION['request_key'], $_SESSION['request_secret']);
-    
-    $accessToken = new Token($accessToken1->key, $accessToken1->secret);
-    $ident = $client->identify($accessToken);
 } catch (\MediaWiki\OAuthClient\Exception $e) {
     // Log the detailed error from the OAuth client.
     error_log("OAuth Error: Authentication failed during client->complete(): " . $e->getMessage());
@@ -91,6 +102,11 @@ try {
         "index.php?a=login",
         "Try again"
     );
+}
+
+try {
+    $accessToken = new Token($accessToken1->key, $accessToken1->secret);
+    $ident = $client->identify($accessToken);
 } catch (\Exception $e) {
     // Log the detailed error.
     error_log("OAuth Error: Failed during OAuth process: " . $e->getMessage());
