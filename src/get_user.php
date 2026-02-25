@@ -5,7 +5,7 @@ if (!headers_sent()) {
     header('Content-Type: application/json');
 }
 //---
-include_once __DIR__ . '/user_infos.php';
+include_once __DIR__ . '/oauth/user_infos.php';
 // ---
 $data = ["username" => $global_username ?? ''];
 // ---
