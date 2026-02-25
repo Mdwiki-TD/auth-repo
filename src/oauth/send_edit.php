@@ -42,11 +42,11 @@ function auth_make_edit($title, $text, $summary, $wiki, $access_key, $access_sec
 {
     $settings = \Settings::getInstance();
     // ---
-    $oauthUrl = "https://$wiki.wikipedia.org/w/index.php?title=Special:OAuth";
+    $wikiOauthUrl = "https://$wiki.wikipedia.org/w/index.php?title=Special:OAuth";
     $apiUrl = "https://$wiki.wikipedia.org/w/api.php";
     // ---
     // Configure the OAuth client with the URL and consumer details.
-    $conf = new ClientConfig($oauthUrl);
+    $conf = new ClientConfig($wikiOauthUrl);
     $conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
     $conf->setUserAgent($settings->userAgent);
     $client = new Client($conf);
