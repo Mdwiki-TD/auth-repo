@@ -24,7 +24,13 @@ include_once __DIR__ . '/helps.php';
 
 // Ensure required variables are defined
 global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
-if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+// if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+if (
+    empty(trim((string)$oauthUrl)) ||
+    empty(trim((string)$CONSUMER_KEY)) ||
+    empty(trim((string)$CONSUMER_SECRET)) ||
+    empty(trim((string)$gUserAgent))
+) {
     throw new \RuntimeException('Required OAuth configuration variables are not defined');
 }
 
