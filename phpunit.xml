@@ -18,9 +18,7 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="COOKIE_KEY" value="def000008f0992fd44f7b71bc86a13c50ffa0295fabd0b8b008fc19d75774746ae6ef19e0328d36d9b457496158ae01fa22dc7638759aadf6c45fd4cda76edb865b0222f"/>
-        <env name="DECRYPT_KEY" value="def000005b2df5554c4d4f3edb8dffbb27da983f3bd3e121aedf49608a799d973f840ce936bd8570b334d5fab61e2121d9252d55dbb79f02f0bf6f5262590c149438e60b"/>
-        <env name="JWT_KEY" value="c4179b8a35d373e222e351b2d96f79c1c21b6c697d450f6c26d73518e8836ec0"/>
+        <!-- Environment variables are set in tests/bootstrap.php using putenv() -->
+        <!-- This ensures they are available to getenv() calls in the source code -->
     </php>
 </phpunit>

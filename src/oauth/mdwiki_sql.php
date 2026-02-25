@@ -57,11 +57,13 @@ class Database
         } catch (PDOException $e) {
             // Log the error message
             error_log($e->getMessage());
+            // In testing mode, re-throw the exception so tests can catch it and skip
+            if (getenv('APP_ENV') === 'testing') {
+                throw $e;
+            }
             // Display a generic message
             echo "Unable to connect to the database. Please try again later.";
-            if (getenv('APP_ENV') !== 'testing') {
-                exit();
-            }
+            exit();
         }
     }
 
@@ -102,6 +104,10 @@ class Database
                 return [];
             }
         } catch (PDOException $e) {
+            // In testing mode, re-throw to allow tests to skip
+            if (getenv('APP_ENV') === 'testing') {
+                throw $e;
+            }
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
             return [];
         }
@@ -123,6 +129,10 @@ class Database
             $result = $q->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         } catch (PDOException $e) {
+            // In testing mode, re-throw to allow tests to skip
+            if (getenv('APP_ENV') === 'testing') {
+                throw $e;
+            }
             echo "SQL Error:" . $e->getMessage() . "<br>" . $sql_query;
             // error_log("SQL Error: " . $e->getMessage() . " | Query: " . $sql_query);
             return [];
