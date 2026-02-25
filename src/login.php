@@ -10,8 +10,11 @@ include_once __DIR__ . '/oauth/u.php';
 $settings = Settings::getInstance();
 
 // Ensure required OAuth variables are available
-if (empty($settings->oauthUrl) || empty($settings->consumerKey) || empty($settings->consumerSecret) || empty($settings->userAgent)) {
-    throw new \RuntimeException('Required OAuth configuration variables are not defined');
+if (empty($settings->consumerKey)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined: consumerKey is missing');
+}
+if (empty($settings->consumerSecret)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined: consumerSecret is missing');
 }
 
 /**
