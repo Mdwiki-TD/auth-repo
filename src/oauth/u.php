@@ -10,7 +10,9 @@ include_once __DIR__ . '/jwt_config.php';
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\JWT\create_jwt;
 
-if ($_SERVER['SERVER_NAME'] === 'localhost') {
+$settings = \Settings::getInstance();
+
+if ($settings->domain === 'localhost') {
     $fa = $_GET['test'] ?? '';
     // if ($fa != 'xx') {
     // Get the Request Token's details from the session and create a new Token object.

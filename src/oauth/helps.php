@@ -63,7 +63,7 @@ function add_to_cookies($key, $value, $age = 0)
     if ($age == 0) {
         $age = $twoYears;
     }
-    $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
+    $secure = ($settings->domain == "localhost") ? false : true;
 
     $value = en_code_value($value);
 

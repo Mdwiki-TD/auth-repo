@@ -12,10 +12,10 @@ use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 //---
 $settings = Settings::getInstance();
 //---
-$secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
 $cookieDomain = $settings->domain;
+$secure = $cookieDomain ? false : true;
 // ---
-if ($_SERVER['SERVER_NAME'] != 'localhost') {
+if ($cookieDomain != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_name("mdwikitoolforgeoauth");
 		// Ensure $domain is defined, fallback to server name
@@ -38,7 +38,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 //---
 $username = get_from_cookies('username');
 //---
-if ($_SERVER['SERVER_NAME'] == 'localhost') {
+if ($settings->domain == 'localhost') {
 	$username = $_SESSION['username'] ?? '';
 } elseif (!empty($username)) {
 	// ---

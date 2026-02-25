@@ -137,7 +137,7 @@ if ($client === null || $authUrl === null) {
 }
 
 // Redirect the user to the authorization URL.
-if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+if ($settings->domain !== 'localhost') {
     header("Location: $authUrl");
     exit(0);
 } else {
