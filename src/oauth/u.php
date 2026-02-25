@@ -4,8 +4,8 @@ if (isset($_REQUEST['test'])) {
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 };
-include_once __DIR__ . '/helps.php';
-include_once __DIR__ . '/jwt_config.php';
+
+include_once __DIR__ . '/include_all.php';
 
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\JWT\create_jwt;

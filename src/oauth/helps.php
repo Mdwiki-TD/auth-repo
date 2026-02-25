@@ -9,8 +9,7 @@ use function OAuth\Helps\de_code_value;
 use function OAuth\Helps\en_code_value;
 */
 
-include_once __DIR__ . '/../vendor_load.php';
-include_once __DIR__ . '/settings.php';
+include_once __DIR__ . '/include_all.php';
 
 use Defuse\Crypto\Crypto;
 

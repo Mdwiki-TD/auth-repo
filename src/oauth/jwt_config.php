@@ -6,8 +6,7 @@ use function OAuth\JWT\create_jwt;
 use function OAuth\JWT\verify_jwt;
 */
 
-include_once __DIR__ . '/../vendor_load.php';
-include_once __DIR__ . '/settings.php';
+include_once __DIR__ . '/include_all.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
@@ -19,10 +18,10 @@ function create_jwt(string $username): string
     $settings = \Settings::getInstance();
 
     $payload = [
-        'iss' => $settings->domain,     // المصدر
-        'iat' => time(),               // وقت الإنشاء
-        'exp' => time() + 3600,        // وقت الانتهاء (ساعة واحدة مثلاً)
-        'username' => $username        // بيانات إضافية (محتوى التوكن)
+        'iss' => $settings->domain,    // source
+        'iat' => time(),               // creation time
+        'exp' => time() + 3600,        // expiration time (e.g., one hour)
+        'username' => $username        // additional data (token content)
     ];
 
     try {

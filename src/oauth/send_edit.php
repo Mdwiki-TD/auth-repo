@@ -15,13 +15,10 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
-use function OAuth\Helps\get_from_cookies;
 
 // header( 'Content-type: text/plain' );
 
 // Get the wiki URL and OAuth consumer details from the settings.
-include_once __DIR__ . '/settings.php';
-include_once __DIR__ . '/helps.php';
 
 function get_edits_tokens($client, $accessToken, $apiUrl)
 {

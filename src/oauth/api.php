@@ -6,7 +6,7 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 //---
-include_once __DIR__ . '/../vendor_load.php';
+include_once __DIR__ . '/include_all.php';
 
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
@@ -19,8 +19,6 @@ use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 // header( 'Content-type: text/plain' );
 
 // Get the wiki URL and OAuth consumer details from the settings.
-include_once __DIR__ . '/settings.php';
-include_once __DIR__ . '/helps.php';
 
 // Get Settings instance
 $settings = Settings::getInstance();
