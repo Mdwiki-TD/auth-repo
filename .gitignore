@@ -8,3 +8,4 @@
 .phpunit.result.cache
 .phpunit.cache/test-results
 .claude/settings.local.json
+.claude/settings.json

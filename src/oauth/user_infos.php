@@ -13,7 +13,7 @@ use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 $settings = Settings::getInstance();
 //---
 $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
-$cookieDomain = $settings->domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+$cookieDomain = $settings->domain;
 // ---
 if ($_SERVER['SERVER_NAME'] != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {

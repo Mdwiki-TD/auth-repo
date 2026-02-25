@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 use Defuse\Crypto\Key;
 
+/**
+ * @property string $domain
+ * @property string $userAgent
+ * @property string $oauthUrl
+ * @property string $apiUrl
+ * @property string $consumerKey
+ * @property string $consumerSecret
+ * @property Key|null $cookieKey
+ * @property Key|null $decryptKey
+ * @property string $jwtKey
+ */
 final class Settings
 {
     // Private properties — access is controlled via __get()

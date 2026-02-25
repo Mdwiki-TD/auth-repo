@@ -40,7 +40,7 @@ function get_edits_tokens($client, $accessToken, $apiUrl)
 
 function auth_make_edit($title, $text, $summary, $wiki, $access_key, $access_secret)
 {
-    $settings = Settings::getInstance();
+    $settings = \Settings::getInstance();
     // ---
     $oauthUrl = "https://$wiki.wikipedia.org/w/index.php?title=Special:OAuth";
     $apiUrl = "https://$wiki.wikipedia.org/w/api.php";
