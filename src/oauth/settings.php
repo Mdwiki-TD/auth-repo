@@ -18,15 +18,15 @@ use Defuse\Crypto\Key;
 final class Settings
 {
     // Private properties — access is controlled via __get()
-    private string $domain;
-    private string $userAgent;
-    private string $oauthUrl;
-    private string $apiUrl;
-    private string $consumerKey;
-    private string $consumerSecret;
-    private ?Key   $cookieKey;
-    private ?Key   $decryptKey;
-    private string $jwtKey;
+    public string $domain;
+    public string $userAgent;
+    public string $oauthUrl;
+    public string $apiUrl;
+    public string $consumerKey;
+    public string $consumerSecret;
+    public ?Key   $cookieKey;
+    public ?Key   $decryptKey;
+    public string $jwtKey;
 
     private static ?self $instance = null;
 
