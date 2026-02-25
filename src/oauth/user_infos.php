@@ -7,7 +7,7 @@ use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 $settings = Settings::getInstance();
 //---
 $cookieDomain = $settings->domain;
-$secure = $cookieDomain ? false : true;
+$secure = ($cookieDomain === 'localhost') ? false : true;
 // ---
 if ($cookieDomain != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {
