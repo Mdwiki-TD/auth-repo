@@ -5,7 +5,7 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 
-include_once __DIR__ . '/oauth/include_all.php';
+include_once __DIR__ . '/include_all.php';
 
 // length of $_GET == 1 and isset($_GET['test'])
 $ye = count($_GET) == 1 && isset($_GET['test']);
