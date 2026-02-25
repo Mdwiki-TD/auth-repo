@@ -32,12 +32,6 @@ final class Settings
 
     private function __construct()
     {
-        $env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
-
-        if ($env === 'development' && file_exists(__DIR__ . '/load_env.php')) {
-            include_once __DIR__ . '/load_env.php';
-        }
-
         $this->domain    = $_SERVER['SERVER_NAME'] ?? 'localhost';
         $this->userAgent = 'mdwiki MediaWiki OAuth Client/1.0';
         $this->oauthUrl  = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
@@ -49,7 +43,7 @@ final class Settings
         $decryptKey     = getenv('DECRYPT_KEY')     ?: $_ENV['DECRYPT_KEY']     ?? '';
         $jwtKey         = getenv('JWT_KEY')         ?: $_ENV['JWT_KEY']         ?? '';
 
-        if ($env === 'production' && (
+        if (getenv('APP_ENV') === 'production' && (
             empty($consumerKey) || empty($consumerSecret) ||
             empty($cookieKey)   || empty($decryptKey)     || empty($jwtKey)
         )) {

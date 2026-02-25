@@ -5,6 +5,12 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 
+$env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
+
+if ($env === 'development' && file_exists(__DIR__ . '/oauth/load_env.php')) {
+    include_once __DIR__ . '/oauth/load_env.php';
+}
+
 include_once __DIR__ . '/include_all.php';
 
 // length of $_GET == 1 and isset($_GET['test'])
