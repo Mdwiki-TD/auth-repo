@@ -16,7 +16,7 @@ use Firebase\JWT\Key;
 
 function create_jwt(string $username): string
 {
-    global $jwt_key, $domain;
+    global $JWT_KEY, $domain;
 
     $payload = [
         'iss' => $domain,     // المصدر
@@ -26,7 +26,7 @@ function create_jwt(string $username): string
     ];
 
     try {
-        return JWT::encode($payload, $jwt_key, 'HS256');
+        return JWT::encode($payload, $JWT_KEY, 'HS256');
     } catch (\Exception $e) {
         error_log('Failed to create JWT token: ' . $e->getMessage());
         return '';
@@ -35,17 +35,17 @@ function create_jwt(string $username): string
 
 function verify_jwt(string $token)
 {
-    global $jwt_key;
+    global $JWT_KEY;
     // [$verified, $error] = verify_jwt($text2);
 
     // Input validation
-    if (empty($token) || empty($jwt_key)) {
+    if (empty($token) || empty($JWT_KEY)) {
         error_log('Token and JWT key are required');
         return ["", 'Token and JWT key are required'];
     }
 
     try {
-        $result = JWT::decode($token, new Key($jwt_key, 'HS256'));
+        $result = JWT::decode($token, new Key($JWT_KEY, 'HS256'));
         return [$result->username, ''];
     } catch (ExpiredException $e) {
         error_log('JWT token has expired');

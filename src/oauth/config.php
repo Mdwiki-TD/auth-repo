@@ -35,4 +35,3 @@ if ($env === "production" && (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET) ||
 
 $cookie_key  = $COOKIE_KEY ? Key::loadFromAsciiSafeString($COOKIE_KEY) : null;
 $decrypt_key = $DECRYPT_KEY ? Key::loadFromAsciiSafeString($DECRYPT_KEY) : null;
-$jwt_key     = $JWT_KEY;
