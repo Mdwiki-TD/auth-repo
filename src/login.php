@@ -7,7 +7,7 @@ use MediaWiki\OAuthClient\Consumer;
 include_once __DIR__ . '/oauth/u.php';
 
 // Get Settings instance
-$settings = Settings::getInstance();
+$settings = \Settings::getInstance();
 
 // Ensure required OAuth variables are available
 if (empty($settings->consumerKey)) {
