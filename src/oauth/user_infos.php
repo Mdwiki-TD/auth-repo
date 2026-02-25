@@ -1,21 +1,17 @@
 <?php
-//---
-include_once __DIR__ . '/config.php';
-include_once __DIR__ . '/helps.php';
-//---
-require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
-//---
+
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 //---
-global $domain;
+include_once __DIR__ . '/../include_all.php';
 //---
-$secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
-$cookieDomain = $domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+$settings = Settings::getInstance();
+//---
+$cookieDomain = $settings->domain;
+$secure = ($cookieDomain === 'localhost') ? false : true;
 // ---
-if ($_SERVER['SERVER_NAME'] != 'localhost') {
+if ($cookieDomain != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_name("mdwikitoolforgeoauth");
 		// Ensure $domain is defined, fallback to server name
@@ -38,7 +34,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 //---
 $username = get_from_cookies('username');
 //---
-if ($_SERVER['SERVER_NAME'] == 'localhost') {
+if ($settings->domain == 'localhost') {
 	$username = $_SESSION['username'] ?? '';
 } elseif (!empty($username)) {
 	// ---

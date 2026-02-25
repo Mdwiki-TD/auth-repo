@@ -1,11 +1,7 @@
 <?php
 
-include_once __DIR__ . '/config.php';
-
-global $domain;
-if (!isset($domain)) {
-    $domain = $_SERVER['SERVER_NAME'] ?? 'localhost';
-}
+$settings = Settings::getInstance();
+$domain = $settings->domain;
 
 session_start();
 session_destroy();

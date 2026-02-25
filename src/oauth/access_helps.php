@@ -8,10 +8,6 @@ use function OAuth\AccessHelps\del_access_from_dbs;
 use function OAuth\AccessHelps\add_access_to_dbs;
 */
 
-include_once __DIR__ . '/mdwiki_sql.php';
-include_once __DIR__ . '/config.php';
-include_once __DIR__ . '/helps.php';
-
 use function OAuth\MdwikiSql\execute_queries;
 use function OAuth\MdwikiSql\fetch_queries;
 use function OAuth\Helps\de_code_value;

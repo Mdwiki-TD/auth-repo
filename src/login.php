@@ -4,13 +4,17 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 
-include_once __DIR__ . '/u.php';
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/oauth/u.php';
+
+// Get Settings instance
+$settings = \Settings::getInstance();
 
 // Ensure required OAuth variables are available
-global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
-if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
-    throw new \RuntimeException('Required OAuth configuration variables are not defined');
+if (empty($settings->consumerKey)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined: consumerKey is missing');
+}
+if (empty($settings->consumerSecret)) {
+    throw new \RuntimeException('Required OAuth configuration variables are not defined: consumerSecret is missing');
 }
 
 /**
@@ -44,9 +48,9 @@ $token = null;
 
 // Configure the OAuth client with the URL and consumer details.
 try {
-    $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
-    $conf->setUserAgent($gUserAgent);
+    $conf = new ClientConfig($settings->oauthUrl);
+    $conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
+    $conf->setUserAgent($settings->userAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
     // Log the detailed, internal error message.
@@ -135,7 +139,7 @@ if ($client === null || $authUrl === null) {
 }
 
 // Redirect the user to the authorization URL.
-if ($_SERVER['SERVER_NAME'] !== 'localhost') {
+if ($settings->domain !== 'localhost') {
     header("Location: $authUrl");
     exit(0);
 } else {

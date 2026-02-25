@@ -10,4 +10,4 @@ parameters:
     # Scan files for class definitions
     scanFiles:
         - src/vendor_load.php
-        - src/oauth/config.php
+        - src/oauth/settings.php

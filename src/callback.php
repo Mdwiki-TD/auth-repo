@@ -1,12 +1,10 @@
 <?php
-require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
-require_once __DIR__ . '/jwt_config.php';
-require_once __DIR__ . '/config.php';
+
+// Get Settings instance
+$settings = Settings::getInstance();
 
 // Ensure required variables are defined
-global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
-if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+if (empty($settings->oauthUrl) || empty($settings->consumerKey) || empty($settings->consumerSecret) || empty($settings->userAgent)) {
     throw new \RuntimeException('Required OAuth configuration variables are not defined');
 }
 
@@ -70,9 +68,9 @@ $accessToken1 = null;
 $ident = null;
 
 try {
-    $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
-    $conf->setUserAgent($gUserAgent);
+    $conf = new ClientConfig($settings->oauthUrl);
+    $conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
+    $conf->setUserAgent($settings->userAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
     // Log the detailed, internal error message for debugging.

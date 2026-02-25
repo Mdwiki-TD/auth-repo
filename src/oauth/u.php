@@ -4,13 +4,13 @@ if (isset($_REQUEST['test'])) {
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 };
-include_once __DIR__ . '/helps.php';
-include_once __DIR__ . '/jwt_config.php';
 
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\JWT\create_jwt;
 
-if ($_SERVER['SERVER_NAME'] === 'localhost') {
+$settings = \Settings::getInstance();
+
+if ($settings->domain === 'localhost') {
     $fa = $_GET['test'] ?? '';
     // if ($fa != 'xx') {
     // Get the Request Token's details from the session and create a new Token object.

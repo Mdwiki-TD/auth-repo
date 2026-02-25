@@ -9,12 +9,12 @@
 
 ## Executive Summary
 
-| Category | Critical | High | Medium | Low |
-|----------|----------|------|--------|-----|
-| Security Vulnerabilities | 4 | 3 | 2 | 2 |
-| Logical Errors | 2 | 4 | 3 | 1 |
-| Performance Issues | 1 | 2 | 3 | 1 |
-| Architectural Anti-Patterns | 3 | 4 | 5 | 2 |
+| Category                    | Critical | High | Medium | Low |
+| --------------------------- | -------- | ---- | ------ | --- |
+| Security Vulnerabilities    | 4        | 3    | 2      | 2   |
+| Logical Errors              | 2        | 4    | 3      | 1   |
+| Performance Issues          | 1        | 2    | 3      | 1   |
+| Architectural Anti-Patterns | 3        | 4    | 5      | 2   |
 
 **Overall Risk Assessment: HIGH**
 
@@ -84,10 +84,11 @@ if (isset($_REQUEST['test'])) {
 ```
 
 **Impact:** Any user can append `?test=1` to any URL to see full error details, exposing:
-- File system paths
-- Database schema
-- Internal implementation details
-- Potentially sensitive configuration
+
+-   File system paths
+-   Database schema
+-   Internal implementation details
+-   Potentially sensitive configuration
 
 **Remediation:** Remove from production code or restrict by IP/client certificate.
 
@@ -108,6 +109,7 @@ if ($linkUrl && $linkText) {
 ```
 
 **Contrast with safe version in `login.php:24-27`:**
+
 ```php
 // SECURE CODE (in login.php)
 echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
@@ -238,6 +240,7 @@ $t = [
 ```
 
 **Correct PHP:**
+
 ```php
 $t = [
     en_code_value(trim($user), "decrypt"),
@@ -260,6 +263,7 @@ define('global_username', $username);  // Creates constant named 'global_usernam
 ```
 
 **Issue:** Constant name looks like a variable name, causing confusion. Later checks:
+
 ```php
 if (defined('global_username') && global_username != '')  // Usage is correct but confusing
 ```
@@ -360,9 +364,10 @@ function get_user_id($user)
 ```
 
 **Impact:**
-- Loads entire `keys_new` table into memory
-- Decrypts every username for every lookup
-- O(n) complexity instead of O(1) with proper indexing
+
+-   Loads entire `keys_new` table into memory
+-   Decrypts every username for every lookup
+-   O(n) complexity instead of O(1) with proper indexing
 
 **Remediation:** Add indexed column or use deterministic encryption for lookup.
 
@@ -407,6 +412,7 @@ if ($access == null) {
 ### 3.4 LOW: Session Start Called Multiple Times
 
 **Pattern seen in multiple files:**
+
 ```php
 if (session_status() === PHP_SESSION_NONE) session_start();
 ```
@@ -419,7 +425,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 ### 4.1 CRITICAL: Global State Pollution
 
-**File:** `oauth/config.php`
+**File:** `oauth/settings.php`
 
 ```php
 // Global variables exposed
@@ -435,10 +441,11 @@ $domain = '...';
 ```
 
 **Impact:**
-- No encapsulation
-- Difficult to test (requires global state manipulation)
-- Cannot run multiple instances
-- Thread safety concerns
+
+-   No encapsulation
+-   Difficult to test (requires global state manipulation)
+-   Cannot run multiple instances
+-   Thread safety concerns
 
 **Remediation:** Use dependency injection container or configuration class.
 
@@ -448,16 +455,16 @@ $domain = '...';
 
 **File:** `oauth/callback.php` (149 lines, 8 responsibilities)
 
-| Lines | Responsibility |
-|-------|----------------|
-| 1-5 | Dependency loading |
-| 6-39 | Error display function |
-| 41-57 | Session validation |
-| 59-102 | OAuth token handling |
-| 104-122 | Database persistence |
-| 124-140 | URL routing logic |
-| 142-143 | HTML output |
-| 145-148 | Redirect |
+| Lines   | Responsibility         |
+| ------- | ---------------------- |
+| 1-5     | Dependency loading     |
+| 6-39    | Error display function |
+| 41-57   | Session validation     |
+| 59-102  | OAuth token handling   |
+| 104-122 | Database persistence   |
+| 124-140 | URL routing logic      |
+| 142-143 | HTML output            |
+| 145-148 | Redirect               |
 
 **Remediation:** Separate into Controller, Service, Repository layers.
 
@@ -468,9 +475,10 @@ $domain = '...';
 **Files:** `oauth/access_helps.php` vs `oauth/access_helps_new.php`
 
 Both files provide identical interfaces with different implementations:
-- `add_access_to_dbs()` vs `add_access_to_dbs_new()`
-- `get_access_from_dbs()` vs `get_access_from_dbs_new()`
-- `del_access_from_dbs()` vs `del_access_from_dbs_new()`
+
+-   `add_access_to_dbs()` vs `add_access_to_dbs_new()`
+-   `get_access_from_dbs()` vs `get_access_from_dbs_new()`
+-   `del_access_from_dbs()` vs `del_access_from_dbs_new()`
 
 **Impact:** Changes must be made in both places, high risk of divergence.
 
@@ -478,20 +486,20 @@ Both files provide identical interfaces with different implementations:
 
 ### 4.4 MEDIUM: Namespace Inconsistency
 
-| File | Namespace |
-|------|-----------|
-| `helps.php` | `OAuth\Helps` |
-| `jwt_config.php` | `OAuth\JWT` |
-| `mdwiki_sql.php` | `OAuth\MdwikiSql` |
-| `access_helps.php` | `OAuth\AccessHelps` |
-| `access_helps_new.php` | `OAuth\AccessHelpsNew` |
-| `send_edit.php` | `OAuth\SendEdit` |
-| `config.php` | **None** (global scope) |
-| `login.php` | **None** |
-| `callback.php` | **None** |
-| `logout.php` | **None** |
-| `user_infos.php` | **None** |
-| `api.php` | **None** |
+| File                   | Namespace               |
+| ---------------------- | ----------------------- |
+| `helps.php`            | `OAuth\Helps`           |
+| `jwt_config.php`       | `OAuth\JWT`             |
+| `mdwiki_sql.php`       | `OAuth\MdwikiSql`       |
+| `access_helps.php`     | `OAuth\AccessHelps`     |
+| `access_helps_new.php` | `OAuth\AccessHelpsNew`  |
+| `send_edit.php`        | `OAuth\SendEdit`        |
+| `settings.php`         | **None** (global scope) |
+| `login.php`            | **None**                |
+| `callback.php`         | **None**                |
+| `logout.php`           | **None**                |
+| `user_infos.php`       | **None**                |
+| `api.php`              | **None**                |
 
 **Impact:** Inconsistent autoloading, mix of namespaced and global code.
 
@@ -569,16 +577,16 @@ function add_access_to_dbs(
 
 ### 5.2 Return Type Inconsistencies
 
-| Function | Declared Return | Actual Return |
-|----------|-----------------|---------------|
-| `de_code_value()` | none | `string` |
-| `en_code_value()` | none | `string` |
-| `get_from_cookies()` | none | `string` |
-| `create_jwt()` | `string` | `string` (correct) |
-| `verify_jwt()` | none | `array [string, string]` |
-| `get_access_from_dbs()` | none | `array|null` |
-| `get_access_from_dbs_new()` | none | `array|null` |
-| `get_user_id()` | none | `int|null` |
+| Function                    | Declared Return | Actual Return            |
+| --------------------------- | --------------- | ------------------------ | ----- |
+| `de_code_value()`           | none            | `string`                 |
+| `en_code_value()`           | none            | `string`                 |
+| `get_from_cookies()`        | none            | `string`                 |
+| `create_jwt()`              | `string`        | `string` (correct)       |
+| `verify_jwt()`              | none            | `array [string, string]` |
+| `get_access_from_dbs()`     | none            | `array                   | null` |
+| `get_access_from_dbs_new()` | none            | `array                   | null` |
+| `get_user_id()`             | none            | `int                     | null` |
 
 ---
 
@@ -586,7 +594,7 @@ function add_access_to_dbs(
 
 ### 6.1 Recommended `helps.php` Documentation
 
-```php
+````php
 <?php
 
 namespace OAuth\Helps;
@@ -751,11 +759,11 @@ function get_from_cookies(string $key): string
 
     return $value;
 }
-```
+````
 
 ### 6.2 Recommended `jwt_config.php` Documentation
 
-```php
+````php
 <?php
 
 namespace OAuth\JWT;
@@ -867,11 +875,11 @@ function verify_jwt(string $token): array
         return ["", 'Failed to verify JWT token: ' . $e->getMessage()];
     }
 }
-```
+````
 
 ### 6.3 Recommended `access_helps_new.php` Documentation
 
-```php
+````php
 <?php
 
 namespace OAuth\AccessHelpsNew;
@@ -1065,11 +1073,11 @@ function del_access_from_dbs_new(string $user): bool
     execute_queries($query, [$user_id]);
     return true;
 }
-```
+````
 
 ### 6.4 Recommended `mdwiki_sql.php` Documentation
 
-```php
+````php
 <?php
 
 namespace OAuth\MdwikiSql;
@@ -1394,7 +1402,7 @@ function fetch_queries(
 
     return $results;
 }
-```
+````
 
 ---
 
@@ -1432,18 +1440,18 @@ function fetch_queries(
 
 ## 8. Recommended Tools
 
-| Tool | Purpose | Recommended Level |
-|------|---------|-------------------|
-| PHPStan | Static analysis | Level 5+ |
-| Psalm | Type checking | --level=3 |
-| Phan | Static analysis | Default |
-| PHP-CS-Fixer | Code style | PSR-12 |
-| ComposerRequireChecker | Dependency analysis | - |
-| Roave Security Advisories | Security alerts | - |
+| Tool                      | Purpose             | Recommended Level |
+| ------------------------- | ------------------- | ----------------- |
+| PHPStan                   | Static analysis     | Level 5+          |
+| Psalm                     | Type checking       | --level=3         |
+| Phan                      | Static analysis     | Default           |
+| PHP-CS-Fixer              | Code style          | PSR-12            |
+| ComposerRequireChecker    | Dependency analysis | -                 |
+| Roave Security Advisories | Security alerts     | -                 |
 
 ---
 
-*End of Static Analysis Report*
+_End of Static Analysis Report_
 
 ---
 
@@ -1454,88 +1462,94 @@ The following improvements have been made to address the issues identified in th
 ### 9.1 Documentation Added
 
 All 18 PHP files now have comprehensive file-level headers including:
-- Package name, author, copyright, license, version
-- Detailed module descriptions
-- Usage examples
-- Security notes
-- Cross-references to related files
+
+-   Package name, author, copyright, license, version
+-   Detailed module descriptions
+-   Usage examples
+-   Security notes
+-   Cross-references to related files
 
 ### 9.2 Type Annotations Added
 
 All functions now have PHP 8.0+ compatible type declarations:
-- Parameter types: `string`, `int`, `bool`, `array`
-- Return types: `string`, `void`, `?array`, `never`
-- Nullable types: `?string`, `?int`
-- Array type hints in PHPDoc: `array{key: type}`, `array<string, mixed>`
+
+-   Parameter types: `string`, `int`, `bool`, `array`
+-   Return types: `string`, `void`, `?array`, `never`
+-   Nullable types: `?string`, `?int`
+-   Array type hints in PHPDoc: `array{key: type}`, `array<string, mixed>`
 
 ### 9.3 PHPDoc Documentation
 
 Every function includes:
-- `@param` with type and description
-- `@return` with type and possible values
-- `@throws` for exception cases
-- `@example` with code samples
-- `@global` for global variable dependencies
-- `@security` notes for sensitive operations
-- `@deprecated` markers for legacy code
+
+-   `@param` with type and description
+-   `@return` with type and possible values
+-   `@throws` for exception cases
+-   `@example` with code samples
+-   `@global` for global variable dependencies
+-   `@security` notes for sensitive operations
+-   `@deprecated` markers for legacy code
 
 ### 9.4 Security Fixes Implemented
 
-| Issue | File | Fix Applied |
-|-------|------|-------------|
-| XSS in error output | callback.php | Documented (needs htmlspecialchars) |
-| Session fixation | callback.php | Added session_regenerate_id(true) |
-| Missing cookie options | helps.php | Added samesite='Strict' |
-| Error exposure | mdwiki_sql.php | Removed SQL from output, logs only |
+| Issue                  | File           | Fix Applied                         |
+| ---------------------- | -------------- | ----------------------------------- |
+| XSS in error output    | callback.php   | Documented (needs htmlspecialchars) |
+| Session fixation       | callback.php   | Added session_regenerate_id(true)   |
+| Missing cookie options | helps.php      | Added samesite='Strict'             |
+| Error exposure         | mdwiki_sql.php | Removed SQL from output, logs only  |
 
 ### 9.5 Code Quality Improvements
 
-- Added `declare(strict_types=1)` to all files
-- Replaced magic numbers with named constants
-- Consistent naming conventions (camelCase methods)
-- Added input validation and sanitization
-- Improved error logging with context prefixes
+-   Added `declare(strict_types=1)` to all files
+-   Replaced magic numbers with named constants
+-   Consistent naming conventions (camelCase methods)
+-   Added input validation and sanitization
+-   Improved error logging with context prefixes
 
 ### 9.6 Files Modified
 
-| File | Key Changes |
-|------|-------------|
-| helps.php | Full rewrite with types, PHPDoc, constants |
-| jwt_config.php | Constants for TTL/algorithm, error handling |
-| mdwiki_sql.php | Class refactor, constants, removed hardcoded password |
-| access_helps.php | Type hints, PHPDoc, deprecated marker |
-| access_helps_new.php | Cache docs, type fixes, performance warnings |
-| config.php | Variable docs, validation, security notes |
-| login.php | Structured error handling, HTML escaping |
-| callback.php | Session regeneration, improved redirect logic |
-| logout.php | Cookie options, domain validation |
-| user_infos.php | Session config, ba_alert escaping |
-| api.php | Full rewrite with proper flow |
-| send_edit.php | Namespace, types, PHPDoc |
-| edit.php | Security notes, escaping |
-| u.php | Deprecation warning, security notice |
-| get_user.php | Full documentation |
-| oauth/index.php | Routing documentation |
-| index.php | Routing documentation |
-| view.php | Template documentation |
-| header.php | Path documentation |
-| vendor_load.php | Security notes |
+| File                 | Key Changes                                           |
+| -------------------- | ----------------------------------------------------- |
+| helps.php            | Full rewrite with types, PHPDoc, constants            |
+| jwt_config.php       | Constants for TTL/algorithm, error handling           |
+| mdwiki_sql.php       | Class refactor, constants, removed hardcoded password |
+| access_helps.php     | Type hints, PHPDoc, deprecated marker                 |
+| access_helps_new.php | Cache docs, type fixes, performance warnings          |
+| settings.php         | Variable docs, validation, security notes             |
+| login.php            | Structured error handling, HTML escaping              |
+| callback.php         | Session regeneration, improved redirect logic         |
+| logout.php           | Cookie options, domain validation                     |
+| user_infos.php       | Session config, ba_alert escaping                     |
+| api.php              | Full rewrite with proper flow                         |
+| send_edit.php        | Namespace, types, PHPDoc                              |
+| edit.php             | Security notes, escaping                              |
+| u.php                | Deprecation warning, security notice                  |
+| get_user.php         | Full documentation                                    |
+| oauth/index.php      | Routing documentation                                 |
+| index.php            | Routing documentation                                 |
+| view.php             | Template documentation                                |
+| header.php           | Path documentation                                    |
+| vendor_load.php      | Security notes                                        |
 
 ### 9.7 Remaining Action Items
 
 **Critical (P0) - COMPLETED:**
+
 1. ~~Delete `oauth/u.php` from production~~ ✓ Deleted
 2. ~~Remove `$_REQUEST['test']` toggles from all files~~ ✓ Removed from vendor_load.php, index.php, callback.php
 3. ~~Add `htmlspecialchars()` in callback.php showErrorAndExit()~~ ✓ Fixed
 4. ~~Remove hardcoded password from mdwiki_sql.php~~ ✓ Uses getenv() now
 
 **High (P1) - COMPLETED:**
+
 1. ~~Implement CSRF protection for logout~~ ✓ Added CSRF token + Referer validation
 2. ~~Add URL whitelist validation for redirects~~ ✓ Added validateRedirectUrl() function
 3. Unify access_helps.php and access_helps_new.php (deferred - requires data migration)
 4. Add PHPUnit test coverage (deferred - requires infrastructure setup)
 
 **Medium (P2) - Future:**
+
 1. Replace global variables with dependency injection
 2. Implement proper autoloading via Composer PSR-4
 3. Add PHPStan/Psalm to CI pipeline
@@ -1543,8 +1557,8 @@ Every function includes:
 
 ---
 
-*Documentation Updated: 2026-02-15*
-*Security Fixes Applied: 7*
-*Total Files Documented: 18*
-*PHPDoc Blocks Added: 85+*
-*Type Annotations Added: 200+*
+_Documentation Updated: 2026-02-15_
+_Security Fixes Applied: 7_
+_Total Files Documented: 18_
+_PHPDoc Blocks Added: 85+_
+_Type Annotations Added: 200+_

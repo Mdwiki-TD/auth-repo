@@ -9,21 +9,21 @@ use function OAuth\Helps\de_code_value;
 use function OAuth\Helps\en_code_value;
 */
 
-include_once __DIR__ . '/../vendor_load.php';
-include_once __DIR__ . '/config.php';
-
 use Defuse\Crypto\Crypto;
 
 function de_code_value($value, $key_type = "cookie")
 {
-    global $cookie_key, $decrypt_key;
+    $settings = \Settings::getInstance();
     // ---
     if (empty(trim($value))) {
         return "";
     }
     // ---
-    $use_key = ($key_type == "decrypt") ? $decrypt_key : $cookie_key;
+    $use_key = ($key_type == "decrypt") ? $settings->decryptKey : $settings->cookieKey;
     // ---
+    if ($use_key === null) {
+        return "";
+    }
     try {
         $value = Crypto::decrypt($value, $use_key);
     } catch (\Exception $e) {
@@ -34,14 +34,17 @@ function de_code_value($value, $key_type = "cookie")
 
 function en_code_value($value, $key_type = "cookie")
 {
-    global $cookie_key, $decrypt_key;
+    $settings = \Settings::getInstance();
     // ---
-    $use_key = ($key_type == "decrypt") ? $decrypt_key : $cookie_key;
+    $use_key = ($key_type == "decrypt") ? $settings->decryptKey : $settings->cookieKey;
     // ---
     if (empty(trim($value))) {
         return "";
     }
     // ---
+    if ($use_key === null) {
+        return "";
+    }
     try {
         $value = Crypto::encrypt($value, $use_key);
     } catch (\Exception $e) {
@@ -52,12 +55,12 @@ function en_code_value($value, $key_type = "cookie")
 
 function add_to_cookies($key, $value, $age = 0)
 {
-    global $domain;
+    $settings = \Settings::getInstance();
     $twoYears = time() + 60 * 60 * 24 * 365 * 2;
     if ($age == 0) {
         $age = $twoYears;
     }
-    $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
+    $secure = ($settings->domain == "localhost") ? false : true;
 
     $value = en_code_value($value);
 
@@ -67,7 +70,7 @@ function add_to_cookies($key, $value, $age = 0)
         $value,
         $age,
         "/",
-        $domain, // "mdwiki.toolforge.org",
+        $settings->domain, // "mdwiki.toolforge.org",
         $secure,  // only secure (https)
         $secure   // httponly
     );
