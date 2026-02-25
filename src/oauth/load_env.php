@@ -90,7 +90,9 @@ function loadEnvFile(string $filePath, array $allowedKeys = []): void
 
 try {
     $envFile = dirname(__DIR__) . '/.env';
-
+    if (!file_exists($envFile)) {
+        $envFile = dirname(dirname(__DIR__)) . '/.env';
+    }
     // Define whitelist of allowed keys
     $whitelist = [
         'CONSUMER_KEY',
