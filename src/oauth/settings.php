@@ -37,11 +37,11 @@ final class Settings
         $this->oauthUrl  = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
         $this->apiUrl    = preg_replace('/index\.php.*/', 'api.php', $this->oauthUrl);
 
-        $consumerKey    = getenv('CONSUMER_KEY')    ?: $_ENV['CONSUMER_KEY']    ?? '';
-        $consumerSecret = getenv('CONSUMER_SECRET') ?: $_ENV['CONSUMER_SECRET'] ?? '';
-        $cookieKey      = getenv('COOKIE_KEY')      ?: $_ENV['COOKIE_KEY']      ?? '';
-        $decryptKey     = getenv('DECRYPT_KEY')     ?: $_ENV['DECRYPT_KEY']     ?? '';
-        $jwtKey         = getenv('JWT_KEY')         ?: $_ENV['JWT_KEY']         ?? '';
+        $consumerKey    = $this->envVar('CONSUMER_KEY');
+        $consumerSecret = $this->envVar('CONSUMER_SECRET');
+        $cookieKey      = $this->envVar('COOKIE_KEY');
+        $decryptKey     = $this->envVar('DECRYPT_KEY');
+        $jwtKey         = $this->envVar('JWT_KEY');
 
         if (getenv('APP_ENV') === 'production' && (
             empty($consumerKey) || empty($consumerSecret) ||
@@ -60,6 +60,19 @@ final class Settings
         $this->decryptKey     = $decryptKey ? Key::loadFromAsciiSafeString($decryptKey) : null;
     }
 
+    private function envVar(string $key)
+    {
+        $value = getenv($key);
+        if ($value !== false) {
+            return $value;
+        }
+
+        if (array_key_exists($key, $_ENV)) {
+            return $_ENV[$key];
+        }
+
+        return "";
+    }
     /**
      * Allow reading private properties from outside the class.
      * Mimics the behaviour of readonly properties (PHP 8.1+).
