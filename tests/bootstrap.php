@@ -34,4 +34,4 @@ $_SERVER['HTTP_HOST'] = 'localhost';
 require_once __DIR__ . '/../src/vendor_load.php';
 
 // Load config which will pick up the environment variables
-require_once __DIR__ . '/../src/oauth/config.php';
+require_once __DIR__ . '/../src/oauth/settings.php';

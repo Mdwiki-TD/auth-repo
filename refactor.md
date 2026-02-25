@@ -16,36 +16,36 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 ┌─────────────────────────────────────────────────────────────────┐
 │                        ENTRY POINTS                             │
 ├─────────────────────────────────────────────────────────────────┤
-│  index.php (routing)  →  view.php (UI)                         │
-│            ↓                   ↓                                 │
-│      oauth/index.php    oauth/user_infos.php                   │
+│  index.php (routing)  →  view.php (UI)                          │
+│            ↓                   ↓                                │
+│      oauth/index.php    oauth/user_infos.php                    │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                    OAUTH MODULE (oauth/)                        │
 ├─────────────────────────────────────────────────────────────────┤
 │  login.php      →  callback.php  →  logout.php                  │
-│  config.php     →  helps.php    →  jwt_config.php               │
-│  access_helps.php (OLD) │ access_helps_new.php (NEW)           │
+│  settings.php     →  helps.php    →  jwt_config.php               │
+│  access_helps.php (OLD) │ access_helps_new.php (NEW)            │
 │  mdwiki_sql.php │ api.php │ edit.php │ send_edit.php            │
-│  u.php (DEV BYPASS)                                                │
+│  u.php (DEV BYPASS)                                             │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                    DATA LAYER                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │  PDO Wrapper (mdwiki_sql.php)                                   │
-│  Tables: access_keys, keys_new, users                          │
+│  Tables: access_keys, keys_new, users                           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Dependencies (from composer.json)
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| mediawiki/oauthclient | ^1.2 | OAuth 1.0 client |
-| defuse/php-encryption | ^2.4 | Symmetric encryption |
-| firebase/php-jwt | ^6.10 | JWT token generation |
+| Package               | Version | Purpose              |
+| --------------------- | ------- | -------------------- |
+| mediawiki/oauthclient | ^1.2    | OAuth 1.0 client     |
+| defuse/php-encryption | ^2.4    | Symmetric encryption |
+| firebase/php-jwt      | ^6.10   | JWT token generation |
 
 ---
 
@@ -55,7 +55,8 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 
 **Severity: CRITICAL**
 
-**Location:** `oauth/config.php:7`
+**Location:** `oauth/settings.php:7`
+
 ```php
 $ROOT_PATH = getenv("HOME") ?: 'I:/mdwiki/mdwiki';
 ```
@@ -71,6 +72,7 @@ $ROOT_PATH = getenv("HOME") ?: 'I:/mdwiki/mdwiki';
 **Severity: CRITICAL**
 
 **Location:** `oauth/mdwiki_sql.php:50-54`
+
 ```php
 if ($server_name === 'localhost') {
     $this->host = 'localhost:3306';
@@ -89,6 +91,7 @@ if ($server_name === 'localhost') {
 **Severity: CRITICAL**
 
 **Location:** `oauth/u.php:19-29`
+
 ```php
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $fa = $_GET['test'] ?? '';
@@ -111,11 +114,12 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 **Severity: HIGH**
 
 **Locations:**
-- `vendor_load.php:8-12`
-- `oauth/mdwiki_sql.php:10-14`
-- `oauth/api.php:2-7`
-- `oauth/edit.php:2-5`
-- `oauth/u.php:2-6`
+
+-   `vendor_load.php:8-12`
+-   `oauth/mdwiki_sql.php:10-14`
+-   `oauth/api.php:2-7`
+-   `oauth/edit.php:2-5`
+-   `oauth/u.php:2-6`
 
 ```php
 if (isset($_REQUEST['test'])) {
@@ -134,16 +138,19 @@ if (isset($_REQUEST['test'])) {
 **Severity: MEDIUM**
 
 **Files:**
-- `oauth/access_helps.php` - OLD implementation (tables: `access_keys`)
-- `oauth/access_helps_new.php` - NEW implementation (tables: `keys_new`)
+
+-   `oauth/access_helps.php` - OLD implementation (tables: `access_keys`)
+-   `oauth/access_helps_new.php` - NEW implementation (tables: `keys_new`)
 
 **Issue:** Both files are loaded simultaneously in `callback.php:2-3`:
+
 ```php
 require_once __DIR__ . '/access_helps.php';
 require_once __DIR__ . '/access_helps_new.php';
 ```
 
 Both are called with fallback logic in multiple locations:
+
 ```php
 $access = get_access_from_dbs_new($username);
 if ($access == null) {
@@ -159,7 +166,8 @@ if ($access == null) {
 
 **Severity: MEDIUM**
 
-**Location:** `oauth/config.php` defines multiple globals:
+**Location:** `oauth/settings.php` defines multiple globals:
+
 ```php
 $gUserAgent = '...';
 $oauthUrl = '...';
@@ -176,8 +184,9 @@ $domain = '...';
 **Issue:** Global scope pollution, no encapsulation, difficult to test, impossible to run multiple instances.
 
 **Usage examples:**
-- `oauth/helps.php:19` - `global $cookie_key, $decrypt_key;`
-- `oauth/jwt_config.php:19` - `global $jwt_key, $domain;`
+
+-   `oauth/helps.php:19` - `global $cookie_key, $decrypt_key;`
+-   `oauth/jwt_config.php:19` - `global $jwt_key, $domain;`
 
 ---
 
@@ -188,14 +197,15 @@ $domain = '...';
 **Example:** `oauth/callback.php`
 
 Contains in ONE file:
-- Session management (`session_start()`)
-- OAuth token handling
-- Database writes
-- JWT generation
-- Cookie management
-- Redirect logic
-- HTML rendering
-- Error handling
+
+-   Session management (`session_start()`)
+-   OAuth token handling
+-   Database writes
+-   JWT generation
+-   Cookie management
+-   Redirect logic
+-   HTML rendering
+-   Error handling
 
 **Issue:** Violates Single Responsibility Principle, difficult to test, cognitive load.
 
@@ -206,10 +216,11 @@ Contains in ONE file:
 **Severity: LOW**
 
 **Examples:**
-- `oauth/index.php:14` - `$action = $_GET['a'] ?? 'user_infos';`
-- `oauth/helps.php:57` - `$twoYears = time() + 60 * 60 * 24 * 365 * 2;`
-- `oauth/logout.php:5` - `time() - 3600`
-- `oauth/jwt_config.php:24` - `'exp' => time() + 3600`
+
+-   `oauth/index.php:14` - `$action = $_GET['a'] ?? 'user_infos';`
+-   `oauth/helps.php:57` - `$twoYears = time() + 60 * 60 * 24 * 365 * 2;`
+-   `oauth/logout.php:5` - `time() - 3600`
+-   `oauth/jwt_config.php:24` - `'exp' => time() + 3600`
 
 **Issue:** No constants defined, values scattered throughout code.
 
@@ -220,14 +231,16 @@ Contains in ONE file:
 **Severity: MEDIUM**
 
 **Pattern 1:** Direct echo and exit
+
 ```php
-// oauth/config.php:14
+// oauth/settings.php:14
 header("HTTP/1.1 500 Internal Server Error");
 echo "The ini file:($inifile) could not be read";
 exit(0);
 ```
 
 **Pattern 2:** Function with styled output
+
 ```php
 // oauth/login.php:18-31
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null) {
@@ -239,11 +252,13 @@ function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $lin
 ```
 
 **Pattern 3:** Error log only (callback.php:119)
+
 ```php
 error_log("OAuth Error: Failed to store user session data or update database...");
 ```
 
 **Pattern 4:** Silent failure (helps.php:29-31)
+
 ```php
 try {
     $value = Crypto::decrypt($value, $use_key);
@@ -261,6 +276,7 @@ try {
 **Severity: LOW**
 
 **Location:** `oauth/mdwiki_sql.php:113-114`
+
 ```php
 } catch (PDOException $e) {
     echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;  // ← Query echoed to user
@@ -277,7 +293,7 @@ try {
 ### 3.1 Tight Coupling Graph
 
 ```
-                    config.php (GLOBAL CONFIG)
+                    settings.php (GLOBAL CONFIG)
                            ↓
         ┌──────────────────┼──────────────────┐
         ↓                  ↓                  ↓
@@ -298,11 +314,12 @@ try {
 ### 3.2 Circular Dependencies
 
 **Issue:** `callback.php` creates a circular dependency:
+
 ```
-callback.php → access_helps.php → mdwiki_sql.php → config.php
-callback.php → access_helps_new.php → mdwiki_sql.php → config.php
-callback.php → helps.php → config.php
-callback.php → jwt_config.php → config.php
+callback.php → access_helps.php → mdwiki_sql.php → settings.php
+callback.php → access_helps_new.php → mdwiki_sql.php → settings.php
+callback.php → helps.php → settings.php
+callback.php → jwt_config.php → settings.php
 ```
 
 ### 3.3 Include/Require Chaos
@@ -321,8 +338,9 @@ require_once __DIR__ . '/jwt_config.php';
 ### 3.4 Namespace Inconsistency
 
 Some files use namespaces, others don't:
-- Namespaced: `OAuth\Helps`, `OAuth\AccessHelps`, `OAuth\JWT`, `OAuth\MdwikiSql`, `OAuth\SendEdit`, `OAuth\AccessHelpsNew`
-- Not namespaced: All entry points (index.php, login.php, callback.php, etc.)
+
+-   Namespaced: `OAuth\Helps`, `OAuth\AccessHelps`, `OAuth\JWT`, `OAuth\MdwikiSql`, `OAuth\SendEdit`, `OAuth\AccessHelpsNew`
+-   Not namespaced: All entry points (index.php, login.php, callback.php, etc.)
 
 ---
 
@@ -330,27 +348,28 @@ Some files use namespaces, others don't:
 
 ### Phase 1: Critical Security Fixes (Week 1)
 
-| Priority | File | Action |
-|----------|------|--------|
-| P0 | `oauth/u.php` | DELETE - Remove backdoor completely |
-| P0 | `oauth/login.php:7` | Remove `include_once __DIR__ . '/u.php';` |
-| P0 | All files with `$_REQUEST['test']` | Remove test mode toggle from production code |
-| P0 | `oauth/mdwiki_sql.php:53` | Remove hardcoded password, use environment variable |
-| P0 | `oauth/mdwiki_sql.php:113` | Remove SQL query from error output |
-| P1 | `oauth/callback.php:32-36` | Add `htmlspecialchars()` to error output |
-| P1 | `oauth/config.php:7` | Fail hard if `HOME` not set (no fallback) |
+| Priority | File                               | Action                                              |
+| -------- | ---------------------------------- | --------------------------------------------------- |
+| P0       | `oauth/u.php`                      | DELETE - Remove backdoor completely                 |
+| P0       | `oauth/login.php:7`                | Remove `include_once __DIR__ . '/u.php';`           |
+| P0       | All files with `$_REQUEST['test']` | Remove test mode toggle from production code        |
+| P0       | `oauth/mdwiki_sql.php:53`          | Remove hardcoded password, use environment variable |
+| P0       | `oauth/mdwiki_sql.php:113`         | Remove SQL query from error output                  |
+| P1       | `oauth/callback.php:32-36`         | Add `htmlspecialchars()` to error output            |
+| P1       | `oauth/settings.php:7`             | Fail hard if `HOME` not set (no fallback)           |
 
 ### Phase 2: Configuration Management (Week 2)
 
-| Task | Description |
-|------|-------------|
-| 2.1 | Create `config/config.php` class with proper encapsulation |
-| 2.2 | Move all globals to config class properties |
-| 2.3 | Implement environment-specific config loading (dev/staging/prod) |
-| 2.4 | Create `.env.example` file |
-| 2.5 | Add `vlucas/phpdotenv` for environment variable management |
+| Task | Description                                                      |
+| ---- | ---------------------------------------------------------------- |
+| 2.1  | Create `config/settings.php` class with proper encapsulation     |
+| 2.2  | Move all globals to config class properties                      |
+| 2.3  | Implement environment-specific config loading (dev/staging/prod) |
+| 2.4  | Create `.env.example` file                                       |
+| 2.5  | Add `vlucas/phpdotenv` for environment variable management       |
 
 **Target Structure:**
+
 ```php
 // config/Config.php
 namespace Auth\Config;
@@ -371,15 +390,16 @@ class Config {
 
 ### Phase 3: Database Layer Unification (Week 3)
 
-| Task | Description |
-|------|-------------|
-| 3.1 | Choose ONE table structure (migrate old to new) |
-| 3.2 | Remove `access_helps.php` (old implementation) |
-| 3.3 | Rename `access_helps_new.php` to `access_repository.php` |
-| 3.4 | Extract `mdwiki_sql.php` Database class to separate file |
-| 3.5 | Implement Repository pattern with interface |
+| Task | Description                                              |
+| ---- | -------------------------------------------------------- |
+| 3.1  | Choose ONE table structure (migrate old to new)          |
+| 3.2  | Remove `access_helps.php` (old implementation)           |
+| 3.3  | Rename `access_helps_new.php` to `access_repository.php` |
+| 3.4  | Extract `mdwiki_sql.php` Database class to separate file |
+| 3.5  | Implement Repository pattern with interface              |
 
 **Target Structure:**
+
 ```php
 // repository/AccessRepositoryInterface.php
 namespace Auth\Repository;
@@ -399,16 +419,17 @@ class PdoAccessRepository implements AccessRepositoryInterface {
 
 ### Phase 4: Service Layer Extraction (Week 4)
 
-| Task | Description |
-|------|-------------|
-| 4.1 | Create `service/OAuthService.php` |
-| 4.2 | Move OAuth logic from `login.php` and `callback.php` |
-| 4.3 | Create `service/JwtService.php` |
-| 4.4 | Move JWT logic from `jwt_config.php` |
-| 4.5 | Create `service/CookieService.php` |
-| 4.6 | Move cookie/encryption logic from `helps.php` |
+| Task | Description                                          |
+| ---- | ---------------------------------------------------- |
+| 4.1  | Create `service/OAuthService.php`                    |
+| 4.2  | Move OAuth logic from `login.php` and `callback.php` |
+| 4.3  | Create `service/JwtService.php`                      |
+| 4.4  | Move JWT logic from `jwt_config.php`                 |
+| 4.5  | Create `service/CookieService.php`                   |
+| 4.6  | Move cookie/encryption logic from `helps.php`        |
 
 **Target Structure:**
+
 ```php
 // service/OAuthService.php
 namespace Auth\Service;
@@ -426,15 +447,16 @@ class OAuthService {
 
 ### Phase 5: Controller Layer (Week 5)
 
-| Task | Description |
-|------|-------------|
-| 5.1 | Create `controller/LoginController.php` |
-| 5.2 | Create `controller/CallbackController.php` |
-| 5.3 | Create `controller/LogoutController.php` |
-| 5.4 | Create `controller/ApiController.php` |
-| 5.5 | Implement proper routing (use nikic/fast-route) |
+| Task | Description                                     |
+| ---- | ----------------------------------------------- |
+| 5.1  | Create `controller/LoginController.php`         |
+| 5.2  | Create `controller/CallbackController.php`      |
+| 5.3  | Create `controller/LogoutController.php`        |
+| 5.4  | Create `controller/ApiController.php`           |
+| 5.5  | Implement proper routing (use nikic/fast-route) |
 
 **Target Structure:**
+
 ```php
 // controller/CallbackController.php
 namespace Auth\Controller;
@@ -454,31 +476,33 @@ class CallbackController {
 
 ### Phase 6: Frontend Separation (Week 6)
 
-| Task | Description |
-|------|-------------|
-| 6.1 | Remove HTML from all PHP files |
-| 6.2 | Create JSON-only API responses |
-| 6.3 | Create separate frontend (templates with Twig or React SPA) |
-| 6.4 | Implement proper REST API structure |
+| Task | Description                                                 |
+| ---- | ----------------------------------------------------------- |
+| 6.1  | Remove HTML from all PHP files                              |
+| 6.2  | Create JSON-only API responses                              |
+| 6.3  | Create separate frontend (templates with Twig or React SPA) |
+| 6.4  | Implement proper REST API structure                         |
 
 ### Phase 7: Testing Infrastructure (Week 7)
 
-| Task | Description |
-|------|-------------|
-| 7.1 | Setup PHPUnit |
-| 7.2 | Create unit tests for services |
-| 7.3 | Create integration tests for repositories |
-| 7.4 | Add GitHub Actions test pipeline |
-| 7.5 | Remove manual test files (`auths_tests/`) |
+| Task | Description                               |
+| ---- | ----------------------------------------- |
+| 7.1  | Setup PHPUnit                             |
+| 7.2  | Create unit tests for services            |
+| 7.3  | Create integration tests for repositories |
+| 7.4  | Add GitHub Actions test pipeline          |
+| 7.5  | Remove manual test files (`auths_tests/`) |
 
 ---
 
 ## 5. Concrete Changes Per File/Module
 
-### oauth/config.php
+### oauth/settings.php
+
 **Status:** DELETE and replace
 
 **Action:** Create `config/Config.php`:
+
 ```php
 <?php
 namespace Auth\Config;
@@ -518,14 +542,17 @@ class Config {
 ```
 
 ### oauth/login.php
+
 **Status:** REFACTOR
 
 **Changes:**
+
 1. Remove line 7: `include_once __DIR__ . '/u.php';`
 2. Extract all logic to `OAuthService::initiate()`
 3. Return JSON response instead of HTML
 
 **After:**
+
 ```php
 <?php
 namespace Auth\Controller;
@@ -565,32 +592,39 @@ class LoginController {
 ```
 
 ### oauth/callback.php
+
 **Status:** REFACTOR
 
 **Changes:**
+
 1. Remove duplicate database includes (lines 2-3)
 2. Extract logic to `OAuthService::handleCallback()`
 3. Remove HTML rendering
 
 ### oauth/user_infos.php
+
 **Status:** REFACTOR
 
 **Issues:**
-- Line 11: `defined('global_username')` - constant named as variable
-- Line 57: `define('global_username', $username);` - defines constant from variable
+
+-   Line 11: `defined('global_username')` - constant named as variable
+-   Line 57: `define('global_username', $username);` - defines constant from variable
 
 **Change:** Replace global constant with proper session/user service
 
 ### oauth/mdwiki_sql.php
+
 **Status:** REFACTOR
 
 **Changes:**
+
 1. Remove lines 10-14 (test mode toggle)
 2. Remove hardcoded credentials (line 53)
 3. Remove SQL from error output (line 113)
 4. Extract to `src/Database/PdoConnection.php`
 
 **After:**
+
 ```php
 <?php
 namespace Auth\Database;
@@ -625,13 +659,16 @@ class PdoConnection {
 ```
 
 ### oauth/helps.php
+
 **Status:** REFACTOR into `service/CookieService.php`
 
 **Issues:**
-- Line 19: `global $cookie_key, $decrypt_key;` - globals
-- Line 28-31: Silent exception swallowing
+
+-   Line 19: `global $cookie_key, $decrypt_key;` - globals
+-   Line 28-31: Silent exception swallowing
 
 **After:**
+
 ```php
 <?php
 namespace Auth\Service;
@@ -689,13 +726,16 @@ class CookieService {
 ```
 
 ### oauth/jwt_config.php
+
 **Status:** REFACTOR into `service/JwtService.php`
 
 **Issues:**
-- Line 19: `global $jwt_key, $domain;` - globals
-- Line 43: Empty error message
+
+-   Line 19: `global $jwt_key, $domain;` - globals
+-   Line 43: Empty error message
 
 **After:**
+
 ```php
 <?php
 namespace Auth\Service;
@@ -750,13 +790,16 @@ readonly class JwtResult {
 ```
 
 ### oauth/access_helps_new.php
+
 **Status:** RENAME to `repository/PdoAccessRepository.php`
 
 **Issues:**
-- Line 20: Global state via `$user_ids_cache`
-- Line 32: Query without WHERE clause - loads all users into memory
+
+-   Line 20: Global state via `$user_ids_cache`
+-   Line 32: Query without WHERE clause - loads all users into memory
 
 **After:**
+
 ```php
 <?php
 namespace Auth\Repository;
@@ -797,11 +840,13 @@ class PdoAccessRepository implements AccessRepositoryInterface {
 ```
 
 ### oauth/u.php
+
 **Status:** DELETE
 
 This entire file is a development backdoor and should be removed.
 
 ### auths_tests/ directory
+
 **Status:** MIGRATE to proper tests
 
 **Action:** Replace with PHPUnit tests in `tests/` directory.
@@ -812,42 +857,42 @@ This entire file is a development backdoor and should be removed.
 
 ### 6.1 Security Risks
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Backdoor file (`u.php`) | Unauthorized access | HIGH | Delete immediately |
-| Test mode via URL parameter | Information disclosure | HIGH | Remove from production |
-| Hardcoded credentials | Credential exposure | MEDIUM | Use environment variables |
-| SQL errors echoed | Schema exposure | LOW | Log only, don't echo |
-| XSS in error output | User session theft | MEDIUM | Sanitize all output |
-| No CSRF protection | Cross-site request forgery | MEDIUM | Add CSRF tokens |
+| Risk                        | Impact                     | Likelihood | Mitigation                |
+| --------------------------- | -------------------------- | ---------- | ------------------------- |
+| Backdoor file (`u.php`)     | Unauthorized access        | HIGH       | Delete immediately        |
+| Test mode via URL parameter | Information disclosure     | HIGH       | Remove from production    |
+| Hardcoded credentials       | Credential exposure        | MEDIUM     | Use environment variables |
+| SQL errors echoed           | Schema exposure            | LOW        | Log only, don't echo      |
+| XSS in error output         | User session theft         | MEDIUM     | Sanitize all output       |
+| No CSRF protection          | Cross-site request forgery | MEDIUM     | Add CSRF tokens           |
 
 ### 6.2 Maintainability Risks
 
-| Risk | Impact | Current State | Target State |
-|------|--------|---------------|--------------|
-| Duplicate DB layers | Confusion, bugs | 2 implementations | 1 unified |
-| Global state | Untestable code | 10+ globals | 0 globals |
-| Mixed concerns | Cognitive load | UI+Logic+DB in 1 file | Separate layers |
-| No tests | Regression fear | 0% coverage | 80%+ target |
-| No documentation | Onboarding difficulty | Minimal | Comprehensive |
+| Risk                | Impact                | Current State         | Target State    |
+| ------------------- | --------------------- | --------------------- | --------------- |
+| Duplicate DB layers | Confusion, bugs       | 2 implementations     | 1 unified       |
+| Global state        | Untestable code       | 10+ globals           | 0 globals       |
+| Mixed concerns      | Cognitive load        | UI+Logic+DB in 1 file | Separate layers |
+| No tests            | Regression fear       | 0% coverage           | 80%+ target     |
+| No documentation    | Onboarding difficulty | Minimal               | Comprehensive   |
 
 ### 6.3 Scalability Risks
 
-| Risk | Impact | Current | Target |
-|------|--------|---------|--------|
-| Session storage | Single server only | PHP sessions | Redis/jwt |
-| File-based config | Deployment friction | Manual edits | Environment vars |
-| New connection per query | Connection exhaustion | PDO per call | Connection pool |
-| No caching | Database load | None | Redis layer |
+| Risk                     | Impact                | Current      | Target           |
+| ------------------------ | --------------------- | ------------ | ---------------- |
+| Session storage          | Single server only    | PHP sessions | Redis/jwt        |
+| File-based config        | Deployment friction   | Manual edits | Environment vars |
+| New connection per query | Connection exhaustion | PDO per call | Connection pool  |
+| No caching               | Database load         | None         | Redis layer      |
 
 ### 6.4 Compliance Risks
 
-| Risk | Regulation | Current Gap | Fix Required |
-|------|------------|-------------|--------------|
-| Cookie handling | GDPR/ePrivacy | No consent management | Add consent layer |
-| Data retention | GDPR | No deletion mechanism | Implement right to be forgotten |
-| Audit logging | SOX/ISO27001 | Incomplete logging | Comprehensive audit log |
-| Encryption standards | PCI-DSS | Using old encryption | Review and update |
+| Risk                 | Regulation    | Current Gap           | Fix Required                    |
+| -------------------- | ------------- | --------------------- | ------------------------------- |
+| Cookie handling      | GDPR/ePrivacy | No consent management | Add consent layer               |
+| Data retention       | GDPR          | No deletion mechanism | Implement right to be forgotten |
+| Audit logging        | SOX/ISO27001  | Incomplete logging    | Comprehensive audit log         |
+| Encryption standards | PCI-DSS       | Using old encryption  | Review and update               |
 
 ---
 
@@ -905,71 +950,78 @@ auth-repo/
 
 ### Current State
 
-| Metric | Value | Target |
-|--------|-------|--------|
-| Cyclomatic Complexity (avg) | ~15 | <10 |
-| Code Duplication | ~25% | <5% |
-| Test Coverage | 0% | >80% |
-| Technical Debt Ratio | ~35% | <15% |
-| Files with >200 LOC | 5 | 0 |
-| Global variables | 10+ | 0 |
-| Dependencies | 4 (appropriate) | - |
-| Security Issues | 6 critical | 0 |
+| Metric                      | Value           | Target |
+| --------------------------- | --------------- | ------ |
+| Cyclomatic Complexity (avg) | ~15             | <10    |
+| Code Duplication            | ~25%            | <5%    |
+| Test Coverage               | 0%              | >80%   |
+| Technical Debt Ratio        | ~35%            | <15%   |
+| Files with >200 LOC         | 5               | 0      |
+| Global variables            | 10+             | 0      |
+| Dependencies                | 4 (appropriate) | -      |
+| Security Issues             | 6 critical      | 0      |
 
 ### Complexity Hotspots
 
-| File | LOC | Complexity | Issues |
-|------|-----|------------|--------|
-| `oauth/callback.php` | 149 | 28 | Mixed concerns, duplicate DB calls |
-| `oauth/mdwiki_sql.php` | 220 | 18 | Class with functions, global state |
-| `oauth/login.php` | 135 | 22 | Session, OAuth, HTML mixed |
-| `oauth/access_helps_new.php` | 148 | 16 | Inefficient user lookup |
+| File                         | LOC | Complexity | Issues                             |
+| ---------------------------- | --- | ---------- | ---------------------------------- |
+| `oauth/callback.php`         | 149 | 28         | Mixed concerns, duplicate DB calls |
+| `oauth/mdwiki_sql.php`       | 220 | 18         | Class with functions, global state |
+| `oauth/login.php`            | 135 | 22         | Session, OAuth, HTML mixed         |
+| `oauth/access_helps_new.php` | 148 | 16         | Inefficient user lookup            |
 
 ---
 
 ## 9. Implementation Checklist
 
 ### Week 1: Security
-- [ ] Delete `oauth/u.php`
-- [ ] Remove test mode toggles
-- [ ] Remove hardcoded credentials
-- [ ] Sanitize error outputs
-- [ ] Add input validation
+
+-   [ ] Delete `oauth/u.php`
+-   [ ] Remove test mode toggles
+-   [ ] Remove hardcoded credentials
+-   [ ] Sanitize error outputs
+-   [ ] Add input validation
 
 ### Week 2: Config
-- [ ] Create Config class
-- [ ] Add phpdotenv
-- [ ] Create .env.example
-- [ ] Migrate all globals
+
+-   [ ] Create Config class
+-   [ ] Add phpdotenv
+-   [ ] Create .env.example
+-   [ ] Migrate all globals
 
 ### Week 3: Database
-- [ ] Extract Database class
-- [ ] Unify access repositories
-- [ ] Add connection pooling
-- [ ] Add query logging
+
+-   [ ] Extract Database class
+-   [ ] Unify access repositories
+-   [ ] Add connection pooling
+-   [ ] Add query logging
 
 ### Week 4: Services
-- [ ] Create OAuthService
-- [ ] Create JwtService
-- [ ] Create CookieService
-- [ ] Create CryptoService
+
+-   [ ] Create OAuthService
+-   [ ] Create JwtService
+-   [ ] Create CookieService
+-   [ ] Create CryptoService
 
 ### Week 5: Controllers
-- [ ] Create LoginController
-- [ ] Create CallbackController
-- [ ] Create LogoutController
-- [ ] Add routing
+
+-   [ ] Create LoginController
+-   [ ] Create CallbackController
+-   [ ] Create LogoutController
+-   [ ] Add routing
 
 ### Week 6: Frontend
-- [ ] Separate HTML from PHP
-- [ ] Create JSON API
-- [ ] Add Twig templates
+
+-   [ ] Separate HTML from PHP
+-   [ ] Create JSON API
+-   [ ] Add Twig templates
 
 ### Week 7: Testing
-- [ ] Setup PHPUnit
-- [ ] Write service tests
-- [ ] Write repository tests
-- [ ] Add CI pipeline
+
+-   [ ] Setup PHPUnit
+-   [ ] Write service tests
+-   [ ] Write repository tests
+-   [ ] Add CI pipeline
 
 ---
 
@@ -978,8 +1030,9 @@ auth-repo/
 ### A. Current Anti-Pattern: Global State
 
 **Before:**
+
 ```php
-// oauth/config.php
+// oauth/settings.php
 $CONSUMER_KEY        = getenv("CONSUMER_KEY") ?: '';
 $CONSUMER_SECRET     = getenv("CONSUMER_SECRET")
 ?: '';
@@ -990,6 +1043,7 @@ $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
 ```
 
 **After:**
+
 ```php
 // config/Config.php
 class Config {
@@ -1021,6 +1075,7 @@ class OAuthService {
 ### B. Current Anti-Pattern: Silent Failure
 
 **Before:**
+
 ```php
 // oauth/helps.php:28
 try {
@@ -1031,6 +1086,7 @@ try {
 ```
 
 **After:**
+
 ```php
 // service/CryptoService.php
 class CryptoService {
@@ -1051,6 +1107,7 @@ class CryptoService {
 ### C. Current Anti-Pattern: Duplicate Code
 
 **Before:**
+
 ```php
 // oauth/callback.php:114-116
 add_access_to_dbs_new($ident->username, $accessToken1->key, $accessToken1->secret);
@@ -1064,6 +1121,7 @@ if ($access == null) {
 ```
 
 **After:**
+
 ```php
 // service/AccessTokenService.php
 class AccessTokenService {
@@ -1083,6 +1141,6 @@ class AccessTokenService {
 
 ---
 
-*Report Generated: 2025-01-26*
-*Analysis Scope: 28 source files*
-*Total Lines Analyzed: ~3,500*
+_Report Generated: 2025-01-26_
+_Analysis Scope: 28 source files_
+_Total Lines Analyzed: ~3,500_
