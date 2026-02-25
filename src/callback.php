@@ -1,7 +1,5 @@
 <?php
 
-include_once __DIR__ . '/oauth/include_all.php';
-
 // Get Settings instance
 $settings = Settings::getInstance();
 

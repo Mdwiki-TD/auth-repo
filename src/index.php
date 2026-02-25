@@ -5,6 +5,8 @@ if (isset($_REQUEST['test'])) {
     error_reporting(E_ALL);
 };
 
+include_once __DIR__ . '/oauth/include_all.php';
+
 // length of $_GET == 1 and isset($_GET['test'])
 $ye = count($_GET) == 1 && isset($_GET['test']);
 
@@ -15,7 +17,6 @@ if (empty($_GET) || $ye) {
     exit();
 }
 
-include_once __DIR__ . '/oauth/include_all.php';
 //---
 $allowedActions = ['login', 'callback', 'logout', 'edit', 'get_user'];
 $action = $_GET['a'] ?? 'user_infos';

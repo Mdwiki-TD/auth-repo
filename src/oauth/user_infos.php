@@ -1,7 +1,5 @@
 <?php
-//---
-include_once __DIR__ . '/include_all.php';
-//---
+
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
