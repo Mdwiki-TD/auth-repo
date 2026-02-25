@@ -9,7 +9,7 @@ use function OAuth\AccessHelps\add_access_to_dbs;
 */
 
 include_once __DIR__ . '/mdwiki_sql.php';
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/settings.php';
 include_once __DIR__ . '/helps.php';
 
 use function OAuth\MdwikiSql\execute_queries;

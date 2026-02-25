@@ -1,14 +1,6 @@
 <?php
 include_once __DIR__ . '/../vendor_load.php';
-
-$configFile = __DIR__ . '/config.php';
-
-if (!file_exists($configFile)) {
-	echo "Configuration could not be read. Please create $configFile by copying config.dist.php";
-	exit(1);
-}
-
-include_once $configFile;
+include_once __DIR__ . '/settings.php';
 include_once __DIR__ . '/helps.php';
 //---
 $allowedActions = ['login', 'callback', 'logout', 'edit', 'get_user'];
