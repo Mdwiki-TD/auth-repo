@@ -9,7 +9,11 @@ putenv('DB_NAME=s54732__mdwiki');
 putenv('DB_NAME_NEW=s54732__mdwiki_new');
 putenv('TOOL_TOOLSDB_USER=root');
 putenv('TOOL_TOOLSDB_PASSWORD=root11');
-
+putenv('CONSUMER_KEY=');
+putenv('CONSUMER_SECRET=');
+putenv('COOKIE_KEY=');
+putenv('DECRYPT_KEY=');
+putenv('JWT_KEY=');
 // Set server variables for testing
 $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['HTTP_HOST'] = 'localhost';
