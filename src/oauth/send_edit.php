@@ -3,7 +3,6 @@
 namespace OAuth\SendEdit;
 /*
 Usage:
-include_once __DIR__ . '/send_edit.php';
 use function OAuth\SendEdit\auth_make_edit;
 use function OAuth\SendEdit\do_edit;
 use function OAuth\SendEdit\get_edits_tokens;

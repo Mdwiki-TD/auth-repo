@@ -18,7 +18,7 @@ if (empty($_GET) || $ye) {
 }
 
 //---
-$allowedActions = ['login', 'callback', 'logout', 'edit', 'get_user'];
+$allowedActions = ['login', 'callback', 'logout', 'get_user'];
 $action = $_GET['a'] ?? 'user_infos';
 //---
 if (in_array($action, $allowedActions)) {
