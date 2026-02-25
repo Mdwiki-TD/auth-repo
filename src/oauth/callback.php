@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
-require_once __DIR__ . '/jwt_config.php';
-require_once __DIR__ . '/settings.php';
+include_once __DIR__ . '/access_helps.php';
+include_once __DIR__ . '/access_helps_new.php';
+include_once __DIR__ . '/jwt_config.php';
+include_once __DIR__ . '/settings.php';
 
 // Get Settings instance
 $settings = Settings::getInstance();

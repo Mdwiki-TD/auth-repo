@@ -3,8 +3,8 @@
 include_once __DIR__ . '/settings.php';
 include_once __DIR__ . '/helps.php';
 //---
-require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
+include_once __DIR__ . '/access_helps.php';
+include_once __DIR__ . '/access_helps_new.php';
 //---
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
