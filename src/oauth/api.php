@@ -18,26 +18,27 @@ use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 
 // header( 'Content-type: text/plain' );
 
-// Get the wiki URL and OAuth consumer details from the config file.
-include_once __DIR__ . '/config.php';
+// Get the wiki URL and OAuth consumer details from the settings.
+include_once __DIR__ . '/settings.php';
 include_once __DIR__ . '/helps.php';
 
+// Get Settings instance
+$settings = Settings::getInstance();
+
 // Ensure required variables are defined
-global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
-// if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
 if (
-    empty(trim((string)$oauthUrl)) ||
-    empty(trim((string)$CONSUMER_KEY)) ||
-    empty(trim((string)$CONSUMER_SECRET)) ||
-    empty(trim((string)$gUserAgent))
+    empty(trim((string)$settings->oauthUrl)) ||
+    empty(trim((string)$settings->consumerKey)) ||
+    empty(trim((string)$settings->consumerSecret)) ||
+    empty(trim((string)$settings->userAgent))
 ) {
     throw new \RuntimeException('Required OAuth configuration variables are not defined');
 }
 
 // Configure the OAuth client with the URL and consumer details.
-$conf = new ClientConfig($oauthUrl);
-$conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
-$conf->setUserAgent($gUserAgent);
+$conf = new ClientConfig($settings->oauthUrl);
+$conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
+$conf->setUserAgent($settings->userAgent);
 $client = new Client($conf);
 // ---
 $username = get_from_cookies('username');
@@ -63,11 +64,12 @@ $ident = $client->identify($accessToken);
 
 function get_edit_tokens()
 {
-    global $client, $accessToken, $apiUrl;
+    global $client, $accessToken;
+    $settings = Settings::getInstance();
     // Example 3: make an edit (getting the edit token first).
     $editToken = json_decode($client->makeOAuthCall(
         $accessToken,
-        "$apiUrl?action=query&meta=tokens&format=json"
+        $settings->apiUrl . "?action=query&meta=tokens&format=json"
     ))->query->tokens->csrftoken;
     //---
     return $editToken;
@@ -75,13 +77,14 @@ function get_edit_tokens()
 
 function do_Api_Query($Params, $addtoken = null)
 {
-    global $client, $accessToken, $apiUrl;
+    global $client, $accessToken;
+    $settings = Settings::getInstance();
     //---
     if ($addtoken !== null) $Params['token'] = get_edit_tokens();
     //---
     $Result = $client->makeOAuthCall(
         $accessToken,
-        $apiUrl,
+        $settings->apiUrl,
         true,
         $Params
     );

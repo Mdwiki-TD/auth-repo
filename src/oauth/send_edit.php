@@ -19,8 +19,8 @@ use function OAuth\Helps\get_from_cookies;
 
 // header( 'Content-type: text/plain' );
 
-// Get the wiki URL and OAuth consumer details from the config file.
-include_once __DIR__ . '/config.php';
+// Get the wiki URL and OAuth consumer details from the settings.
+include_once __DIR__ . '/settings.php';
 include_once __DIR__ . '/helps.php';
 
 function get_edits_tokens($client, $accessToken, $apiUrl)
@@ -40,15 +40,15 @@ function get_edits_tokens($client, $accessToken, $apiUrl)
 
 function auth_make_edit($title, $text, $summary, $wiki, $access_key, $access_secret)
 {
-    global $gUserAgent, $CONSUMER_KEY, $CONSUMER_SECRET;
+    $settings = Settings::getInstance();
     // ---
     $oauthUrl = "https://$wiki.wikipedia.org/w/index.php?title=Special:OAuth";
     $apiUrl = "https://$wiki.wikipedia.org/w/api.php";
     // ---
     // Configure the OAuth client with the URL and consumer details.
     $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
-    $conf->setUserAgent($gUserAgent);
+    $conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
+    $conf->setUserAgent($settings->userAgent);
     $client = new Client($conf);
     // ---
     $accessToken = new Token($access_key, $access_secret);

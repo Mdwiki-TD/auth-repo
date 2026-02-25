@@ -5,11 +5,13 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 
 include_once __DIR__ . '/u.php';
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/settings.php';
+
+// Get Settings instance
+$settings = Settings::getInstance();
 
 // Ensure required OAuth variables are available
-global $oauthUrl, $CONSUMER_KEY, $CONSUMER_SECRET, $gUserAgent;
-if (!isset($oauthUrl) || !isset($CONSUMER_KEY) || !isset($CONSUMER_SECRET) || !isset($gUserAgent)) {
+if (empty($settings->oauthUrl) || empty($settings->consumerKey) || empty($settings->consumerSecret) || empty($settings->userAgent)) {
     throw new \RuntimeException('Required OAuth configuration variables are not defined');
 }
 
@@ -44,9 +46,9 @@ $token = null;
 
 // Configure the OAuth client with the URL and consumer details.
 try {
-    $conf = new ClientConfig($oauthUrl);
-    $conf->setConsumer(new Consumer($CONSUMER_KEY, $CONSUMER_SECRET));
-    $conf->setUserAgent($gUserAgent);
+    $conf = new ClientConfig($settings->oauthUrl);
+    $conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
+    $conf->setUserAgent($settings->userAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
     // Log the detailed, internal error message.

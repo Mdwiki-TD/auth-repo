@@ -1,6 +1,6 @@
 <?php
 //---
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/settings.php';
 include_once __DIR__ . '/helps.php';
 //---
 require_once __DIR__ . '/access_helps.php';
@@ -10,10 +10,10 @@ use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
 //---
-global $domain;
+$settings = Settings::getInstance();
 //---
 $secure = ($_SERVER['SERVER_NAME'] == "localhost") ? false : true;
-$cookieDomain = $domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+$cookieDomain = $settings->domain ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
 // ---
 if ($_SERVER['SERVER_NAME'] != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {

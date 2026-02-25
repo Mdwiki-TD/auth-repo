@@ -3,41 +3,24 @@
 use Defuse\Crypto\Key;
 //---
 include_once __DIR__ . '/../vendor_load.php';
-//---
-$env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
+include_once __DIR__ . '/settings.php';
 
-if ($env === 'development' && file_exists(__DIR__ . '/load_env.php')) {
-    include_once __DIR__ . '/load_env.php';
-}
+// Get the singleton Settings instance
+$settings = Settings::getInstance();
 
-// Declare all config variables as global so they can be accessed from anywhere
+// Backward-compatible global variables for existing code
 global $domain, $gUserAgent, $oauthUrl, $apiUrl;
 global $CONSUMER_KEY, $CONSUMER_SECRET, $COOKIE_KEY, $DECRYPT_KEY, $JWT_KEY;
 global $cookie_key, $decrypt_key;
 
-$domain = $_SERVER['SERVER_NAME'] ?? 'localhost';
-$gUserAgent = 'mdwiki MediaWiki OAuth Client/1.0';
-$oauthUrl = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
-
-// Make the api.php URL from the OAuth URL.
-$apiUrl = preg_replace('/index\.php.*/', 'api.php', $oauthUrl);
-
-// ----------------
-// ----------------
-$CONSUMER_KEY        = getenv("CONSUMER_KEY") ?: $_ENV['CONSUMER_KEY'] ?? '';
-$CONSUMER_SECRET     = getenv("CONSUMER_SECRET") ?: $_ENV['CONSUMER_SECRET'] ?? '';
-$COOKIE_KEY          = getenv("COOKIE_KEY") ?: $_ENV['COOKIE_KEY'] ?? '';
-$DECRYPT_KEY         = getenv("DECRYPT_KEY") ?: $_ENV['DECRYPT_KEY'] ?? '';
-$JWT_KEY             = getenv("JWT_KEY") ?: $_ENV['JWT_KEY'] ?? '';
-// ----------------
-// ----------------
-
-if ($env === "production" && (empty($CONSUMER_KEY) || empty($CONSUMER_SECRET) || empty($COOKIE_KEY) || empty($DECRYPT_KEY) || empty($JWT_KEY))) {
-    header("HTTP/1.1 500 Internal Server Error");
-    error_log("Required configuration directives not found in environment variables!");
-    echo 'Required configuration directives not found';
-    exit(0);
-}
-
-$cookie_key  = $COOKIE_KEY ? Key::loadFromAsciiSafeString($COOKIE_KEY) : null;
-$decrypt_key = $DECRYPT_KEY ? Key::loadFromAsciiSafeString($DECRYPT_KEY) : null;
+$domain = $settings->domain;
+$gUserAgent = $settings->userAgent;
+$oauthUrl = $settings->oauthUrl;
+$apiUrl = $settings->apiUrl;
+$CONSUMER_KEY = $settings->consumerKey;
+$CONSUMER_SECRET = $settings->consumerSecret;
+$JWT_KEY = $settings->jwtKey;
+$COOKIE_KEY = $settings->cookieKey ? $settings->cookieKey->saveToAsciiSafeString() : '';
+$DECRYPT_KEY = $settings->decryptKey ? $settings->decryptKey->saveToAsciiSafeString() : '';
+$cookie_key = $settings->cookieKey;
+$decrypt_key = $settings->decryptKey;

@@ -7,7 +7,7 @@ use function OAuth\JWT\verify_jwt;
 */
 
 include_once __DIR__ . '/../vendor_load.php';
-include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/settings.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
@@ -16,17 +16,17 @@ use Firebase\JWT\Key;
 
 function create_jwt(string $username): string
 {
-    global $JWT_KEY, $domain;
+    $settings = \Settings::getInstance();
 
     $payload = [
-        'iss' => $domain,     // المصدر
+        'iss' => $settings->domain,     // المصدر
         'iat' => time(),               // وقت الإنشاء
         'exp' => time() + 3600,        // وقت الانتهاء (ساعة واحدة مثلاً)
         'username' => $username        // بيانات إضافية (محتوى التوكن)
     ];
 
     try {
-        return JWT::encode($payload, $JWT_KEY, 'HS256');
+        return JWT::encode($payload, $settings->jwtKey, 'HS256');
     } catch (\Exception $e) {
         error_log('Failed to create JWT token: ' . $e->getMessage());
         return '';
@@ -35,17 +35,18 @@ function create_jwt(string $username): string
 
 function verify_jwt(string $token)
 {
-    global $JWT_KEY;
+    $settings = \Settings::getInstance();
+    $jwtKey = $settings->jwtKey;
     // [$verified, $error] = verify_jwt($text2);
 
     // Input validation
-    if (empty($token) || empty($JWT_KEY)) {
+    if (empty($token) || empty($jwtKey)) {
         error_log('Token and JWT key are required');
         return ["", 'Token and JWT key are required'];
     }
 
     try {
-        $result = JWT::decode($token, new Key($JWT_KEY, 'HS256'));
+        $result = JWT::decode($token, new Key($jwtKey, 'HS256'));
         return [$result->username, ''];
     } catch (ExpiredException $e) {
         error_log('JWT token has expired');
