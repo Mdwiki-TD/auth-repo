@@ -31,7 +31,4 @@ $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['HTTP_HOST'] = 'localhost';
 
 // Load vendor autoloader
-require_once __DIR__ . '/../src/vendor_load.php';
-
-// Load config which will pick up the environment variables
-require_once __DIR__ . '/../src/oauth/settings.php';
+require_once __DIR__ . '/../src/include_all.php';
