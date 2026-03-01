@@ -200,9 +200,6 @@ auth_repo/
 │   ├── logs/                      # Application logs
 │   └── sessions/                  # File-based sessions (if used)
 │
-├── .env                           # Environment variables (gitignored)
-├── .env.example                   # Environment template
-├── .env.test                      # Test environment
 ├── .gitignore
 ├── composer.json                  # PSR-4 autoloading: "App\\": "src/"
 ├── composer.lock
@@ -572,7 +569,6 @@ return [
 1. Create new directory structure
 2. Setup PSR-4 autoloading in composer.json
 3. Install and configure `vlucas/phpdotenv`
-4. Create environment configuration files (.env.example)
 5. Move entry point to `public/index.php`
 6. Configure web server to use `public/` as document root
 
@@ -581,7 +577,6 @@ return [
 -   `public/index.php` (new entry point)
 -   `config/settings.php` (configuration container)
 -   `config/dependencies.php` (DI container)
--   `.env.example`
 -   Updated `composer.json` with PSR-4 autoloading
 
 ### Phase 2: Domain Layer (Week 2)
@@ -735,7 +730,6 @@ HEALTHCHECK --interval=30s --timeout=3s \
 # Development commands
 install:
 	composer install
-	cp .env.example .env
 
 test:
 	vendor/bin/phpunit

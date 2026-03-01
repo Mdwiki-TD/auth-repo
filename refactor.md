@@ -365,7 +365,6 @@ Some files use namespaces, others don't:
 | 2.1  | Create `config/settings.php` class with proper encapsulation     |
 | 2.2  | Move all globals to config class properties                      |
 | 2.3  | Implement environment-specific config loading (dev/staging/prod) |
-| 2.4  | Create `.env.example` file                                       |
 | 2.5  | Add `vlucas/phpdotenv` for environment variable management       |
 
 **Target Structure:**
@@ -939,7 +938,6 @@ auth-repo/
 │   │   └── Repository/
 │   └── Integration/
 │       └── Repository/
-├── .env.example
 ├── composer.json
 └── refactor.md                        # This document
 ```
@@ -986,7 +984,6 @@ auth-repo/
 
 -   [ ] Create Config class
 -   [ ] Add phpdotenv
--   [ ] Create .env.example
 -   [ ] Migrate all globals
 
 ### Week 3: Database
