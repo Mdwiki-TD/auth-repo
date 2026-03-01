@@ -172,7 +172,7 @@ final class CallbackAction
 
         echo 'You are authenticated as '
             . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . '.<br>';
-        echo "<a href='{$newUrl}'>Continue</a>";
+        echo "<a href='" . htmlspecialchars($newUrl, ENT_QUOTES, 'UTF-8') . "'>Continue</a>";
     }
 
     /**

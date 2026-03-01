@@ -96,7 +96,8 @@ final class LoginAction
             exit(0);
         }
 
-        echo "Go to this URL to authorize:<br /><a href='{$authUrl}'>{$authUrl}</a>";
+        $safeUrl = htmlspecialchars($authUrl, ENT_QUOTES, 'UTF-8');
+        echo "Go to this URL to authorize:<br /><a href='{$safeUrl}'>{$safeUrl}</a>";
     }
 
     // ── helpers ──────────────────────────────────────────
