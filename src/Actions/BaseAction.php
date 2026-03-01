@@ -29,12 +29,13 @@ abstract class BaseAction
      * @param string $message The error message to display
      * @param string|null $linkUrl Optional link URL
      * @param string|null $linkText Optional link text
+     * @return never
      */
     protected function showErrorAndExit(
         string $message,
         ?string $linkUrl = null,
         ?string $linkText = null
-    ): void {
+    ): never {
         error_log("[OAuth Error] User was shown the following message: " . $message);
 
         echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
@@ -51,8 +52,9 @@ abstract class BaseAction
      * Redirect to a URL.
      *
      * @param string $url The URL to redirect to
+     * @return never
      */
-    protected function redirect(string $url): void
+    protected function redirect(string $url): never
     {
         header("Location: $url");
         exit;

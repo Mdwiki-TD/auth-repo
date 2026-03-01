@@ -58,7 +58,7 @@ if ($useModernActions && isset($modernActionMap[$action])) {
     
     // For user_infos, don't output JSON - just set global
     if ($action === 'user_infos') {
-        $actionInstance = new $actionClass(null, null, null, false);
+        $actionInstance = new \OAuth\Actions\GetUserAction(null, null, null, false);
     } else {
         $actionInstance = new $actionClass();
     }
