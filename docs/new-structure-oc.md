@@ -31,8 +31,7 @@ auth_repo/
 │   ├── jwt_config.php     # JWT functions with globals
 │   ├── mdwiki_sql.php     # Database wrapper (220 LOC)
 │   ├── access_helps.php   # OLD token storage (deprecated)
-│   ├── access_helps_new.php # NEW token storage (duplicate)
-│   └── u.php              # DEVELOPMENT BACKDOOR (CRITICAL)
+│   └── access_helps_new.php # NEW token storage (duplicate)
 ├── auths_tests/           # Manual test scripts (not PHPUnit)
 │   ├── _test_.php
 │   ├── _test_2.php
@@ -45,7 +44,6 @@ auth_repo/
 
 1. **Security Risks**
 
-    - `oauth/u.php` contains a hardcoded user bypass for localhost
     - `?test=1` URL parameter enables full error reporting in production
     - Hardcoded database credentials (`root`/`root11`)
     - SQL queries echoed to users on errors
@@ -200,9 +198,6 @@ auth_repo/
 │   ├── logs/                      # Application logs
 │   └── sessions/                  # File-based sessions (if used)
 │
-├── .env                           # Environment variables (gitignored)
-├── .env.example                   # Environment template
-├── .env.test                      # Test environment
 ├── .gitignore
 ├── composer.json                  # PSR-4 autoloading: "App\\": "src/"
 ├── composer.lock
@@ -572,7 +567,6 @@ return [
 1. Create new directory structure
 2. Setup PSR-4 autoloading in composer.json
 3. Install and configure `vlucas/phpdotenv`
-4. Create environment configuration files (.env.example)
 5. Move entry point to `public/index.php`
 6. Configure web server to use `public/` as document root
 
@@ -581,7 +575,6 @@ return [
 -   `public/index.php` (new entry point)
 -   `config/settings.php` (configuration container)
 -   `config/dependencies.php` (DI container)
--   `.env.example`
 -   Updated `composer.json` with PSR-4 autoloading
 
 ### Phase 2: Domain Layer (Week 2)
@@ -672,7 +665,6 @@ return [
 
 **Tasks**:
 
-1. **DELETE**: `oauth/u.php` (security backdoor)
 2. **DELETE**: `oauth/access_helps.php` (deprecated)
 3. **DELETE**: `auths_tests/` directory
 4. **REMOVE**: All `?test=1` debug toggles
@@ -735,7 +727,6 @@ HEALTHCHECK --interval=30s --timeout=3s \
 # Development commands
 install:
 	composer install
-	cp .env.example .env
 
 test:
 	vendor/bin/phpunit
@@ -828,13 +819,11 @@ $config = Config::fromEnvironment($_ENV['APP_ENV'] ?? 'dev');
 **Current Issues**:
 
 -   All PHP files web-accessible
--   `u.php` backdoor present in repository
 -   `?test=1` exposes debug information
 
 **Mitigations**:
 
 -   **Document Root**: Only `public/index.php` accessible
--   **Remove Backdoors**: Delete `oauth/u.php`
 -   **Debug Mode**: Controlled via environment variable, not URL parameter
 -   **Error Handling**: Generic error messages in production, detailed logs internally
 

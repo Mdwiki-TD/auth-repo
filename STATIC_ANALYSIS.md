@@ -46,32 +46,9 @@ $this->password = getenv('DB_PASSWORD') ?: throw new RuntimeException('DB_PASSWO
 
 ---
 
-### 1.2 CRITICAL: Development Backdoor in Production Code
-
-**File:** `oauth/u.php:13-32`
-**CWE-507:** Trojan Horse
-
-```php
-// VULNERABLE CODE - DO NOT USE IN PRODUCTION
-if ($_SERVER['SERVER_NAME'] === 'localhost') {
-    $user = 'Mr. Ibrahem';  // Authentication bypass
-    $_SESSION['username'] = $user;
-    add_to_cookies('username', $user);
-    $jwt = create_jwt($user);
-    add_to_cookies('jwt_token', $jwt);
-    header("Location: $return_to");
-    exit(0);
-}
-```
-
-**Impact:** Anyone accessing via localhost can impersonate any user.
-**Remediation:** Remove this file entirely from production. Use proper development environment configuration.
-
----
-
 ### 1.3 CRITICAL: Test Mode Toggle Exposes Stack Traces
 
-**Files:** `vendor_load.php:8-12`, `oauth/mdwiki_sql.php:10-14`, `oauth/api.php:2-7`, `oauth/edit.php:2-5`, `oauth/u.php:2-6`
+**Files:** `vendor_load.php:8-12`, `oauth/mdwiki_sql.php:10-14`, `oauth/api.php:2-7`, `oauth/edit.php:2-5`
 **CWE-209:** Generation of Error Message Containing Sensitive Information
 
 ```php
@@ -327,20 +304,6 @@ function del_access_from_dbs_new($user)
 
 ---
 
-### 2.7 LOW: Unreachable Code in Conditional
-
-**File:** `oauth/u.php:14-15`
-
-```php
-$fa = $_GET['test'] ?? '';
-// if ($fa != 'xx') {  // Commented out condition
-// ... rest of code always executes on localhost
-```
-
-**Issue:** Commented-out condition suggests incomplete implementation.
-
----
-
 ## 3. Performance Bottlenecks
 
 ### 3.1 HIGH: Full Table Scan on Every User Lookup
@@ -517,7 +480,6 @@ time() + 3600  // jwt_config.php:24 (JWT expiry)
 
 // Default values
 $newurl = "/Translation_Dashboard/index.php";  // callback.php:126
-$user = 'Mr. Ibrahem';  // u.php:19
 
 // Allowed actions
 $allowedActions = ['login', 'callback', 'logout', 'edit', 'get_user'];  // index.php:14
@@ -1410,7 +1372,6 @@ function fetch_queries(
 
 ### Immediate Action Required (P0)
 
-1. **Delete `oauth/u.php`** - Development backdoor in production
 2. **Remove `$_REQUEST['test']` toggles** - Information disclosure vulnerability
 3. **Remove hardcoded password** from `mdwiki_sql.php:54`
 4. **Apply `htmlspecialchars()`** in `callback.php:35`
@@ -1524,7 +1485,6 @@ Every function includes:
 | api.php              | Full rewrite with proper flow                         |
 | send_edit.php        | Namespace, types, PHPDoc                              |
 | edit.php             | Security notes, escaping                              |
-| u.php                | Deprecation warning, security notice                  |
 | get_user.php         | Full documentation                                    |
 | oauth/index.php      | Routing documentation                                 |
 | index.php            | Routing documentation                                 |
@@ -1536,7 +1496,6 @@ Every function includes:
 
 **Critical (P0) - COMPLETED:**
 
-1. ~~Delete `oauth/u.php` from production~~ ✓ Deleted
 2. ~~Remove `$_REQUEST['test']` toggles from all files~~ ✓ Removed from vendor_load.php, index.php, callback.php
 3. ~~Add `htmlspecialchars()` in callback.php showErrorAndExit()~~ ✓ Fixed
 4. ~~Remove hardcoded password from mdwiki_sql.php~~ ✓ Uses getenv() now

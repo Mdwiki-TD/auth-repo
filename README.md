@@ -19,7 +19,7 @@ This module contains the core authentication logic and API endpoints.
     -   `auth/logout.php` – Manages user logout functionality.
     -   `auth/callback.php` – Handles authentication callbacks (e.g., OAuth responses).
     -   `auth/get_user.php`, `auth/user_infos.php` – Fetch user information.
-    -   `auth/index.php`, `auth/edit.php`, `auth/u.php` – Provides user-related interactions.
+    -   `auth/index.php`, `auth/edit.php` – Provides user-related interactions.
     -   `auth/api.php`, `auth/access_helps.php`, `auth/helps.php`, `auth/send_edit.php` – Additional API endpoints.
     -   `auth/mdwiki_sql.php` – Potential SQL interactions for user authentication.
 
