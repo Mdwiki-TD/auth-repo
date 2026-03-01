@@ -208,17 +208,13 @@ final class CallbackAction extends BaseAction
         $test = $_GET['test'] ?? '';
         $returnTo = $_GET['return_to'] ?? '';
 
-        // Don't redirect back to auth pages
-        if (!empty($returnTo) && strpos($returnTo, '/auth/') !== false) {
-            $returnTo = '';
-        }
-
+        // Use the safe return_to validator from BaseAction
+        $safeReturnTo = $this->createReturnTo($returnTo);
+        
         $newUrl = self::DEFAULT_REDIRECT;
         
-        if (!empty($returnTo) && strpos($returnTo, self::DEFAULT_REDIRECT) === false) {
-            $newUrl = filter_var($returnTo, FILTER_VALIDATE_URL) 
-                ? $returnTo 
-                : self::DEFAULT_REDIRECT;
+        if (!empty($safeReturnTo) && strpos($safeReturnTo, self::DEFAULT_REDIRECT) === false) {
+            $newUrl = $safeReturnTo;
         } else {
             $state = $this->createState(['cat', 'code']);
             if (!empty($state)) {
