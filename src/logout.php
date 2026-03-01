@@ -5,9 +5,30 @@ $domain = $settings->domain;
 
 session_start();
 session_destroy();
-setcookie('username', '', time() - 3600, "/", $domain, true, true);
-setcookie('accesskey', '', time() - 3600, "/", $domain, true, true);
-setcookie('access_secret', '', time() - 3600, "/", $domain, true, true);
+setcookie('username', '', [
+    'expires' => time() - 3600,
+    'path' => '/',
+    'domain' => $domain,
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+setcookie('accesskey', '', [
+    'expires' => time() - 3600,
+    'path' => '/',
+    'domain' => $domain,
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+setcookie('access_secret', '', [
+    'expires' => time() - 3600,
+    'path' => '/',
+    'domain' => $domain,
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
 // echo "You are now logged out. <a href='index.php?a=index'>Log in.</a>";
 
 // return to the previous page

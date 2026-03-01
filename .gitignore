@@ -9,4 +9,4 @@
 .claude/*.json
 .vscode/*.json
 
-/src/oauth/dev
+/src/dev
