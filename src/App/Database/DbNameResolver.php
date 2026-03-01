@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Database;
 
-use App\Security\EncryptionService;
-
 /**
  * Table-to-database mapping helper.
  *

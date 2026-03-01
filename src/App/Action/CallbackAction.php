@@ -186,9 +186,10 @@ final class CallbackAction
         error_log('[OAuth Error] User was shown the following message: ' . $message);
 
         echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
-        echo $message;
+        echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
         if ($linkUrl !== null && $linkText !== null) {
-            echo "<br><a href='" . $linkUrl . "'>" . $linkText . '</a>';
+            echo "<br><a href='" . htmlspecialchars($linkUrl, ENT_QUOTES, 'UTF-8')
+                . "'>" . htmlspecialchars($linkText, ENT_QUOTES, 'UTF-8') . '</a>';
         }
         echo '</div>';
         exit;
