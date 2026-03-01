@@ -11,3 +11,6 @@ parameters:
     scanFiles:
         - src/vendor_load.php
         - src/oauth/settings.php
+
+    bootstrapFiles:
+        - vendor/autoload.php

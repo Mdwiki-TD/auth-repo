@@ -3,7 +3,9 @@
     "type": "library",
     "description": "OAuth client for MediaWiki",
     "autoload": {
-        "psr-4": {},
+        "psr-4": {
+            "App\\": "src/App/"
+        },
         "files": []
     },
     "authors": [
@@ -20,8 +22,7 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^10.0",
-        "sebastian/version": "^4.0"
+        "phpunit/phpunit": "^10.0"
     },
     "require": {
         "mediawiki/oauthclient": "^1.2",
