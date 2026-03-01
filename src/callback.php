@@ -142,21 +142,22 @@ $test = $_GET['test'] ?? '';
 $return_to = $_GET['return_to'] ?? '';
 $newurl = "/Translation_Dashboard/index.php";
 
+if (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
+    $return_to = "";
+}
 
 if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
     $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
-} elseif (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
-    $newurl = '/Translation_Dashboard/index.php';
 } else {
     $state = create_state(['cat', 'code']);
     $state = http_build_query($state);
     $newurl = "/Translation_Dashboard/index.php?$state";
 }
 
-echo "You are authenticated as " . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . ".<br>";
-echo "<a href='$newurl'>Continue</a>";
-
 if (empty($test)) {
     header("Location: $newurl");
     exit;
+} else {
+    echo "You are authenticated as " . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . ".<br>";
+    echo "<a href='$newurl'>Continue</a>";
 }
