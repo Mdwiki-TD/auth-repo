@@ -31,8 +31,7 @@ auth_repo/
 │   ├── jwt_config.php     # JWT functions with globals
 │   ├── mdwiki_sql.php     # Database wrapper (220 LOC)
 │   ├── access_helps.php   # OLD token storage (deprecated)
-│   ├── access_helps_new.php # NEW token storage (duplicate)
-│   └── u.php              # DEVELOPMENT BACKDOOR (CRITICAL)
+│   └── access_helps_new.php # NEW token storage (duplicate)
 ├── auths_tests/           # Manual test scripts (not PHPUnit)
 │   ├── _test_.php
 │   ├── _test_2.php
@@ -45,7 +44,6 @@ auth_repo/
 
 1. **Security Risks**
 
-    - `oauth/u.php` contains a hardcoded user bypass for localhost
     - `?test=1` URL parameter enables full error reporting in production
     - Hardcoded database credentials (`root`/`root11`)
     - SQL queries echoed to users on errors
@@ -667,7 +665,6 @@ return [
 
 **Tasks**:
 
-1. **DELETE**: `oauth/u.php` (security backdoor)
 2. **DELETE**: `oauth/access_helps.php` (deprecated)
 3. **DELETE**: `auths_tests/` directory
 4. **REMOVE**: All `?test=1` debug toggles
@@ -822,13 +819,11 @@ $config = Config::fromEnvironment($_ENV['APP_ENV'] ?? 'dev');
 **Current Issues**:
 
 -   All PHP files web-accessible
--   `u.php` backdoor present in repository
 -   `?test=1` exposes debug information
 
 **Mitigations**:
 
 -   **Document Root**: Only `public/index.php` accessible
--   **Remove Backdoors**: Delete `oauth/u.php`
 -   **Debug Mode**: Controlled via environment variable, not URL parameter
 -   **Error Handling**: Generic error messages in production, detailed logs internally
 

@@ -85,29 +85,6 @@ if ($server_name === 'localhost') {
 
 ---
 
-### 2.3 Production Debug/Backdoor Code
-
-**Severity: CRITICAL**
-
-**Location:** `oauth/u.php:19-29`
-
-```php
-if ($_SERVER['SERVER_NAME'] === 'localhost') {
-    $fa = $_GET['test'] ?? '';
-    if (session_status() === PHP_SESSION_NONE) session_start();
-    $user = 'Mr. Ibrahem';  // ← HARDCODED USER BYPASS
-    $_SESSION['username'] = $user;
-    // ... sets cookies, JWT, redirects
-    exit(0);
-}
-```
-
-**Issue:** This file creates a backdoor that authenticates ANY user as 'Mr. Ibrahem' on localhost. While intended for testing, this file exists in the production repository and is included by `login.php:7`.
-
-**Also in:** `oauth/login.php:7` includes `u.php` unconditionally.
-
----
-
 ### 2.4 Test Mode Toggle via Request Parameter
 
 **Severity: HIGH**
@@ -118,7 +95,6 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 -   `oauth/mdwiki_sql.php:10-14`
 -   `oauth/api.php:2-7`
 -   `oauth/edit.php:2-5`
--   `oauth/u.php:2-6`
 
 ```php
 if (isset($_REQUEST['test'])) {
@@ -349,8 +325,6 @@ Some files use namespaces, others don't:
 
 | Priority | File                               | Action                                              |
 | -------- | ---------------------------------- | --------------------------------------------------- |
-| P0       | `oauth/u.php`                      | DELETE - Remove backdoor completely                 |
-| P0       | `oauth/login.php:7`                | Remove `include_once __DIR__ . '/u.php';`           |
 | P0       | All files with `$_REQUEST['test']` | Remove test mode toggle from production code        |
 | P0       | `oauth/mdwiki_sql.php:53`          | Remove hardcoded password, use environment variable |
 | P0       | `oauth/mdwiki_sql.php:113`         | Remove SQL query from error output                  |
@@ -545,7 +519,6 @@ class Config {
 
 **Changes:**
 
-1. Remove line 7: `include_once __DIR__ . '/u.php';`
 2. Extract all logic to `OAuthService::initiate()`
 3. Return JSON response instead of HTML
 
@@ -837,12 +810,6 @@ class PdoAccessRepository implements AccessRepositoryInterface {
 }
 ```
 
-### oauth/u.php
-
-**Status:** DELETE
-
-This entire file is a development backdoor and should be removed.
-
 ### auths_tests/ directory
 
 **Status:** MIGRATE to proper tests
@@ -857,7 +824,6 @@ This entire file is a development backdoor and should be removed.
 
 | Risk                        | Impact                     | Likelihood | Mitigation                |
 | --------------------------- | -------------------------- | ---------- | ------------------------- |
-| Backdoor file (`u.php`)     | Unauthorized access        | HIGH       | Delete immediately        |
 | Test mode via URL parameter | Information disclosure     | HIGH       | Remove from production    |
 | Hardcoded credentials       | Credential exposure        | MEDIUM     | Use environment variables |
 | SQL errors echoed           | Schema exposure            | LOW        | Log only, don't echo      |
@@ -973,7 +939,6 @@ auth-repo/
 
 ### Week 1: Security
 
--   [ ] Delete `oauth/u.php`
 -   [ ] Remove test mode toggles
 -   [ ] Remove hardcoded credentials
 -   [ ] Sanitize error outputs
