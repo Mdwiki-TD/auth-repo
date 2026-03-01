@@ -7,6 +7,10 @@ parameters:
     excludePaths:
         - *_old.php
 
+    # Bootstrap vendor autoload for external library classes
+    bootstrapFiles:
+        - vendor/autoload.php
+
     # Scan files for class definitions
     scanFiles:
         - src/vendor_load.php

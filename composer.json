@@ -3,8 +3,17 @@
     "type": "library",
     "description": "OAuth client for MediaWiki",
     "autoload": {
-        "psr-4": {},
-        "files": []
+        "psr-4": {
+            "OAuth\\Services\\": "src/Services/",
+            "OAuth\\Repository\\": "src/Repository/",
+            "OAuth\\Actions\\": "src/Actions/"
+        },
+        "files": [
+            "src/oauth/settings.php",
+            "src/oauth/mdwiki_sql.php",
+            "src/oauth/helps.php",
+            "src/oauth/jwt_config.php"
+        ]
     },
     "authors": [
         {
@@ -19,7 +28,7 @@
         ]
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan": "*",
         "phpunit/phpunit": "^10.0"
     },
     "require": {

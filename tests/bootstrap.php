@@ -30,5 +30,8 @@ $_ENV['APP_ENV'] = 'testing';
 $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['HTTP_HOST'] = 'localhost';
 
-// Load vendor autoloader
+// Load vendor autoloader (includes PSR-4 autoloading for new classes)
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Load legacy includes
 require_once __DIR__ . '/../src/include_all.php';
