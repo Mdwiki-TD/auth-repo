@@ -17,6 +17,7 @@ use function OAuth\Helps\add_to_cookies;
 use function OAuth\AccessHelps\add_access_to_dbs;
 use function OAuth\AccessHelpsNew\add_access_to_dbs_new;
 use function OAuth\AccessHelps\sql_add_user;
+use function OAuth\Utils\create_state;
 
 /**
  * Display a user-facing error message in a red-bordered box, optionally with a link, then terminate execution.
@@ -141,16 +142,13 @@ $test = $_GET['test'] ?? '';
 $return_to = $_GET['return_to'] ?? '';
 $newurl = "/Translation_Dashboard/index.php";
 
+
 if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
     $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
 } elseif (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
     $newurl = '/Translation_Dashboard/index.php';
 } else {
-    $state = [];
-    foreach (['cat', 'code'] as $key) {
-        $da1 = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
-        if (!empty($da1)) $state[$key] = $da1;
-    }
+    $state = create_state(['cat', 'code']);
     $state = http_build_query($state);
     $newurl = "/Translation_Dashboard/index.php?$state";
 }

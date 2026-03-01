@@ -3,6 +3,7 @@
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_dbs;
 use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
+use function OAuth\Utils\ba_alert;
 //---
 include_once __DIR__ . '/../include_all.php';
 //---
@@ -19,16 +20,6 @@ if ($cookieDomain != 'localhost') {
 	}
 }
 
-function ba_alert($text)
-{
-	return <<<HTML
-	<div class='container'>
-		<div class="alert alert-danger" role="alert">
-			<i class="bi bi-exclamation-triangle"></i> $text
-		</div>
-	</div>
-	HTML;
-}
 //---
 if (session_status() === PHP_SESSION_NONE) session_start();
 //---
