@@ -147,7 +147,7 @@ if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php'
     $newurl = '/Translation_Dashboard/index.php';
 } else {
     $state = [];
-    foreach (['cat', 'code', 'type', 'doit'] as $key) {
+    foreach (['cat', 'code'] as $key) {
         $da1 = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
         if (!empty($da1)) $state[$key] = $da1;
     }

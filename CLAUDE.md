@@ -71,7 +71,7 @@ Manual test scripts in `auths_tests/` are for development use (not PHPUnit tests
 -   **Local vs Production**: Code checks `$_SERVER['SERVER_NAME']` to detect localhost for development-specific behavior
 -   **Test Mode**: Adding `?test=1` to any URL enables error reporting (should be removed in production)
 -   **Namespaces**: Helper classes use `OAuth\*` namespaces; entry points do not use namespaces
--   **State Parameter**: OAuth flow preserves `cat`, `code`, `type`, `doit`, and `return_to` parameters through the callback
+-   **State Parameter**: OAuth flow preserves `cat`, `code`, and `return_to` parameters through the callback
 
 ## Known Issues (from refactor.md)
 

@@ -549,7 +549,7 @@ class LoginController {
 
     private function buildState(array $params): array {
         $state = [];
-        $allowedKeys = ['cat', 'code', 'type', 'doit'];
+        $allowedKeys = ['cat', 'code'];
 
         foreach ($allowedKeys as $key) {
             if (isset($params[$key])) {

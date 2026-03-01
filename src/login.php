@@ -62,11 +62,30 @@ try {
     showErrorAndExit("An internal error occurred while preparing the authentication service. Please try again later.");
 }
 
+function create_return_to()
+{
+
+    $allowed_domains = ['mdwiki.toolforge.org', 'localhost'];
+    $return_to = '';
+    if (isset($_SERVER['HTTP_REFERER'])) {
+        $parsed = parse_url($_SERVER['HTTP_REFERER']);
+        if (isset($parsed['host']) && in_array($parsed['host'], $allowed_domains)) {
+            $return_to = $_SERVER['HTTP_REFERER'];
+        }
+    }
+
+    if (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
+        $return_to = "";
+    }
+
+    return $return_to;
+}
+
 /**
  * Build a callback URL by appending selected state parameters.
  *
  * Constructs a query fragment from a sanitized subset of GET parameters
- * (cat, code, type, test, doit) and, when the HTTP Referer is present and
+ * (cat, code, test) and, when the HTTP Referer is present and
  * its host is one of mdwiki.toolforge.org or localhost and the referer path
  * does not contain "/auth/", includes a `return_to` parameter with that referer.
  *
@@ -76,33 +95,23 @@ try {
 function create_callback_url($url)
 {
     $state = [];
-    $return_to = '';
-    $allowed_domains = ['mdwiki.toolforge.org', 'localhost'];
-
-    if (isset($_SERVER['HTTP_REFERER'])) {
-        $parsed = parse_url($_SERVER['HTTP_REFERER']);
-        if (isset($parsed['host']) && in_array($parsed['host'], $allowed_domains)) {
-            $return_to = $_SERVER['HTTP_REFERER'];
-        }
-    }
-
-    if (!empty($return_to) && (strpos($return_to, '/auth/') === false)) {
+    $return_to = create_return_to();
+    if (!empty($return_to)) {
         $state['return_to'] = $return_to;
     }
 
-    foreach (['cat', 'code', 'type', 'test', 'doit'] as $key) {
+    foreach (['cat', 'code', 'test'] as $key) {
         $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
         if (!empty($da)) {
             $state[$key] = $da;
         }
     }
 
-    $sta = "";
     if (!empty($state)) {
-        $sta = '&' . http_build_query($state);
+        $url .= '&' . http_build_query($state);
     }
 
-    return $url . $sta;
+    return $url;
 }
 
 $call_back_url = create_callback_url('https://mdwiki.toolforge.org/auth/index.php?a=callback');
