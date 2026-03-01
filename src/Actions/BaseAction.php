@@ -99,8 +99,8 @@ abstract class BaseAction
     {
         $state = [];
         foreach ($keys as $key) {
-            // Use $_GET directly for CLI compatibility, with sanitization
-            $value = isset($_GET[$key]) ? htmlspecialchars((string)$_GET[$key], ENT_QUOTES, 'UTF-8') : '';
+            // Use $_GET directly - values will be URL-encoded by http_build_query
+            $value = isset($_GET[$key]) ? trim((string)$_GET[$key]) : '';
             if (!empty($value)) {
                 $state[$key] = $value;
             }

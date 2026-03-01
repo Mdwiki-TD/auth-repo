@@ -131,13 +131,15 @@ final class CallbackAction extends BaseAction
 
     /**
      * Exchange request token for access token.
+     *
+     * @return Token The access token from the OAuth provider
      */
     private function exchangeTokens(Token $requestToken): Token
     {
         try {
             $accessToken = $this->client->complete($requestToken, $_GET['oauth_verifier']);
             unset($_SESSION['request_key'], $_SESSION['request_secret']);
-            return new Token($accessToken->key, $accessToken->secret);
+            return $accessToken;
         } catch (\MediaWiki\OAuthClient\Exception $e) {
             error_log("OAuth Error: Authentication failed during client->complete(): " . $e->getMessage());
             $this->showErrorAndExit(

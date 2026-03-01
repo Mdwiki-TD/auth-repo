@@ -162,8 +162,8 @@ class JwtServiceTest extends TestCase
         // Token should be valid immediately
         $this->assertTrue($shortLivedService->isTokenValid($token));
         
-        // After 2 seconds, token should be expired
-        sleep(2);
+        // Wait just over 1 second for the token to expire
+        usleep(1100000); // 1.1 seconds
         
         [$username, $error] = $shortLivedService->verifyToken($token);
         $this->assertEmpty($username);
