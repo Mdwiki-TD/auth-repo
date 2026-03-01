@@ -19,9 +19,12 @@ final class Helpers
     {
         $state = [];
         foreach ($keys as $key) {
-            $value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
-            if (!empty($value)) {
-                $state[$key] = $value;
+            $raw = $_GET[$key] ?? null;
+            if ($raw !== null && $raw !== '') {
+                $value = strip_tags((string) $raw);
+                if ($value !== '') {
+                    $state[$key] = $value;
+                }
             }
         }
         return $state;
