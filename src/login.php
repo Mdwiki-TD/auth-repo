@@ -79,7 +79,7 @@ function create_callback_url($url)
 {
     $state = create_state(['cat', 'code', 'test']);
 
-    $return_to = create_return_to($_SERVER['HTTP_REFERER']);
+    $return_to = create_return_to($_SERVER['HTTP_REFERER'] ?? '');
     if (!empty($return_to)) {
         $state['return_to'] = $return_to;
     }

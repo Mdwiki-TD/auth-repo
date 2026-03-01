@@ -31,7 +31,7 @@ setcookie('access_secret', '', [
     'samesite' => 'Lax',
 ]);
 
-$return_to = create_return_to($_SERVER['HTTP_REFERER']) ?: '/Translation_Dashboard/index.php';
+$return_to = create_return_to($_SERVER['HTTP_REFERER'] ?? '') ?: '/Translation_Dashboard/index.php';
 //---
 // echo json_encode($_SERVER);
 header("Location: $return_to");

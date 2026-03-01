@@ -32,14 +32,17 @@ function ba_alert($text)
 
 function create_return_to($http_referer)
 {
+    if (empty($http_referer)) {
+        return '';
+    }
 
     $allowed_domains = ['mdwiki.toolforge.org', 'localhost'];
     $return_to = '';
-    if (isset($http_referer)) {
-        $parsed = parse_url($http_referer);
-        if (isset($parsed['host']) && in_array($parsed['host'], $allowed_domains)) {
-            $return_to = $http_referer;
-        }
+
+    $parsed = parse_url($http_referer);
+
+    if (isset($parsed['host']) && in_array($parsed['host'], $allowed_domains)) {
+        $return_to = $http_referer;
     }
 
     if (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
