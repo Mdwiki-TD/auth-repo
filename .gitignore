@@ -9,5 +9,4 @@
 .claude/*.json
 .vscode/*.json
 
-src/oauth/load_env.php
-src/oauth/u.php
+/src/oauth/dev
