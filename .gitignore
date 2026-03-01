@@ -10,3 +10,4 @@
 .claude/settings.local.json
 .claude/settings.json
 src/oauth/load_env.php
+src/oauth/u.php
