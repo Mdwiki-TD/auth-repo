@@ -4,8 +4,11 @@ use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 
-include_once __DIR__ . '/oauth/u.php';
+$env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 
+if ($env === 'development' && file_exists(__DIR__ . '/oauth/u.php')) {
+    include_once __DIR__ . '/oauth/u.php';
+}
 // Get Settings instance
 $settings = \Settings::getInstance();
 

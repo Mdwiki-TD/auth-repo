@@ -79,4 +79,3 @@ See `refactor.md` for detailed technical debt analysis. Key concerns:
 
 -   Duplicate database abstraction layers (`access_helps.php` and `access_helps_new.php`)
 -   Global variable usage for configuration
--   `u.php` contains development bypass code that should not be used in production

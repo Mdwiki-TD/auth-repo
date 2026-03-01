@@ -25,10 +25,9 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 │                    OAUTH MODULE (oauth/)                        │
 ├─────────────────────────────────────────────────────────────────┤
 │  login.php      →  callback.php  →  logout.php                  │
-│  settings.php     →  helps.php    →  jwt_config.php               │
+│  settings.php     →  helps.php    →  jwt_config.php             │
 │  access_helps.php (OLD) │ access_helps_new.php (NEW)            │
 │  mdwiki_sql.php │ api.php │ edit.php │ send_edit.php            │
-│  u.php (DEV BYPASS)                                             │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
