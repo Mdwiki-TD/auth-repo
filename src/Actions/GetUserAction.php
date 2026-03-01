@@ -20,20 +20,29 @@ final class GetUserAction extends BaseAction
     private CookieService $cookieService;
     private TokenRepository $tokenRepository;
     private ?string $username = null;
+    private bool $outputJson;
 
     public function __construct(
         ?\Settings $settings = null,
         ?CookieService $cookieService = null,
-        ?TokenRepository $tokenRepository = null
+        ?TokenRepository $tokenRepository = null,
+        bool $outputJson = true
     ) {
         parent::__construct($settings);
         $this->cookieService = $cookieService ?? CookieService::fromSettings();
         $this->tokenRepository = $tokenRepository ?? TokenRepository::fromSettings();
+        $this->outputJson = $outputJson;
     }
 
     public function execute(): void
     {
-        $this->jsonResponse(['username' => $this->getUsername()]);
+        // Always define the global for backward compatibility
+        $this->defineGlobalUsername();
+        
+        // Only output JSON if requested (e.g., for get_user action)
+        if ($this->outputJson) {
+            $this->jsonResponse(['username' => $this->getUsername()]);
+        }
     }
 
     /**
