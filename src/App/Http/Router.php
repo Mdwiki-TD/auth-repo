@@ -45,7 +45,13 @@ final class Router
         }
 
         $action = $_GET['a'] ?? 'user_infos';
+        if ($action === 'login') {
+            $env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 
+            if ($env === 'development' && file_exists(__DIR__ . '/dev/dev_login.php')) {
+                include_once __DIR__ . '/dev/dev_login.php';
+            }
+        }
         if (!isset(self::ACTION_MAP[$action])) {
             return; // unknown action → do nothing (matches legacy)
         }

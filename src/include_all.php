@@ -13,3 +13,20 @@ include_once __DIR__ . '/oauth/jwt_config.php';
 include_once __DIR__ . '/oauth/helps.php';
 
 include_once __DIR__ . '/oauth/utils.php';
+
+include_once __DIR__ . '/App/Action/CallbackAction.php';
+include_once __DIR__ . '/App/Action/GetUserAction.php';
+include_once __DIR__ . '/App/Action/LoginAction.php';
+include_once __DIR__ . '/App/Action/LogoutAction.php';
+include_once __DIR__ . '/App/Action/ViewAction.php';
+include_once __DIR__ . '/App/Database/Connection.php';
+include_once __DIR__ . '/App/Database/DbNameResolver.php';
+include_once __DIR__ . '/App/Database/TokenRepository.php';
+include_once __DIR__ . '/App/Database/UserRepository.php';
+include_once __DIR__ . '/App/Http/CookieManager.php';
+include_once __DIR__ . '/App/Http/Helpers.php';
+include_once __DIR__ . '/App/Http/Router.php';
+include_once __DIR__ . '/App/Http/UserResolver.php';
+include_once __DIR__ . '/App/Security/EncryptionService.php';
+include_once __DIR__ . '/App/Security/JwtService.php';
+include_once __DIR__ . '/App/Config.php';

@@ -124,7 +124,7 @@ final class LoginAction
     public static function showErrorAndExit(
         string $message,
         ?string $linkUrl = null,
-        ?string $linkText = null,
+        ?string $linkText = null
     ): void {
         error_log('[OAuth Error] User was shown the following message: ' . $message);
 
