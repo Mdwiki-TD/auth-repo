@@ -4,9 +4,7 @@
     "description": "OAuth client for MediaWiki",
     "autoload": {
         "psr-4": {
-            "OAuth\\Services\\": "src/Services/",
-            "OAuth\\Repository\\": "src/Repository/",
-            "OAuth\\Actions\\": "src/Actions/"
+            "App\\": "src/App/"
         },
         "files": [
             "src/oauth/settings.php",
@@ -28,7 +26,7 @@
         ]
     },
     "require-dev": {
-        "phpstan/phpstan": "*",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10.0"
     },
     "require": {
