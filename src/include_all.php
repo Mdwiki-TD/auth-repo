@@ -14,14 +14,13 @@ include_once __DIR__ . '/oauth/helps.php';
 
 include_once __DIR__ . '/oauth/utils.php';
 
-include_once __DIR__ . '/Actions/BaseAction.php';
-include_once __DIR__ . '/Actions/CallbackAction.php';
-include_once __DIR__ . '/Actions/GetUserAction.php';
-include_once __DIR__ . '/Actions/LoginAction.php';
-include_once __DIR__ . '/Actions/LogoutAction.php';
+include_once __DIR__ . '/App/Action/BaseAction.php';
+include_once __DIR__ . '/App/Action/CallbackAction.php';
+include_once __DIR__ . '/App/Action/GetUserAction.php';
+include_once __DIR__ . '/App/Action/LoginAction.php';
+include_once __DIR__ . '/App/Action/LogoutAction.php';
 
-include_once __DIR__ . '/Repository/TokenRepository.php';
-
-include_once __DIR__ . '/Services/CookieService.php';
-include_once __DIR__ . '/Services/EncryptionService.php';
-include_once __DIR__ . '/Services/JwtService.php';
+include_once __DIR__ . '/App/Database/TokenRepository.php';
+include_once __DIR__ . '/App/Http/CookieManager.php';
+include_once __DIR__ . '/App/Security/EncryptionService.php';
+include_once __DIR__ . '/App/Security/JwtService.php';
