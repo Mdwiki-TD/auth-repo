@@ -58,7 +58,7 @@ auth_repo/
 3. **Maintainability Problems**
 
     - No separation of public assets from application code
-    - Windows-specific paths hardcoded (`I:/mdwiki/mdwiki`)
+    - Windows-specific paths hardcoded (`I:/MD_TOOLS/MDWIKI_MAIN_REPO`)
     - Inconsistent error handling (4 different patterns)
     - Zero test coverage with PHPUnit
 

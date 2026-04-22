@@ -1143,7 +1143,7 @@ class Database
     public function __construct(string $server_name, string $db_suffix = 'mdwiki')
     {
         $this->db_suffix = $db_suffix ?: 'mdwiki';
-        $this->home_dir = getenv("HOME") ?: 'I:/mdwiki/mdwiki';
+        $this->home_dir = getenv("HOME") ?: 'I:/MD_TOOLS/MDWIKI_MAIN_REPO';
         $this->initializeConnection($server_name);
     }
 

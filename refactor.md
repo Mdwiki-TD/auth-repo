@@ -57,10 +57,10 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 **Location:** `oauth/settings.php:7`
 
 ```php
-$ROOT_PATH = getenv("HOME") ?: 'I:/mdwiki/mdwiki';
+$ROOT_PATH = getenv("HOME") ?: 'I:/MD_TOOLS/MDWIKI_MAIN_REPO';
 ```
 
-**Issue:** Windows development path (`I:/mdwiki/mdwiki`) is hardcoded as fallback. This will fail in production if `HOME` environment variable is not set.
+**Issue:** Windows development path (`I:/MD_TOOLS/MDWIKI_MAIN_REPO`) is hardcoded as fallback. This will fail in production if `HOME` environment variable is not set.
 
 **Also in:** `oauth/mdwiki_sql.php:37`, `header.php:3`
 
