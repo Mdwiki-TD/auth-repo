@@ -192,41 +192,12 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 ```php
 // REDUNDANT OPERATIONS
-add_access_to_dbs_new($ident->username, $accessToken1->key, $accessToken1->secret);
 add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);  // Legacy?
 sql_add_user($ident->username);
 ```
 
 **Issue:** Writing to two tables (`keys_new` and `access_keys`) creates data consistency risk.
 **Remediation:** Migrate to single storage mechanism, remove legacy code.
-
----
-
-### 2.2 HIGH: Undefined Variable in Function Call
-
-**File:** `oauth/access_helps_new.php:55-57`
-**Issue:** Named parameter syntax used incorrectly in function call.
-
-```php
-// INCORRECT - $key_type is a local variable, not a named parameter
-$t = [
-    en_code_value(trim($user), $key_type = "decrypt"),  // $key_type becomes "decrypt" locally
-    en_code_value($access_key, $key_type = "decrypt"),  // Then "decrypt" here
-    en_code_value($access_secret, $key_type = "decrypt")
-];
-```
-
-**Correct PHP:**
-
-```php
-$t = [
-    en_code_value(trim($user), "decrypt"),
-    en_code_value($access_key, "decrypt"),
-    en_code_value($access_secret, "decrypt")
-];
-```
-
-This works but is confusing. PHP 8.0+ named arguments would be: `key_type: "decrypt"`.
 
 ---
 
@@ -271,10 +242,8 @@ if ($_SERVER['SERVER_NAME'] != 'localhost') {
 **Files:** Multiple locations
 
 ```php
-$access = get_access_from_dbs_new($username);
-if ($access == null) {
-    $access = get_access_from_dbs($username);
-}
+$access = get_access_from_dbs($username);
+
 if ($access == null) {
     // Handle missing
 }
@@ -361,10 +330,7 @@ function execute_queries($sql_query, $params = null, $table_name = null)
 
 ```php
 // Called in multiple files on same request
-$access = get_access_from_dbs_new($username);
-if ($access == null) {
-    $access = get_access_from_dbs($username);
-}
+$access = get_access_from_dbs($username);
 ```
 
 **Impact:** Multiple database roundtrips for same data within single request.
@@ -432,18 +398,6 @@ $domain = '...';
 **Remediation:** Separate into Controller, Service, Repository layers.
 
 ---
-
-### 4.3 HIGH: Dual Implementation (Shotgun Surgery Risk)
-
-**Files:** `oauth/access_helps.php` vs `oauth/access_helps_new.php`
-
-Both files provide identical interfaces with different implementations:
-
--   `add_access_to_dbs()` vs `add_access_to_dbs_new()`
--   `get_access_from_dbs()` vs `get_access_from_dbs_new()`
--   `del_access_from_dbs()` vs `del_access_from_dbs_new()`
-
-**Impact:** Changes must be made in both places, high risk of divergence.
 
 ---
 

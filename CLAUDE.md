@@ -29,18 +29,18 @@ php -S localhost:8000
 
 ### OAuth Module (`oauth/`)
 
-| File                                        | Purpose                                                               |
-| ------------------------------------------- | --------------------------------------------------------------------- |
-| `settings.php`                              | Loads OAuth credentials from environment variables                    |
-| `login.php`                                 | Initiates OAuth flow, redirects to Wikimedia                          |
-| `callback.php`                              | Handles OAuth callback, exchanges tokens, stores access tokens        |
-| `logout.php`                                | Clears session and cookies                                            |
-| `user_infos.php`                            | Retrieves and exposes authenticated user info                         |
-| `api.php`                                   | API endpoint for external tool authentication                         |
-| `helps.php`                                 | Cookie encryption/decryption utilities (uses `defuse/php-encryption`) |
-| `jwt_config.php`                            | JWT token creation/validation (uses `firebase/php-jwt`)               |
-| `mdwiki_sql.php`                            | PDO database wrapper for MySQL (Toolforge or localhost)               |
-| `access_helps.php` / `access_helps_new.php` | Token storage/retrieval from database (dual implementations)          |
+| File               | Purpose                                                               |
+| ------------------ | --------------------------------------------------------------------- |
+| `settings.php`     | Loads OAuth credentials from environment variables                    |
+| `login.php`        | Initiates OAuth flow, redirects to Wikimedia                          |
+| `callback.php`     | Handles OAuth callback, exchanges tokens, stores access tokens        |
+| `logout.php`       | Clears session and cookies                                            |
+| `user_infos.php`   | Retrieves and exposes authenticated user info                         |
+| `api.php`          | API endpoint for external tool authentication                         |
+| `helps.php`        | Cookie encryption/decryption utilities (uses `defuse/php-encryption`) |
+| `jwt_config.php`   | JWT token creation/validation (uses `firebase/php-jwt`)               |
+| `mdwiki_sql.php`   | PDO database wrapper for MySQL (Toolforge or localhost)               |
+| `access_helps.php` | Token storage/retrieval from database (dual implementations)          |
 
 ### Dependencies (via Composer)
 
@@ -59,7 +59,6 @@ Configuration is loaded from environment variables. Required keys:
 ### Database Tables
 
 -   `access_keys` - Legacy token storage (via `access_helps.php`)
--   `keys_new` - Current token storage (via `access_helps_new.php`)
 -   `users` - User data
 
 ### Test Files
@@ -77,5 +76,5 @@ Manual test scripts in `auths_tests/` are for development use (not PHPUnit tests
 
 See `refactor.md` for detailed technical debt analysis. Key concerns:
 
--   Duplicate database abstraction layers (`access_helps.php` and `access_helps_new.php`)
+-   Duplicate database abstraction layers (`access_helps.phpx`)
 -   Global variable usage for configuration

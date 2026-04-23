@@ -26,7 +26,6 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 ├─────────────────────────────────────────────────────────────────┤
 │  login.php      →  callback.php  →  logout.php                  │
 │  settings.php     →  helps.php    →  jwt_config.php             │
-│  access_helps.php (OLD) │ access_helps_new.php (NEW)            │
 │  mdwiki_sql.php │ api.php │ edit.php │ send_edit.php            │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -34,7 +33,7 @@ This repository implements a PHP-based OAuth 1.0 authentication system for Media
 │                    DATA LAYER                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │  PDO Wrapper (mdwiki_sql.php)                                   │
-│  Tables: access_keys, keys_new, users                           │
+│  Tables: access_keys, users                           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -115,22 +114,17 @@ if (isset($_REQUEST['test'])) {
 **Files:**
 
 -   `oauth/access_helps.php` - OLD implementation (tables: `access_keys`)
--   `oauth/access_helps_new.php` - NEW implementation (tables: `keys_new`)
 
 **Issue:** Both files are loaded simultaneously in `callback.php:2-3`:
 
 ```php
 require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
 ```
 
 Both are called with fallback logic in multiple locations:
 
 ```php
-$access = get_access_from_dbs_new($username);
-if ($access == null) {
-    $access = get_access_from_dbs($username);
-}
+$access = get_access_from_dbs($username);
 ```
 
 **Impact:** Double database queries, maintenance burden, unclear which is canonical.
@@ -292,7 +286,7 @@ try {
 
 ```
 callback.php → access_helps.php → mdwiki_sql.php → settings.php
-callback.php → access_helps_new.php → mdwiki_sql.php → settings.php
+callback.php → mdwiki_sql.php → settings.php
 callback.php → helps.php → settings.php
 callback.php → jwt_config.php → settings.php
 ```
@@ -304,7 +298,6 @@ callback.php → jwt_config.php → settings.php
 ```php
 // oauth/callback.php:1-4
 require_once __DIR__ . '/access_helps.php';
-require_once __DIR__ . '/access_helps_new.php';
 require_once __DIR__ . '/jwt_config.php';
 ```
 
@@ -314,7 +307,7 @@ require_once __DIR__ . '/jwt_config.php';
 
 Some files use namespaces, others don't:
 
--   Namespaced: `OAuth\Helps`, `OAuth\AccessHelps`, `OAuth\JWT`, `OAuth\MdwikiSql`, `OAuth\SendEdit`, `OAuth\AccessHelpsNew`
+-   Namespaced: `OAuth\Helps`, `OAuth\AccessHelps`, `OAuth\JWT`, `OAuth\MdwikiSql`, `OAuth\SendEdit`
 -   Not namespaced: All entry points (index.php, login.php, callback.php, etc.)
 
 ---
@@ -366,7 +359,6 @@ class Config {
 | ---- | -------------------------------------------------------- |
 | 3.1  | Choose ONE table structure (migrate old to new)          |
 | 3.2  | Remove `access_helps.php` (old implementation)           |
-| 3.3  | Rename `access_helps_new.php` to `access_repository.php` |
 | 3.4  | Extract `mdwiki_sql.php` Database class to separate file |
 | 3.5  | Implement Repository pattern with interface              |
 
@@ -1071,14 +1063,10 @@ class CryptoService {
 
 ```php
 // oauth/callback.php:114-116
-add_access_to_dbs_new($ident->username, $accessToken1->key, $accessToken1->secret);
 add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
 
 // oauth/user_infos.php:41-45
-$access = get_access_from_dbs_new($username);
-if ($access == null) {
-    $access = get_access_from_dbs($username);
-}
+$access = get_access_from_dbs($username);
 ```
 
 **After:**
