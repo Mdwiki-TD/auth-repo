@@ -5,52 +5,42 @@ namespace OAuth\Helps;
 Usage:
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\Helps\get_from_cookies;
-use function OAuth\Helps\de_code_value;
-use function OAuth\Helps\en_code_value;
+use function OAuth\Helps\decode_value;
+use function OAuth\Helps\encode_value;
 */
 
 use Defuse\Crypto\Crypto;
 
-function de_code_value($value, $key_type = "cookie")
+function decode_value($value, $key_type = "cookie")
 {
+    if (empty(trim($value))) return "";
+
     $settings = \Settings::getInstance();
-    // ---
-    if (empty(trim($value))) {
-        return "";
-    }
-    // ---
-    $use_key = ($key_type == "decrypt") ? $settings->decryptKey : $settings->cookieKey;
-    // ---
-    if ($use_key === null) {
-        return "";
-    }
+    $use_key  = ($key_type === "decrypt") ? $settings->decryptKey : $settings->cookieKey;
+
+    if ($use_key === null) return "";
+
     try {
-        $value = Crypto::decrypt($value, $use_key);
+        return Crypto::decrypt($value, $use_key);
     } catch (\Exception $e) {
-        $value = "";
+        return "";
     }
-    return $value;
 }
 
-function en_code_value($value, $key_type = "cookie")
+function encode_value($value, $key_type = "cookie")
 {
+    if (empty(trim($value))) return "";
+
     $settings = \Settings::getInstance();
-    // ---
-    $use_key = ($key_type == "decrypt") ? $settings->decryptKey : $settings->cookieKey;
-    // ---
-    if (empty(trim($value))) {
-        return "";
-    }
-    // ---
-    if ($use_key === null) {
-        return "";
-    }
+    $use_key = ($key_type === "decrypt") ? $settings->decryptKey : $settings->cookieKey;
+
+    if ($use_key === null) return "";
+
     try {
-        $value = Crypto::encrypt($value, $use_key);
+        return Crypto::encrypt($value, $use_key);
     } catch (\Exception $e) {
-        $value = "";
-    };
-    return $value;
+        return "";
+    }
 }
 
 function add_to_cookies($key, $value, $age = 0)
@@ -62,7 +52,7 @@ function add_to_cookies($key, $value, $age = 0)
     }
     $secure = ($settings->domain == "localhost") ? false : true;
 
-    $value = en_code_value($value);
+    $value = encode_value($value);
 
     // echo "add_to_cookies: value: $value<br>";
     setcookie(
@@ -79,7 +69,7 @@ function add_to_cookies($key, $value, $age = 0)
 function get_from_cookies($key)
 {
     if (isset($_COOKIE[$key])) {
-        $value = de_code_value($_COOKIE[$key]);
+        $value = decode_value($_COOKIE[$key]);
     } else {
         // echo "key: $key<br>";
         $value = "";

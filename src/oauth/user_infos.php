@@ -1,8 +1,7 @@
 <?php
 
 use function OAuth\Helps\get_from_cookies;
-use function OAuth\AccessHelps\get_access_from_dbs;
-use function OAuth\AccessHelpsNew\get_access_from_dbs_new;
+use function OAuth\AccessHelps\get_access_from_db;
 use function OAuth\Utils\ba_alert;
 //---
 include_once __DIR__ . '/../include_all.php';
@@ -29,11 +28,7 @@ if ($settings->domain == 'localhost') {
 	$username = $_SESSION['username'] ?? '';
 } elseif (!empty($username)) {
 	// ---
-	$access = get_access_from_dbs_new($username);
-	// ---
-	if ($access == null) {
-		$access = get_access_from_dbs($username);
-	}
+	$access = get_access_from_db($username);
 	// ---
 	if ($access == null) {
 		echo ba_alert("No access keys found. Login again.");

@@ -22,29 +22,29 @@ class HelpsTest extends TestCase
     }
 
     /**
-     * Test that en_code_value returns empty string for empty input
+     * Test that encode_value returns empty string for empty input
      */
     public function testEnCodeValueReturnsEmptyStringForEmptyInput(): void
     {
-        $result = \OAuth\Helps\en_code_value('');
+        $result = \OAuth\Helps\encode_value('');
         $this->assertEquals('', $result);
     }
 
     /**
-     * Test that de_code_value returns empty string for empty input
+     * Test that decode_value returns empty string for empty input
      */
     public function testDeCodeValueReturnsEmptyStringForEmptyInput(): void
     {
-        $result = \OAuth\Helps\de_code_value('');
+        $result = \OAuth\Helps\decode_value('');
         $this->assertEquals('', $result);
     }
 
     /**
-     * Test that de_code_value returns empty string for invalid encrypted data
+     * Test that decode_value returns empty string for invalid encrypted data
      */
     public function testDeCodeValueReturnsEmptyStringForInvalidData(): void
     {
-        $result = \OAuth\Helps\de_code_value('invalid_encrypted_data');
+        $result = \OAuth\Helps\decode_value('invalid_encrypted_data');
         $this->assertEquals('', $result);
     }
 
@@ -56,14 +56,14 @@ class HelpsTest extends TestCase
         $original = 'test_value_123';
         
         // Encrypt the value
-        $encrypted = \OAuth\Helps\en_code_value($original);
+        $encrypted = \OAuth\Helps\encode_value($original);
         
         // Should not be empty and should be different from original
         $this->assertNotEmpty($encrypted);
         $this->assertNotEquals($original, $encrypted);
         
         // Decrypt and verify
-        $decrypted = \OAuth\Helps\de_code_value($encrypted);
+        $decrypted = \OAuth\Helps\decode_value($encrypted);
         $this->assertEquals($original, $decrypted);
     }
 
@@ -75,13 +75,13 @@ class HelpsTest extends TestCase
         $original = 'test_with_decrypt_key';
         
         // Encrypt with decrypt key type
-        $encrypted = \OAuth\Helps\en_code_value($original, 'decrypt');
+        $encrypted = \OAuth\Helps\encode_value($original, 'decrypt');
         
         // Should not be empty
         $this->assertNotEmpty($encrypted);
         
         // Decrypt with same key type
-        $decrypted = \OAuth\Helps\de_code_value($encrypted, 'decrypt');
+        $decrypted = \OAuth\Helps\decode_value($encrypted, 'decrypt');
         $this->assertEquals($original, $decrypted);
     }
 
@@ -102,7 +102,7 @@ class HelpsTest extends TestCase
         // Simulate a cookie value (would be encrypted in real scenario)
         $_COOKIE['username'] = 'test+user+name';
         
-        // Since we can't easily mock de_code_value, we test the plus replacement logic
+        // Since we can't easily mock decode_value, we test the plus replacement logic
         // by checking if the function runs without error
         $result = \OAuth\Helps\get_from_cookies('username');
         
@@ -128,8 +128,8 @@ class HelpsTest extends TestCase
         ];
 
         foreach ($specialStrings as $original) {
-            $encrypted = \OAuth\Helps\en_code_value($original);
-            $decrypted = \OAuth\Helps\de_code_value($encrypted);
+            $encrypted = \OAuth\Helps\encode_value($original);
+            $decrypted = \OAuth\Helps\decode_value($encrypted);
             $this->assertEquals($original, $decrypted, "Failed to encrypt/decrypt: $original");
         }
     }
