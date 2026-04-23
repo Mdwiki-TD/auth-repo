@@ -30,7 +30,7 @@ if ($settings->domain == 'localhost') {
 	// ---
 	$access = get_access_from_db($username);
 	// ---
-	if ($access == null) {
+	if (empty($access)) {
 		echo ba_alert("No access keys found. Login again.");
 		setcookie('username', '', [
 			'expires' => time() - 3600,

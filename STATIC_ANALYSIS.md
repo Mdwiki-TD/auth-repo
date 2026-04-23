@@ -244,7 +244,7 @@ if ($_SERVER['SERVER_NAME'] != 'localhost') {
 ```php
 $access = get_access_from_dbs($username);
 
-if ($access == null) {
+if (empty($access)) {
     // Handle missing
 }
 ```
