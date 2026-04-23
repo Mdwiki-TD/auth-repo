@@ -20,8 +20,8 @@ function add_access_to_db($user, $access_key, $access_secret)
     $t = [
         $user,
         hash('sha256', $user),
-        encode_value($access_key),
-        encode_value($access_secret)
+        encode_value($access_key, "decrypt"),
+        encode_value($access_secret, "decrypt")
     ];
     //---
     // SET user_name_hash = SHA2(user_name, 256)
@@ -52,8 +52,8 @@ function get_access_from_db($user)
 
     if ($result) {
         return [
-            'access_key' => decode_value($result[0]['access_key']),
-            'access_secret' => decode_value($result[0]['access_secret'])
+            'access_key' => decode_value($result[0]['access_key'], "decrypt"),
+            'access_secret' => decode_value($result[0]['access_secret'], "decrypt")
         ];
     }
     return [];

@@ -52,7 +52,7 @@ function add_to_cookies($key, $value, $age = 0)
     }
     $secure = ($settings->domain == "localhost") ? false : true;
 
-    $value = encode_value($value);
+    $value = encode_value($value, "cookie");
 
     // echo "add_to_cookies: value: $value<br>";
     setcookie(
@@ -69,7 +69,7 @@ function add_to_cookies($key, $value, $age = 0)
 function get_from_cookies($key)
 {
     if (isset($_COOKIE[$key])) {
-        $value = decode_value($_COOKIE[$key]);
+        $value = decode_value($_COOKIE[$key], "cookie");
     } else {
         // echo "key: $key<br>";
         $value = "";
