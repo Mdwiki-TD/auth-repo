@@ -3,75 +3,71 @@
 namespace OAuth\AccessHelps;
 /*
 Usage:
-use function OAuth\AccessHelps\get_access_from_dbs;
-use function OAuth\AccessHelps\del_access_from_dbs;
-use function OAuth\AccessHelps\add_access_to_dbs;
+use function OAuth\AccessHelps\get_access_from_db;
+use function OAuth\AccessHelps\del_access_from_db;
+use function OAuth\AccessHelps\add_access_to_db;
 */
 
-use function OAuth\MdwikiSql\execute_queries;
-use function OAuth\MdwikiSql\fetch_queries;
-use function OAuth\Helps\de_code_value;
-use function OAuth\Helps\en_code_value;
+use function OAuth\MdwikiSql\execute_query;
+use function OAuth\MdwikiSql\fetch_query;
+use function OAuth\Helps\decode_value;
+use function OAuth\Helps\encode_value;
 
-function add_access_to_dbs($user, $access_key, $access_secret)
+function add_access_to_db($user, $access_key, $access_secret)
 {
+    $user = trim($user);
+    //---
     $t = [
-        trim($user),
-        en_code_value($access_key),
-        en_code_value($access_secret)
+        $user,
+        hash('sha256', $user),
+        encode_value($access_key),
+        encode_value($access_secret)
     ];
     //---
+    // SET user_name_hash = SHA2(user_name, 256)
+    //---
     $query = <<<SQL
-        INSERT INTO access_keys (user_name, access_key, access_secret)
-        VALUES (?, ?, ?)
+        INSERT INTO access_keys (user_name, user_name_hash, access_key, access_secret)
+        VALUES (?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             access_key = VALUES(access_key),
             access_secret = VALUES(access_secret),
-            created_at = NOW();
+            updated_at = NOW();
     SQL;
     //---
-    execute_queries($query, $t);
+    execute_query($query, $t);
 };
 
-function get_access_from_dbs($user)
+function get_access_from_db($user)
 {
-    // Validate and sanitize username
     $user = trim($user);
 
-    // Query to get access_key and access_secret for the user
     $query = <<<SQL
         SELECT access_key, access_secret
         FROM access_keys
-        WHERE user_name = ?;
+        WHERE user_name = ? or user_name_hash = ?;
     SQL;
 
-    // تنفيذ الاستعلام وتمرير اسم المستخدم كمعامل
-    $result = fetch_queries($query, [$user]);
+    $result = fetch_query($query, [$user, hash('sha256', $user)]);
 
-    // التحقق مما إذا كان قد تم العثور على نتائج
-
-    if (!$result) {
-        // إذا لم يتم العثور على نتيجة، إرجاع null أو يمكنك تخصيص رد معين
-        return null;
+    if ($result) {
+        return [
+            'access_key' => decode_value($result[0]['access_key']),
+            'access_secret' => decode_value($result[0]['access_secret'])
+        ];
     }
-
-    $result = $result[0];
-    // ---
-    return [
-        'access_key' => de_code_value($result['access_key']),
-        'access_secret' => de_code_value($result['access_secret'])
-    ];
+    return [];
 }
 
-function del_access_from_dbs($user)
+function del_access_from_db($user)
 {
     $user = trim($user);
 
     $query = <<<SQL
-        DELETE FROM access_keys WHERE user_name = ?;
+        DELETE FROM access_keys WHERE user_name = ? or user_name_hash = ?;
     SQL;
 
-    execute_queries($query, [$user]);
+    execute_query($query, [$user, hash('sha256', $user)], "access_keys");
 }
 
 function sql_add_user($user_name)
@@ -82,7 +78,7 @@ function sql_add_user($user_name)
     SQL;
     $params = [$user_name, $user_name];
 
-    $results = execute_queries($qua, $params);
+    $results = execute_query($qua, $params);
 
     return $results;
 }

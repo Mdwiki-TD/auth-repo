@@ -14,7 +14,7 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 use function OAuth\Helps\add_to_cookies;
-use function OAuth\AccessHelps\add_access_to_dbs;
+use function OAuth\AccessHelps\add_access_to_db;
 use function OAuth\AccessHelps\sql_add_user;
 use function OAuth\Utils\create_state;
 
@@ -127,7 +127,7 @@ try {
         $_SESSION['csrf_tokens'] = [];
     }
 
-    add_access_to_dbs($ident->username, $accessToken1->key, $accessToken1->secret);
+    add_access_to_db($ident->username, $accessToken1->key, $accessToken1->secret);
     sql_add_user($ident->username);
 } catch (\Exception $e) {
     // Log the detailed error.

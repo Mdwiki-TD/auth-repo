@@ -3,8 +3,8 @@
 namespace OAuth\MdwikiSql;
 /*
 Usage:
-use function OAuth\MdwikiSql\fetch_queries;
-use function OAuth\MdwikiSql\execute_queries;
+use function OAuth\MdwikiSql\fetch_query;
+use function OAuth\MdwikiSql\execute_query;
 */
 
 if (isset($_REQUEST['test'])) {
@@ -173,7 +173,7 @@ function get_dbname($table_name)
     return 'DB_NAME'; // default
 }
 
-function execute_queries($sql_query, $params = null, $table_name = null)
+function execute_query($sql_query, $params = null, $table_name = null)
 {
 
     $dbname_var = get_dbname($table_name);
@@ -197,7 +197,7 @@ function execute_queries($sql_query, $params = null, $table_name = null)
     //---
     return $results;
 };
-function fetch_queries($sql_query, $params = null, $table_name = null)
+function fetch_query($sql_query, $params = null, $table_name = null)
 {
 
     $dbname_var = get_dbname($table_name);

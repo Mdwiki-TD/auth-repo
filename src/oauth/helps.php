@@ -5,13 +5,13 @@ namespace OAuth\Helps;
 Usage:
 use function OAuth\Helps\add_to_cookies;
 use function OAuth\Helps\get_from_cookies;
-use function OAuth\Helps\de_code_value;
-use function OAuth\Helps\en_code_value;
+use function OAuth\Helps\decode_value;
+use function OAuth\Helps\encode_value;
 */
 
 use Defuse\Crypto\Crypto;
 
-function de_code_value($value, $key_type = "cookie")
+function decode_value($value, $key_type = "cookie")
 {
     if (empty(trim($value))) return "";
 
@@ -27,7 +27,7 @@ function de_code_value($value, $key_type = "cookie")
     }
 }
 
-function en_code_value($value, $key_type = "cookie")
+function encode_value($value, $key_type = "cookie")
 {
     if (empty(trim($value))) return "";
 
@@ -52,7 +52,7 @@ function add_to_cookies($key, $value, $age = 0)
     }
     $secure = ($settings->domain == "localhost") ? false : true;
 
-    $value = en_code_value($value);
+    $value = encode_value($value);
 
     // echo "add_to_cookies: value: $value<br>";
     setcookie(
@@ -69,7 +69,7 @@ function add_to_cookies($key, $value, $age = 0)
 function get_from_cookies($key)
 {
     if (isset($_COOKIE[$key])) {
-        $value = de_code_value($_COOKIE[$key]);
+        $value = decode_value($_COOKIE[$key]);
     } else {
         // echo "key: $key<br>";
         $value = "";

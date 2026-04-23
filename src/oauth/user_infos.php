@@ -1,16 +1,10 @@
 <?php
 
 use function OAuth\Helps\get_from_cookies;
-use function OAuth\AccessHelps\get_access_from_dbs;
+use function OAuth\AccessHelps\get_access_from_db;
 use function OAuth\Utils\ba_alert;
-use function OAuth\MdwikiSql\fetch_queries;
 //---
 include_once __DIR__ . '/../include_all.php';
-//---
-$user_hash = hash('sha256', "Mr. Ibrahem");
-$query = "SELECT * FROM access_keys WHERE user_name_hash = ?";
-$result = fetch_queries($query, [$user_hash]);
-var_export($result);
 //---
 $settings = Settings::getInstance();
 //---
@@ -34,7 +28,7 @@ if ($settings->domain == 'localhost') {
 	$username = $_SESSION['username'] ?? '';
 } elseif (!empty($username)) {
 	// ---
-	$access = get_access_from_dbs($username);
+	$access = get_access_from_db($username);
 	// ---
 	if ($access == null) {
 		echo ba_alert("No access keys found. Login again.");
