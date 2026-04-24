@@ -5,27 +5,28 @@ use OAuth\Settings\Settings;
 
 $settings = Settings::getInstance();
 $domain = $settings->domain;
+$secure = $domain !== 'localhost';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$_SESSION = [];
 session_destroy();
-setcookie('username', '', [
-    'expires' => time() - 3600,
-    'path' => '/',
-    'domain' => $domain,
-    'secure' => true,
+
+$cookieOpts = [
+    'expires'  => time() - 3600,
+    'path'     => '/',
+    'domain'   => $domain,
+    'secure'   => $secure,
     'httponly' => true,
     'samesite' => 'Lax',
-]);
-setcookie('jwt_token', '', [
-    'expires' => time() - 3600,
-    'path' => '/',
-    'domain' => $domain,
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'Lax',
-]);
+];
+
+foreach (['jwt_token', 'username'] as $name) {
+    setcookie($name, '', $cookieOpts);
+}
 
 $return_to = create_return_to($_SERVER['HTTP_REFERER'] ?? '') ?: '/Translation_Dashboard/index.php';
-//---
-// echo json_encode($_SERVER);
+
 header("Location: $return_to");

@@ -87,7 +87,7 @@ function add_callback_state($url)
     return $url;
 }
 
-$callback = $settings->generateCallbackUrl();
+$callback = $settings->generateCallbackUrl('/auth/callback.php');
 // 'https://mdwiki.toolforge.org/auth/callback.php'
 
 $callback_with_state = add_callback_state($callback);
