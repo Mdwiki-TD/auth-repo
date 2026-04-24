@@ -81,7 +81,8 @@ function add_callback_state($url)
     }
 
     if (!empty($state)) {
-        $url .= '&' . http_build_query($state);
+        $separator = (strpos($url, '?') !== false) ? '&' : '?';
+        $url .= $separator . http_build_query($state);
     }
 
     return $url;
