@@ -16,15 +16,7 @@ setcookie('username', '', [
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
-setcookie('accesskey', '', [
-    'expires' => time() - 3600,
-    'path' => '/',
-    'domain' => $domain,
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'Lax',
-]);
-setcookie('access_secret', '', [
+setcookie('jwt_token', '', [
     'expires' => time() - 3600,
     'path' => '/',
     'domain' => $domain,
