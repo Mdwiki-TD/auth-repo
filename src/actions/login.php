@@ -3,9 +3,11 @@
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
+use OAuth\Settings\Settings;
+
+
 use function OAuth\Utils\create_state;
 use function OAuth\Utils\create_return_to;
-use OAuth\Settings\Settings;
 
 // Get Settings instance
 $settings = Settings::getInstance();

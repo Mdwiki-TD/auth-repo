@@ -158,7 +158,21 @@ if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php'
 }
 
 if (empty($test)) {
-    header("Location: $newurl");
+    echo <<<HTML
+        <meta http-equiv='refresh' content='0; url=$newurl'>
+        <br>
+        <h1> Login Successful </h1>
+        <h2>
+            <a target="_blank" href='$newurl'>Continue</a>
+        </h2>
+        <script type='text/javascript'>
+        window.open('$newurl', '_self');
+        </script>
+        <noscript>
+            <meta http-equiv='refresh' content='0; url=$newurl'>
+        </noscript>
+    HTML;
+    // header("Location: $newurl");
     exit;
 } else {
     echo "You are authenticated as " . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . ".<br>";
