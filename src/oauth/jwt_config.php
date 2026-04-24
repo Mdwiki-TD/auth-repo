@@ -10,10 +10,11 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\Key;
+use OAuth\Settings\Settings;
 
 function create_jwt(string $username): string
 {
-    $settings = \Settings::getInstance();
+    $settings = Settings::getInstance();
 
     $payload = [
         'iss' => $settings->domain,    // source
@@ -32,7 +33,7 @@ function create_jwt(string $username): string
 
 function verify_jwt(string $token)
 {
-    $settings = \Settings::getInstance();
+    $settings = Settings::getInstance();
     $jwtKey = $settings->jwtKey;
     // [$verified, $error] = verify_jwt($text2);
 

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace OAuth\Settings;
+
 use Defuse\Crypto\Key;
 
 /**

@@ -5,9 +5,10 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use function OAuth\Utils\create_state;
 use function OAuth\Utils\create_return_to;
+use OAuth\Settings\Settings;
 
 // Get Settings instance
-$settings = \Settings::getInstance();
+$settings = Settings::getInstance();
 
 // Ensure required OAuth variables are available
 if (empty($settings->consumerKey)) {
