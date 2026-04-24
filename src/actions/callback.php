@@ -49,7 +49,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 if (!isset($_GET['oauth_verifier'])) {
     showErrorAndExit(
         "This page should only be accessed after redirection back from the wiki.",
-        "index.php?a=login",
+        "login.php",
         "Login"
     );
 }
@@ -57,7 +57,7 @@ if (!isset($_GET['oauth_verifier'])) {
 if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
     showErrorAndExit(
         "OAuth session expired or invalid. Please start login again.",
-        "index.php?a=login",
+        "login.php",
         "Login"
     );
 }
@@ -98,7 +98,7 @@ try {
     // Show a generic error with a link to retry.
     showErrorAndExit(
         "Authentication with the wiki failed. Please try again.",
-        "index.php?a=login",
+        "login.php",
         "Try again"
     );
 }
@@ -115,7 +115,7 @@ try {
 
 // Verify all required objects were created
 if ($client === null || $accessToken1 === null || $ident === null) {
-    showErrorAndExit("Authentication failed. Please try logging in again.", "index.php?a=login", "Try again");
+    showErrorAndExit("Authentication failed. Please try logging in again.", "login.php", "Try again");
 }
 
 try {
