@@ -10,12 +10,13 @@ use function OAuth\Helps\encode_value;
 */
 
 use Defuse\Crypto\Crypto;
+use OAuth\Settings\Settings;
 
 function decode_value($value, $key_type = "cookie")
 {
     if (empty(trim($value))) return "";
 
-    $settings = \Settings::getInstance();
+    $settings = Settings::getInstance();
     $use_key  = ($key_type === "decrypt") ? $settings->decryptKey : $settings->cookieKey;
 
     if ($use_key === null) return "";
@@ -31,7 +32,7 @@ function encode_value($value, $key_type = "cookie")
 {
     if (empty(trim($value))) return "";
 
-    $settings = \Settings::getInstance();
+    $settings = Settings::getInstance();
     $use_key = ($key_type === "decrypt") ? $settings->decryptKey : $settings->cookieKey;
 
     if ($use_key === null) return "";
@@ -45,7 +46,7 @@ function encode_value($value, $key_type = "cookie")
 
 function add_to_cookies($key, $value, $age = 0)
 {
-    $settings = \Settings::getInstance();
+    $settings = Settings::getInstance();
     $twoYears = time() + 60 * 60 * 24 * 365 * 2;
     if ($age == 0) {
         $age = $twoYears;

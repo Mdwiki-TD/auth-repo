@@ -10,14 +10,14 @@ include_once __DIR__ . '/oauth/user_infos.php';
 
 $message = <<<HTML
 	Go to this URL to authorize this tool:<br />
-	<a href='/auth/index.php?a=login'>Login</a><br />
+	<a href='/auth/login.php'>Login</a><br />
 HTML;
 
 if (defined('global_username') && global_username != '') {
 	$u_name = global_username;
 	$message = <<<HTML
 		You are authenticated as $u_name.<br />
-		<a href='/auth/index.php?a=logout'>logout</a>
+		<a href='/auth/logout.php'>logout</a>
 	HTML;
 };
 

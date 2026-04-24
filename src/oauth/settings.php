@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace OAuth\Settings;
+
 use Defuse\Crypto\Key;
 
 /**
@@ -19,6 +21,7 @@ final class Settings
 {
     // Private properties — access is controlled via __get()
     public string $domain;
+    public string $ServerUrl;
     public string $userAgent;
     public string $oauthUrl;
     public string $apiUrl;
@@ -33,6 +36,7 @@ final class Settings
     private function __construct()
     {
         $this->domain    = $_SERVER['SERVER_NAME'] ?? 'localhost';
+        $this->ServerUrl = $this->generateServerUrl();
         $this->userAgent = 'mdwiki MediaWiki OAuth Client/1.0';
         $this->oauthUrl  = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth';
         $this->apiUrl    = preg_replace('/index\.php.*/', 'api.php', $this->oauthUrl);
@@ -60,6 +64,48 @@ final class Settings
         $this->decryptKey     = $decryptKey ? Key::loadFromAsciiSafeString($decryptKey) : null;
     }
 
+    /**
+     *
+     */
+    private function generateServerUrl()
+    {
+        /*
+        "SERVER_PORT": "9001",
+        "SERVER_NAME": "localhost",
+        "HTTP_HOST": "localhost:9001",
+        */
+        // 1. Detect Protocol: Works for local development and production proxies
+        $protocol = 'http';
+
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            // Standard SSL detection
+            $protocol = 'https';
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            // Detection for environments behind a Proxy/Load Balancer (e.g., Nginx, Cloudflare)
+            $protocol = 'https';
+        }
+
+        // 2. Detect Host: HTTP_HOST captures both domain and port (e.g., localhost:9000)
+        // This is OS-agnostic (Works the same on Windows and Linux)
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+        // 4. Build the final absolute URI
+        return $protocol . "://" . $host;
+    }
+    /**
+     * Generates a dynamic Callback URL that works seamlessly on Windows (localhost)
+     * and Linux (production) environments.
+     * * @param string $path The destination path (e.g., 'auth/callback')
+     * @return string The absolute URL including protocol and host
+     */
+    public function generateCallbackUrl($path = '/auth/callback.php')
+    {
+        // Normalize Path: Ensure the path starts with a single forward slash
+        $path = '/' . ltrim($path, '/');
+
+        // Build the final absolute URI
+        return $this->ServerUrl . $path;
+    }
     private function envVar(string $key)
     {
         $value = getenv($key);

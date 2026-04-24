@@ -149,7 +149,7 @@ session_destroy();
 setcookie('username', '', time() - 3600, "/", $domain, true, true);
 ```
 
-**Impact:** Attacker can log out users by embedding `<img src="https://target/auth/index.php?a=logout">`.
+**Impact:** Attacker can log out users by embedding `<img src="https://target/auth/logout.php">`.
 **Remediation:** Require CSRF token for logout action.
 
 ---
@@ -244,7 +244,7 @@ if ($_SERVER['SERVER_NAME'] != 'localhost') {
 ```php
 $access = get_access_from_dbs($username);
 
-if ($access == null) {
+if (empty($access)) {
     // Handle missing
 }
 ```

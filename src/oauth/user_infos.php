@@ -3,6 +3,7 @@
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_db;
 use function OAuth\Utils\ba_alert;
+use OAuth\Settings\Settings;
 //---
 include_once __DIR__ . '/../include_all.php';
 //---
@@ -30,7 +31,7 @@ if ($settings->domain == 'localhost') {
 	// ---
 	$access = get_access_from_db($username);
 	// ---
-	if ($access == null) {
+	if (empty($access)) {
 		echo ba_alert("No access keys found. Login again.");
 		setcookie('username', '', [
 			'expires' => time() - 3600,
