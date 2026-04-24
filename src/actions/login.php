@@ -71,7 +71,7 @@ try {
  * @param string $url Base callback URL to which state parameters will be appended.
  * @return string The resulting callback URL including the serialized state query (or the original URL if no state added).
  */
-function create_callback_url($url)
+function add_callback_state($url)
 {
     $state = create_state(['camp', 'cat', 'code', 'test']);
 
@@ -87,10 +87,13 @@ function create_callback_url($url)
     return $url;
 }
 
-$call_back_url = create_callback_url('https://mdwiki.toolforge.org/auth/index.php?a=callback');
+$callback = $settings->generateCallbackUrl();
+// 'https://mdwiki.toolforge.org/auth/callback.php'
+
+$callback_with_state = add_callback_state($callback);
 
 try {
-    $client->setCallback($call_back_url);
+    $client->setCallback($callback_with_state);
 } catch (\Exception $e) {
     // Log the detailed error.
     error_log("OAuth Error: Failed to set OAuth callback URL: " . $e->getMessage());

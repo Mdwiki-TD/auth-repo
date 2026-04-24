@@ -62,6 +62,38 @@ final class Settings
         $this->decryptKey     = $decryptKey ? Key::loadFromAsciiSafeString($decryptKey) : null;
     }
 
+    /**
+     * Generates a dynamic Callback URL for OAuth providers.
+     * * @param string $path The destination path (e.g., /auth/callback)
+     * @return string The absolute URL including protocol, host, and port
+     */
+    public function generateCallbackUrl($path = '/auth/callback.php')
+    {
+        /*
+        "SERVER_PORT": "9001",
+        "SERVER_NAME": "localhost",
+        "HTTP_HOST": "localhost:9001",
+        */
+        // 1. Determine the protocol (Support for HTTPS and Load Balancers/Proxies)
+        $protocol = 'http';
+
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            $protocol = 'https';
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            // This is crucial when the app is behind a proxy like Nginx, Cloudflare, or Docker
+            $protocol = 'https';
+        }
+
+        // 2. Get the host and port (e.g., example.com or localhost:9000)
+        // HTTP_HOST is preferred as it includes the port number automatically
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+        // 3. Sanitize the path to prevent double slashes (//)
+        $path = '/' . ltrim($path, '/');
+
+        // 4. Return the assembled absolute URL
+        return $protocol . "://" . $host . $path;
+    }
     private function envVar(string $key)
     {
         $value = getenv($key);
