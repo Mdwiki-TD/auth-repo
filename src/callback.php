@@ -147,7 +147,7 @@ if (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
 if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
     $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
 } else {
-    $state = create_state(['cat', 'code']);
+    $state = create_state(['camp', 'cat', 'code']);
     $state = http_build_query($state);
     $newurl = "/Translation_Dashboard/index.php?$state";
 }
