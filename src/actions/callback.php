@@ -1,4 +1,5 @@
 <?php
+
 use OAuth\Settings\Settings;
 
 // Get Settings instance
@@ -141,8 +142,11 @@ $test = $_GET['test'] ?? '';
 $return_to = $_GET['return_to'] ?? '';
 $newurl = "/Translation_Dashboard/index.php";
 
-if (!empty($return_to) && (strpos($return_to, '/auth/') !== false)) {
-    $return_to = "";
+if (!empty($return_to)) {
+    $server_url = $settings->ServerUrl;
+    if ((strpos($return_to, '/auth/') !== false) || (strpos($return_to, $server_url) === false)) {
+        $return_to = "";
+    }
 }
 
 if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
