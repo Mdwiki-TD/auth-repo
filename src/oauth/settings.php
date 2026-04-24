@@ -63,9 +63,10 @@ final class Settings
     }
 
     /**
-     * Generates a dynamic Callback URL for OAuth providers.
-     * * @param string $path The destination path (e.g., /auth/callback)
-     * @return string The absolute URL including protocol, host, and port
+     * Generates a dynamic Callback URL that works seamlessly on Windows (localhost)
+     * and Linux (production) environments.
+     * * @param string $path The destination path (e.g., 'auth/callback')
+     * @return string The absolute URL including protocol and host
      */
     public function generateCallbackUrl($path = '/auth/callback.php')
     {
@@ -74,24 +75,25 @@ final class Settings
         "SERVER_NAME": "localhost",
         "HTTP_HOST": "localhost:9001",
         */
-        // 1. Determine the protocol (Support for HTTPS and Load Balancers/Proxies)
+        // 1. Detect Protocol: Works for local development and production proxies
         $protocol = 'http';
 
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            // Standard SSL detection
             $protocol = 'https';
         } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-            // This is crucial when the app is behind a proxy like Nginx, Cloudflare, or Docker
+            // Detection for environments behind a Proxy/Load Balancer (e.g., Nginx, Cloudflare)
             $protocol = 'https';
         }
 
-        // 2. Get the host and port (e.g., example.com or localhost:9000)
-        // HTTP_HOST is preferred as it includes the port number automatically
+        // 2. Detect Host: HTTP_HOST captures both domain and port (e.g., localhost:9000)
+        // This is OS-agnostic (Works the same on Windows and Linux)
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 
-        // 3. Sanitize the path to prevent double slashes (//)
+        // 3. Normalize Path: Ensure the path starts with a single forward slash
         $path = '/' . ltrim($path, '/');
 
-        // 4. Return the assembled absolute URL
+        // 4. Build the final absolute URI
         return $protocol . "://" . $host . $path;
     }
     private function envVar(string $key)
