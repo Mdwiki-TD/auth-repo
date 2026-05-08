@@ -312,7 +312,7 @@ function get_user_id($user)
 ```php
 function execute_queries($sql_query, $params = null, $table_name = null)
 {
-    $db = new Database($_SERVER['SERVER_NAME'] ?? '', $dbname);  // New connection every call
+    $db = new Database('DB_NAME');  // New connection every call
     $results = $db->executequery($sql_query, $params);
     $db = null;  // Destroy connection
     return $results;
@@ -1287,7 +1287,7 @@ function execute_queries(
 ): array
 {
     $dbname = get_dbname($table_name);
-    $db = new Database($_SERVER['SERVER_NAME'] ?? '', $dbname);
+    $db = new Database('DB_NAME');
 
     $results = $db->executequery($sql_query, $params);
     $db = null;
@@ -1311,7 +1311,7 @@ function fetch_queries(
 ): array
 {
     $dbname = get_dbname($table_name);
-    $db = new Database($_SERVER['SERVER_NAME'] ?? '', $dbname);
+    $db = new Database('DB_NAME');
 
     $results = $db->fetchquery($sql_query, $params);
     $db = null;
