@@ -8,27 +8,27 @@ A standalone PHP-based OAuth 1.0 authentication service for MediaWiki-powered si
 
 ### Main Features
 
-- **OAuth 1.0a flow** with Wikimedia (meta.wikimedia.org) via `mediawiki/oauthclient`
-- **JWT-based session tokens** (HS256, 1-hour expiry) via `firebase/php-jwt`
-- **Symmetric encryption** of cookies and stored tokens via `defuse/php-encryption`
-- **Persistent token storage** in MySQL with encrypted access keys/secrets
-- **Environment-aware configuration** — separate behavior for development, production, and testing
-- **Local development bypass** — skips OAuth flow on localhost for faster iteration
-- **State preservation** — passes `cat`, `code`, `camp`, and `return_to` parameters through the OAuth callback
-- **JSON API endpoint** (`get_user.php`) for external tools to query the authenticated user
+-   **OAuth 1.0a flow** with Wikimedia (meta.wikimedia.org) via `mediawiki/oauthclient`
+-   **JWT-based session tokens** (HS256, 1-hour expiry) via `firebase/php-jwt`
+-   **Symmetric encryption** of cookies and stored tokens via `defuse/php-encryption`
+-   **Persistent token storage** in MySQL with encrypted access keys/secrets
+-   **Environment-aware configuration** — separate behavior for development, production, and testing
+-   **Local development bypass** — skips OAuth flow on localhost for faster iteration
+-   **State preservation** — passes `cat`, `code`, `camp`, and `return_to` parameters through the OAuth callback
+-   **JSON API endpoint** (`get_user.php`) for external tools to query the authenticated user
 
 ### Frameworks & Technologies
 
-| Technology | Purpose |
-|---|---|
-| PHP 8.0+ | Runtime (uses `match`, named arguments, union types) |
-| `mediawiki/oauthclient` ^1.2 | OAuth 1.0a client for MediaWiki |
-| `firebase/php-jwt` 7.0.0 | JWT creation and verification |
-| `defuse/php-encryption` ^2.4 | Symmetric encryption for cookies and tokens |
-| PDO / MySQL | Token and user storage |
-| PHPUnit 10.x | Unit testing |
-| PHPStan level 5 | Static analysis |
-| GitHub Actions | CI/CD (tests + deployment via SSH) |
+| Technology                   | Purpose                                              |
+| ---------------------------- | ---------------------------------------------------- |
+| PHP 8.0+                     | Runtime (uses `match`, named arguments, union types) |
+| `mediawiki/oauthclient` ^1.2 | OAuth 1.0a client for MediaWiki                      |
+| `firebase/php-jwt` 7.0.0     | JWT creation and verification                        |
+| `defuse/php-encryption` ^2.4 | Symmetric encryption for cookies and tokens          |
+| PDO / MySQL                  | Token and user storage                               |
+| PHPUnit 10.x                 | Unit testing                                         |
+| PHPStan level 5              | Static analysis                                      |
+| GitHub Actions               | CI/CD (tests + deployment via SSH)                   |
 
 ### PHP Version Requirement
 
@@ -87,13 +87,29 @@ auth_repo/
 
 ### Architecture Layers
 
-| Layer | Files | Responsibility |
-|---|---|---|
-| **Entry Points** | `index.php`, `login.php`, `callback.php`, `logout.php`, `get_user.php` | HTTP routing and delegation |
-| **Actions** | `src/actions/*.php` | Business logic for each OAuth step |
-| **Core Module** | `src/oauth/*.php` | Namespaced utilities (DB, crypto, JWT, config) |
-| **Configuration** | `settings.php`, `load_env.php` | Environment-driven settings singleton |
-| **Presentation** | `view.php` | Minimal HTML UI with Bootstrap cards |
+| Layer             | Files                                                                  | Responsibility                                 |
+| ----------------- | ---------------------------------------------------------------------- | ---------------------------------------------- |
+| **Entry Points**  | `index.php`, `login.php`, `callback.php`, `logout.php`, `get_user.php` | HTTP routing and delegation                    |
+| **Actions**       | `src/actions/*.php`                                                    | Business logic for each OAuth step             |
+| **Core Module**   | `src/oauth/*.php`                                                      | Namespaced utilities (DB, crypto, JWT, config) |
+| **Configuration** | `settings.php`, `load_env.php`                                         | Environment-driven settings singleton          |
+| **Presentation**  | `view.php`                                                             | Minimal HTML UI with Bootstrap cards           |
+
+---
+
+---
+
+## End points
+
+| Endpoint                               | Method | Description                                                                     |
+| -------------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| `/auth/` or `/auth/index.php`          | GET    | Auth status page — shows login link or authenticated username with logout       |
+| `/auth/login.php` or `/?a=login`       | GET    | Initiate OAuth login — redirects to MediaWiki authorization page                |
+| `/auth/callback.php` or `/?a=callback` | GET    | OAuth callback handler — completes auth, stores tokens, sets cookies, redirects |
+| `/auth/logout.php` or `/?a=logout`     | GET    | Destroy session and clear cookies, then redirect                                |
+| `/auth/get_user.php` or `/?a=get_user` | GET    | JSON API — returns `{"username": "..."}`                                        |
+
+All endpoints use GET only. Direct file paths and the `?a=` router are interchangeable for the same endpoint.
 
 ---
 
@@ -105,38 +121,38 @@ The project uses a **function-based architecture with namespaced modules** rathe
 
 ### Design Patterns
 
-| Pattern | Usage | Quality |
-|---|---|---|
-| **Singleton** | `Settings::getInstance()` | Well-implemented with `__clone()` and `__wakeup()` protection |
-| **Factory Method** | `Database` class instantiation in wrapper functions | Functional but creates new connections per call |
-| **Facade** | `execute_query()` / `fetch_query()` wrap the `Database` class | Simplifies caller API but hides connection lifecycle |
+| Pattern            | Usage                                                         | Quality                                                       |
+| ------------------ | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Singleton**      | `Settings::getInstance()`                                     | Well-implemented with `__clone()` and `__wakeup()` protection |
+| **Factory Method** | `Database` class instantiation in wrapper functions           | Functional but creates new connections per call               |
+| **Facade**         | `execute_query()` / `fetch_query()` wrap the `Database` class | Simplifies caller API but hides connection lifecycle          |
 
 ### SOLID Principles Compliance
 
-| Principle | Assessment |
-|---|---|
+| Principle                     | Assessment                                                                                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **S** (Single Responsibility) | Mostly adhered — each file has a focused purpose. `user_infos.php` mixes session setup, cookie validation, DB lookup, and constant definition. |
-| **O** (Open/Closed) | Not applicable — no inheritance or extension points needed for this scope. |
-| **L** (Liskov Substitution) | N/A — no class hierarchies. |
-| **I** (Interface Segregation) | N/A — no interfaces defined. |
-| **D** (Dependency Inversion) | Partially met — `Settings` singleton is accessed directly rather than injected, making testing harder. |
+| **O** (Open/Closed)           | Not applicable — no inheritance or extension points needed for this scope.                                                                     |
+| **L** (Liskov Substitution)   | N/A — no class hierarchies.                                                                                                                    |
+| **I** (Interface Segregation) | N/A — no interfaces defined.                                                                                                                   |
+| **D** (Dependency Inversion)  | Partially met — `Settings` singleton is accessed directly rather than injected, making testing harder.                                         |
 
 ### Maintainability
 
-- **Positive**: Clear file naming, consistent namespace convention, good PHPDoc on `Settings` class.
-- **Negative**: Heavy use of `include_once` chains; no autoloading for application code (only vendor). Functions are defined at file scope rather than in classes, limiting testability.
+-   **Positive**: Clear file naming, consistent namespace convention, good PHPDoc on `Settings` class.
+-   **Negative**: Heavy use of `include_once` chains; no autoloading for application code (only vendor). Functions are defined at file scope rather than in classes, limiting testability.
 
 ### Readability
 
-- Code is generally readable with descriptive function names.
-- Inconsistent formatting: mixed use of semicolons after closing braces (`};`), inconsistent brace placement.
-- PHPDoc coverage is sparse — only `Settings`, `login.php`'s `showErrorAndExit()`, and `login.php`'s `add_callback_state()` have proper docblocks.
+-   Code is generally readable with descriptive function names.
+-   Inconsistent formatting: mixed use of semicolons after closing braces (`};`), inconsistent brace placement.
+-   PHPDoc coverage is sparse — only `Settings`, `login.php`'s `showErrorAndExit()`, and `login.php`'s `add_callback_state()` have proper docblocks.
 
 ### Scalability
 
-- Each database query creates and destroys a `Database` instance — no connection pooling or reuse within a request.
-- Cookie-based session with 2-year expiry is long; no refresh token mechanism.
-- The system is designed for a single-tool deployment; sharing across tools requires all to trust the same cookie domain.
+-   Each database query creates and destroys a `Database` instance — no connection pooling or reuse within a request.
+-   Cookie-based session with 2-year expiry is long; no refresh token mechanism.
+-   The system is designed for a single-tool deployment; sharing across tools requires all to trust the same cookie domain.
 
 ---
 
@@ -228,7 +244,7 @@ if ((strpos($return_to, '/auth/') !== false) || (strpos($return_to, $server_url)
 }
 ```
 
-The validation checks if `$return_to` *contains* the server URL (via `strpos`), not if it *starts with* it. A URL like `https://evil.com/https://mdwiki.toolforge.org/...` would pass this check.
+The validation checks if `$return_to` _contains_ the server URL (via `strpos`), not if it _starts with_ it. A URL like `https://evil.com/https://mdwiki.toolforge.org/...` would pass this check.
 
 ### 5. SQL Error Messages Exposed to Users (LOW)
 
@@ -245,45 +261,45 @@ Database error messages and raw SQL queries are echoed directly to the user, lea
 
 ### Missing Validation
 
-- No CSRF protection on the login initiation endpoint
-- No rate limiting on OAuth callback or login endpoints
-- No input length validation on username values before database storage
-- `$_GET['return_to']` in callback.php is validated but the validation logic has edge cases
+-   No CSRF protection on the login initiation endpoint
+-   No rate limiting on OAuth callback or login endpoints
+-   No input length validation on username values before database storage
+-   `$_GET['return_to']` in callback.php is validated but the validation logic has edge cases
 
 ### Missing Tests
 
-- No tests for `access_helps.php` (token storage/retrieval)
-- No tests for `mdwiki_sql.php` (database operations)
-- No tests for `user_infos.php` (session management)
-- No tests for `utils.php` (state building, return-to validation)
-- No integration tests for the full OAuth flow
-- No tests for `actions/login.php`, `actions/callback.php`, or `actions/logout.php`
+-   No tests for `access_helps.php` (token storage/retrieval)
+-   No tests for `mdwiki_sql.php` (database operations)
+-   No tests for `user_infos.php` (session management)
+-   No tests for `utils.php` (state building, return-to validation)
+-   No integration tests for the full OAuth flow
+-   No tests for `actions/login.php`, `actions/callback.php`, or `actions/logout.php`
 
 ### Outdated Packages
 
-- `firebase/php-jwt` is pinned to `7.0.0` — consider using `^7.0` to receive patch updates
-- `FILTER_SANITIZE_STRING` will break on PHP 8.2+
+-   `firebase/php-jwt` is pinned to `7.0.0` — consider using `^7.0` to receive patch updates
+-   `FILTER_SANITIZE_STRING` will break on PHP 8.2+
 
 ### Missing Environment Configuration
 
-- No `.env` file committed (correct for security), but no documentation on how to generate Defuse encryption keys
-- Missing `APP_ENV` in `.env.example`
+-   No `.env` file committed (correct for security), but no documentation on how to generate Defuse encryption keys
+-   Missing `APP_ENV` in `.env.example`
 
 ### Error Handling Issues
 
-- `Database::__destruct()` sets `$this->db = null` but PDO already handles connection cleanup
-- Several catch blocks silently return empty strings/arrays without logging (e.g., `helps.php:27-28`)
+-   `Database::__destruct()` sets `$this->db = null` but PDO already handles connection cleanup
+-   Several catch blocks silently return empty strings/arrays without logging (e.g., `helps.php:27-28`)
 
 ### Logging/Monitoring
 
-- No structured logging — all errors go to PHP's `error_log()` with free-form strings
-- No request ID or correlation ID for tracing authentication flows
-- No metrics or health check endpoint
+-   No structured logging — all errors go to PHP's `error_log()` with free-form strings
+-   No request ID or correlation ID for tracing authentication flows
+-   No metrics or health check endpoint
 
 ### Deployment Concerns
 
-- The `.gitignore` excludes `/src/dev` but the directory exists in the repo — it may be deployed if the deployment script copies the entire repo
-- The deploy workflow (`update.yaml`) runs a shell script (`shs/update_auth.sh`) whose contents are not in this repo
+-   The `.gitignore` excludes `/src/dev` but the directory exists in the repo — it may be deployed if the deployment script copies the entire repo
+-   The deploy workflow (`update.yaml`) runs a shell script (`shs/update_auth.sh`) whose contents are not in this repo
 
 ---
 
@@ -330,14 +346,14 @@ Database error messages and raw SQL queries are echoed directly to the user, lea
 
 ## Comprehensive Review
 
-| Category | Score | Notes |
-|---|---|---|
-| **Overall Rating** | **6.5/10** | Functional and well-intentioned but has security gaps and architectural debt |
-| **Production Readiness** | **6/10** | Works in production but the XSS in callback.php and `?test=1` flag need fixing first |
-| **Security Score** | **6/10** | Good encryption choices, parameterized SQL, but XSS vector, error exposure, and missing CSRF |
-| **Technical Debt** | **Moderate** | Duplicated code, global state, no autoloading, hardcoded redirects |
-| **Maintainability** | **6/10** | Clear file structure but include-chain architecture and lack of tests make changes risky |
-| **Risk Assessment** | **Medium** | The XSS and error display issues are exploitable; the open redirect edge case is low-risk |
+| Category                 | Score        | Notes                                                                                        |
+| ------------------------ | ------------ | -------------------------------------------------------------------------------------------- |
+| **Overall Rating**       | **6.5/10**   | Functional and well-intentioned but has security gaps and architectural debt                 |
+| **Production Readiness** | **6/10**     | Works in production but the XSS in callback.php and `?test=1` flag need fixing first         |
+| **Security Score**       | **6/10**     | Good encryption choices, parameterized SQL, but XSS vector, error exposure, and missing CSRF |
+| **Technical Debt**       | **Moderate** | Duplicated code, global state, no autoloading, hardcoded redirects                           |
+| **Maintainability**      | **6/10**     | Clear file structure but include-chain architecture and lack of tests make changes risky     |
+| **Risk Assessment**      | **Medium**   | The XSS and error display issues are exploitable; the open redirect edge case is low-risk    |
 
 ---
 
@@ -440,9 +456,9 @@ vendor/bin/phpstan analyse
 
 Pushing to the `main` branch triggers the GitHub Actions workflow (`.github/workflows/update.yaml`), which SSHes into the Toolforge server and runs the deployment script. Ensure the following secrets are configured in your GitHub repository:
 
-- `HOST` — Toolforge server hostname
-- `USERNAME` — SSH username
-- `KEY` — SSH private key
+-   `HOST` — Toolforge server hostname
+-   `USERNAME` — SSH username
+-   `KEY` — SSH private key
 
 ### Registering an OAuth Consumer
 
