@@ -2,10 +2,18 @@
 
 declare(strict_types=1);
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Bootstrap for PHPUnit tests
+// Sets up environment variables so no real DB/OAuth is needed
+
 // Set test environment
 putenv('APP_ENV=testing');
 putenv('DB_HOST_TOOLS=localhost:3306');
 putenv('DB_NAME=s54732__mdwikiz');
+
 putenv('TOOL_TOOLSDB_USER=root');
 putenv('TOOL_TOOLSDB_PASSWORD=root11');
 putenv('CONSUMER_KEY=test_consumer_key');
@@ -30,4 +38,4 @@ $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['HTTP_HOST'] = 'localhost';
 
 // Load vendor autoloader
-require_once __DIR__ . '/../src/include_all.php';
+require_once dirname(__DIR__) . '/src/include_all.php';
