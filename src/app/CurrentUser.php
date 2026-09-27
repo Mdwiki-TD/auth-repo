@@ -131,7 +131,13 @@ class CurrentUser
         ];
     }
 
-    private function clearUserCookie(): void
+    public function Logout(): void
+    {
+        $_SESSION = [];
+        session_destroy();
+        $this->clearUserCookie();
+    }
+    public function clearUserCookie(): void
     {
         setcookie("username", "", [
             "expires"  => time() - 3600,

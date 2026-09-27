@@ -1,5 +1,7 @@
 <?php
-// src/app/actions/login.php
+// src/app/controllers/LoginController.php
+
+namespace OAuth\Controllers;
 
 use OAuth\Settings\Settings;
 use MediaWiki\OAuthClient\Client;

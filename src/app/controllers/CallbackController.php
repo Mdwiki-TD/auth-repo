@@ -1,5 +1,5 @@
 <?php
-// src/app/actions/callback.php
+// src/app/controllers/CallbackController.php
 
 use OAuth\Settings\Settings;
 use OAuth\User\CurrentUser;
