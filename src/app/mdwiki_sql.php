@@ -1,4 +1,5 @@
 <?php
+// src/app/mdwiki_sql.php
 
 namespace OAuth\MdwikiSql;
 

@@ -1,4 +1,5 @@
 <?php
+// src/app/actions/callback.php
 
 use OAuth\Settings\Settings;
 use OAuth\User\CurrentUser;

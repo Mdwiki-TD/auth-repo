@@ -1,4 +1,5 @@
 <?php
+// src/app/actions/logout.php
 
 use OAuth\Settings\Settings;
 

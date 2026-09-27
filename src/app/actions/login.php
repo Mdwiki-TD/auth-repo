@@ -1,4 +1,5 @@
 <?php
+// src/app/actions/login.php
 
 use OAuth\Settings\Settings;
 use MediaWiki\OAuthClient\Client;

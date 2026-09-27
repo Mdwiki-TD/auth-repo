@@ -1,4 +1,5 @@
 <?php
+// src/app/Database.php
 
 /**
  * Database Abstraction Layer for MDWiki SQL Operations

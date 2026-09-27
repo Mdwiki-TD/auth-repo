@@ -1,4 +1,5 @@
 <?php
+// src/app/CurrentUser.php
 
 namespace OAuth\User;
 

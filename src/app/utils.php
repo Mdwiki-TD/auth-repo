@@ -1,4 +1,5 @@
 <?php
+// src/app/utils.php
 
 namespace OAuth\Utils;
 
@@ -17,17 +18,6 @@ function create_state($keys)
         }
     }
     return $state;
-}
-
-function ba_alert($text)
-{
-    return <<<HTML
-	<div class='container'>
-		<div class="alert alert-danger" role="alert">
-			<i class="bi bi-exclamation-triangle"></i> $text
-		</div>
-	</div>
-	HTML;
 }
 
 function create_return_to($http_referer)
