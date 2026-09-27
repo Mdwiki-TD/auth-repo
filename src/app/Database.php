@@ -121,8 +121,8 @@ class Database
             $result = $q->fetchAll(PDO::FETCH_ASSOC);
             return $result;
         } catch (PDOException $e) {
-            echo "SQL Error:" . $e->getMessage() . "<br>" . $sqlQuery;
             error_log("SQL Error in fetchquery: " . $e->getMessage() . " | Query: " . $sqlQuery);
+            $this->testPrint("SQL Error in fetchquery: " . $e->getMessage() . " | Query: " . $sqlQuery);
             // In testing mode, re-throw to allow tests to skip
             if (getenv('APP_ENV') === 'testing') {
                 throw $e;
@@ -148,7 +148,6 @@ class Database
             error_log("Rows affected: " . $q->rowCount());
             return true;
         } catch (PDOException $e) {
-            echo "sql error:" . $e->getMessage() . "<br>" . $sqlQuery;
             error_log("SQL Error in executequery: " . $e->getMessage() . " | Query: " . $sqlQuery);
             $this->testPrint("SQL Error in executequery: " . $e->getMessage() . " | Query: " . $sqlQuery);
             // In testing mode, re-throw to allow tests to skip
