@@ -1,5 +1,5 @@
 <?php
-// src/app/settings.php
+// src/app/Settings.php
 
 declare(strict_types=1);
 
