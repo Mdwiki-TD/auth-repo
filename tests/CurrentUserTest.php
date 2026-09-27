@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OAuth\Tests;
 
-use OAuth\Settings\Settings;
+use OAuth\Settings;
 use OAuth\User\CurrentUser;
 use PHPUnit\Framework\TestCase;
 

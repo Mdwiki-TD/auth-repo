@@ -177,7 +177,7 @@ The system uses `defuse/php-encryption` — a well-audited, high-level symmetric
 
 ### 2. Well-Implemented Settings Singleton
 
-`OAuth\Settings\Settings` is a properly designed singleton: immutable from outside (read-only via `__set()` override), protected against cloning and unserialization, and validates required keys at startup in production mode. The `__get()` magic method provides clean property access without exposing mutation.
+`OAuth\Settings` is a properly designed singleton: immutable from outside (read-only via `__set()` override), protected against cloning and unserialization, and validates required keys at startup in production mode. The `__get()` magic method provides clean property access without exposing mutation.
 
 ### 3. Exemplary OAuth Error Handling
 

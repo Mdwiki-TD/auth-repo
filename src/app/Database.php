@@ -165,19 +165,6 @@ class Database
         }
     }
 
-    public function executQqueryOrFail(string $sqlQuery, $params = null): void
-    {
-        $this->disableFullGroupByMode($sqlQuery);
-
-        $q = $this->db->prepare($sqlQuery);
-        if ($params) {
-            $q->execute($params);
-        } else {
-            $q->execute();
-        }
-        error_log("Rows affected: " . $q->rowCount());
-    }
-
     public function __destruct()
     {
         $this->db = null;
