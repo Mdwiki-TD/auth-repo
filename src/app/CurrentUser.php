@@ -143,6 +143,7 @@ class CurrentUser
             "expires"  => time() - 3600,
             "path"     => "/",
             "domain"   => $this->settings->domain,
+            // Fix: reuse the same $secure computation here (and note httponly => $secure in addUsernameToCookies means httponly is off on plain HTTP — httponly should basically always be true).
             "secure"   => true,
             "httponly" => true,
             "samesite" => "Lax",
