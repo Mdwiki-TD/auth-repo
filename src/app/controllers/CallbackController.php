@@ -201,8 +201,26 @@ class CallbackController
         $newurl = "/Translation_Dashboard/index.php";
 
         if (!empty($return_to)) {
-            $server_url = $this->settings->ServerUrl;
-            if ((strpos($return_to, '/auth/') !== false) || (strpos($return_to, $server_url) === false)) {
+            $parsedReturn = parse_url($return_to);
+            $parsedServer = parse_url($this->settings->ServerUrl);
+
+            $returnScheme = isset($parsedReturn['scheme']) ? strtolower($parsedReturn['scheme']) : '';
+            $returnHost = isset($parsedReturn['host']) ? strtolower($parsedReturn['host']) : '';
+            $serverScheme = isset($parsedServer['scheme']) ? strtolower($parsedServer['scheme']) : '';
+            $serverHost = isset($parsedServer['host']) ? strtolower($parsedServer['host']) : '';
+
+            $returnPort = $parsedReturn['port'] ?? null;
+            $serverPort = $parsedServer['port'] ?? null;
+
+            if (
+                strpos($return_to, '/auth/') !== false ||
+                $parsedReturn === false ||
+                $returnScheme === '' ||
+                $returnHost === '' ||
+                $returnScheme !== $serverScheme ||
+                $returnHost !== $serverHost ||
+                $returnPort !== $serverPort
+            ) {
                 $return_to = "";
             }
         }
@@ -226,20 +244,22 @@ class CallbackController
     {
         $test = $_GET['test'] ?? '';
         $newurl = $this->resolveRedirectUrl();
+        $newurlAttr = htmlspecialchars($newurl, ENT_QUOTES, 'UTF-8');
+        $newurlJs = json_encode($newurl);
 
         if (empty($test)) {
             echo <<<HTML
-                <meta http-equiv='refresh' content='0; url=$newurl'>
+                <meta http-equiv='refresh' content='0; url=$newurlAttr'>
                 <br>
                 <h1> Login Successful </h1>
                 <h2>
-                    <a target="_blank" href='$newurl'>Continue</a>
+                    <a target="_blank" href='$newurlAttr'>Continue</a>
                 </h2>
                 <script type='text/javascript'>
-                window.open('$newurl', '_self');
+                window.open($newurlJs, '_self');
                 </script>
                 <noscript>
-                    <meta http-equiv='refresh' content='0; url=$newurl'>
+                    <meta http-equiv='refresh' content='0; url=$newurlAttr'>
                 </noscript>
             HTML;
             // header("Location: $newurl");
@@ -247,7 +267,7 @@ class CallbackController
         }
 
         echo "You are authenticated as " . htmlspecialchars($ident->username, ENT_QUOTES, 'UTF-8') . ".<br>";
-        echo "<a href='$newurl'>Continue</a>";
+        echo "<a href='$newurlAttr'>Continue</a>";
     }
 
     /**

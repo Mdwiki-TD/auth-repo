@@ -209,7 +209,7 @@ class CurrentUser
         return $this->db->executequery($query, [$userName, $userName]);
     }
 
-    private function addAccessToDb(string $user, string $accessKey, string $accessSecret): void
+    private function addAccessToDb(string $user, string $accessKey, string $accessSecret): bool
     {
         $decryptKey = $this->settings->getKey("decrypt");
 
@@ -232,14 +232,18 @@ class CurrentUser
                 updated_at = NOW();
         SQL;
 
-        $this->db->executequery($query, $params);
+        return $this->db->executequery($query, $params);
     }
 
     public function addUserData(string $user, string $accessKey, string $accessSecret): void
     {
         $user = trim($user);
 
-        $this->sqlAddUser($user);
-        $this->addAccessToDb($user, $accessKey, $accessSecret);
+        $userAdded = $this->sqlAddUser($user);
+        $accessAdded = $this->addAccessToDb($user, $accessKey, $accessSecret);
+
+        if (!$userAdded || !$accessAdded) {
+            throw new \RuntimeException("Failed to write user data or access keys to database.");
+        }
     }
 }

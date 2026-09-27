@@ -9,7 +9,7 @@ if (empty($_GET) || $ye) {
     exit();
 }
 
-$allowedActions = ['login', 'callback', 'logout', 'get_user'];
+$allowedActions = ['login', 'callback', 'logout'];
 $action = $_GET['a'] ?? '';
 
 if (in_array($action, $allowedActions)) {
