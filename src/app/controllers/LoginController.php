@@ -3,7 +3,7 @@
 
 namespace OAuth\Controllers;
 
-use OAuth\Settings\Settings;
+use OAuth\Settings;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;

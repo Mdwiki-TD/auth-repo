@@ -3,7 +3,7 @@
 
 namespace OAuth\User;
 
-use OAuth\Settings\Settings;
+use OAuth\Settings;
 use OAuth\MdwikiSql\Database;
 
 /**
@@ -20,6 +20,7 @@ class CurrentUser
     private Database $db;
 
     private string $username = "";
+    private bool $isCoordinator = false;
     private ?string $alertMessage = null;
 
     public function __construct(Settings $settings)
@@ -28,6 +29,7 @@ class CurrentUser
         $this->db = new Database('DB_NAME');
         $this->ensureSessionStarted();
         $this->resolveUsername();
+        $this->resolveCoordinatorStatus();
         self::$instance = $this;
     }
 
@@ -47,6 +49,11 @@ class CurrentUser
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    public function isCoordinator(): bool
+    {
+        return $this->isCoordinator;
     }
 
     public function isLoggedIn(): bool
@@ -205,6 +212,8 @@ class CurrentUser
         );
 
         $this->username = $username;
+
+        $this->resolveCoordinatorStatus();
     }
     private function sqlAddUser(string $userName): bool
     {
@@ -252,5 +261,18 @@ class CurrentUser
         if (!$userAdded || !$accessAdded) {
             throw new \RuntimeException("Failed to write user data or access keys to database.");
         }
+    }
+
+    private function resolveCoordinatorStatus(): void
+    {
+        if ($this->username === "") {
+            return;
+        }
+
+        $query = "SELECT id, username, is_active FROM coordinators order by id";
+        $dbResult = $this->db->fetchquery($query);
+
+        $coordinators = array_column($dbResult, "is_active", "username");
+        $this->isCoordinator = (($coordinators[$this->username] ?? 0) == 1);
     }
 }

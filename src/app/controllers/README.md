@@ -24,7 +24,7 @@ Initiates the OAuth 1.0a authorization flow with Wikimedia.
 - `showErrorAndExit()` — Displays a user-facing error and logs it
 - `add_callback_state()` — Appends preserved state parameters to the callback URL
 
-**Dependencies:** `OAuth\Settings\Settings`, `OAuth\Utils\create_state`, `OAuth\Utils\create_return_to`, `MediaWiki\OAuthClient\*`
+**Dependencies:** `OAuth\Settings`, `OAuth\Utils\create_state`, `OAuth\Utils\create_return_to`, `MediaWiki\OAuthClient\*`
 
 ---
 
@@ -45,7 +45,7 @@ Handles the redirect back from Wikimedia after the user authorizes the applicati
 **Key functions:**
 - `showErrorAndExit()` — User-facing error display (duplicated from `login.php`)
 
-**Dependencies:** `OAuth\Settings\Settings`, `OAuth\JWT\create_jwt`, `OAuth\Helps\add_to_cookies`, `OAuth\AccessHelps\add_access_to_db`, `OAuth\AccessHelps\sql_add_user`, `OAuth\Utils\create_state`, `MediaWiki\OAuthClient\*`
+**Dependencies:** `OAuth\Settings`, `OAuth\JWT\create_jwt`, `OAuth\Helps\add_to_cookies`, `OAuth\AccessHelps\add_access_to_db`, `OAuth\AccessHelps\sql_add_user`, `OAuth\Utils\create_state`, `MediaWiki\OAuthClient\*`
 
 **Known issues:**
 - `showErrorAndExit()` does not escape HTML in the `$message` parameter (potential XSS)
@@ -62,7 +62,7 @@ Clears all authentication state.
 2. Clears `jwt_token` and `username` cookies (sets expiry to past)
 3. Redirects to the HTTP referer (if valid) or a default page
 
-**Dependencies:** `OAuth\Settings\Settings`, `OAuth\Utils\create_return_to`
+**Dependencies:** `OAuth\Settings`, `OAuth\Utils\create_return_to`
 
 ---
 
