@@ -57,6 +57,7 @@ final class Settings
             error_log('Required configuration directives not found in environment variables!');
             echo 'Required configuration directives not found';
             // exit(0);
+            // Fix: wrap the entry points (or each handle()) in a try/catch that logs and renders the generic 500 page, restoring the graceful behaviour the old exit() gave.
             throw new \RuntimeException('Required configuration directives not found in environment variables!');
         }
 
