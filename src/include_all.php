@@ -26,3 +26,5 @@ if ($env === 'development' && file_exists(__DIR__ . '/dev/load_env.php')) {
 
 include_once __DIR__ . '/vendor_load.php';
 include_once __DIR__ . '/app/include.php';
+
+\OAuth\User\CurrentUser::ensureSessionStarted();

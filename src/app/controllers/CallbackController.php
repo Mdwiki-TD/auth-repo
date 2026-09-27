@@ -29,9 +29,7 @@ class CallbackController
     {
         $this->validateConfig();
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        CurrentUser::ensureSessionStarted();
 
         $this->validateVerifierPresent();
         $this->validateSessionTokens();
@@ -81,6 +79,19 @@ class CallbackController
     private function validateSessionTokens(): void
     {
         if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
+            $host = php_uname('n');
+            $sessId = session_id();
+            $sessStatus = session_status();
+            $cookieName = session_name();
+            $hasCookie = isset($_COOKIE[$cookieName]) ? 'yes' : 'no';
+            $sessionKeys = implode(',', array_keys($_SESSION));
+
+            error_log(
+                "OAuth session miss: host={$host} | session_id={$sessId} | " .
+                "session_status={$sessStatus} | cookie_present={$hasCookie} | " .
+                "session_keys=[{$sessionKeys}]"
+            );
+
             $this->showErrorAndExit(
                 "OAuth session expired or invalid. Please start login again.",
                 "login.php",
