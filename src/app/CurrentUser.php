@@ -6,6 +6,7 @@ use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Key;
 use OAuth\Settings\Settings;
 use function OAuth\MdwikiSql\fetch_query;
+use function OAuth\MdwikiSql\execute_query;
 /**
  * Represents the current user: handles session initialization, reading
  * identity from cookies/session, validating access in the database,
@@ -108,7 +109,18 @@ class CurrentUser
             return "";
         }
     }
+    private function encodeValue(string $value, ?Key $useKey): string
+    {
+        if ($useKey === null || trim($value) === "") {
+            return "";
+        }
 
+        try {
+            return Crypto::encrypt($value, $useKey);
+        } catch (\Throwable $e) {
+            return "";
+        }
+    }
     private function getFromCookies(string $key, ?Key $cookieKey): string
     {
         if (!isset($_COOKIE[$key])) {
@@ -181,5 +193,76 @@ class CurrentUser
 
         $this->username = $username;
     }
+    public function addUsernameToCookies(string $username): void
+    {
+        $_SESSION["username"] = $username;
 
+        $cookieKey = $this->getKey("cookie");
+        $value      = $this->encodeValue($username, $cookieKey);
+
+        if ($value === "") {
+            return;
+        }
+
+        $twoYears = time() + 60 * 60 * 24 * 365 * 2;
+        $secure   = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off";
+
+        setcookie(
+            "username",
+            $value,
+            [
+                "expires"  => $twoYears,
+                "path"     => "/",
+                "domain"   => $this->settings->domain,
+                "secure"   => $secure,
+                "httponly" => $secure,
+                "samesite" => "Strict",
+            ]
+        );
+
+        $this->username = $username;
+    }
+    private function sqlAddUser(string $userName): bool
+    {
+        $query = <<<SQL
+            INSERT INTO users (username) SELECT ?
+            WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = ?)
+        SQL;
+
+        return execute_query($query, [$userName, $userName]);
+    }
+
+    private function addAccessToDb(string $user, string $accessKey, string $accessSecret): void
+    {
+        $decryptKey = $this->getKey("decrypt");
+
+        $params = [
+            $user,
+            hash("sha256", $user),
+            $this->encodeValue($accessKey, $decryptKey),
+            $this->encodeValue($accessSecret, $decryptKey),
+        ];
+
+        // ---
+        // user_name_hash = SHA2(user_name, 256)
+        // ---
+        $query = <<<SQL
+            INSERT INTO access_keys (user_name, user_name_hash, access_key, access_secret)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                access_key = VALUES(access_key),
+                access_secret = VALUES(access_secret),
+                updated_at = NOW();
+        SQL;
+
+        execute_query($query, $params);
+    }
+
+    public function addUserData(string $user, string $accessKey, string $accessSecret): void
+    {
+        $user = trim($user);
+
+        $this->sqlAddUser($user);
+        $this->addAccessToDb($user, $accessKey, $accessSecret);
+    }
 }

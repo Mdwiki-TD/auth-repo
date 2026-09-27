@@ -16,7 +16,6 @@ use Defuse\Crypto\Key;
  * @property string $appEnv
  * @property Key|null $cookieKey
  * @property Key|null $decryptKey
- * @property string $jwtKey
  */
 final class Settings
 {
@@ -31,7 +30,6 @@ final class Settings
     public string $appEnv;
     public ?Key   $cookieKey;
     public ?Key   $decryptKey;
-    public string $jwtKey;
 
     private static ?self $instance = null;
 
@@ -48,11 +46,10 @@ final class Settings
         $consumerSecret = $this->envVar('CONSUMER_SECRET');
         $cookieKey      = $this->envVar('COOKIE_KEY');
         $decryptKey     = $this->envVar('DECRYPT_KEY');
-        $jwtKey         = $this->envVar('JWT_KEY');
 
         if ($appEnv === 'production' && (
             empty($consumerKey) || empty($consumerSecret) ||
-            empty($cookieKey)   || empty($decryptKey)     || empty($jwtKey)
+            empty($cookieKey)   || empty($decryptKey)
         )) {
             http_response_code(500);
             error_log('Required configuration directives not found in environment variables!');
@@ -67,7 +64,6 @@ final class Settings
         $this->cookieKey      = $cookieKey  ? Key::loadFromAsciiSafeString($cookieKey)  : null;
         $this->decryptKey     = $decryptKey ? Key::loadFromAsciiSafeString($decryptKey) : null;
 
-        $this->jwtKey         = $jwtKey;
     }
 
     /**

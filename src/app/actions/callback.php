@@ -1,6 +1,12 @@
 <?php
 
 use OAuth\Settings\Settings;
+use OAuth\User\CurrentUser;
+use MediaWiki\OAuthClient\Token;
+use MediaWiki\OAuthClient\Client;
+use MediaWiki\OAuthClient\ClientConfig;
+use MediaWiki\OAuthClient\Consumer;
+use function OAuth\Utils\create_state;
 
 // Get Settings instance
 $settings = Settings::getInstance();
@@ -9,16 +15,6 @@ $settings = Settings::getInstance();
 if (empty($settings->oauthUrl) || empty($settings->consumerKey) || empty($settings->consumerSecret) || empty($settings->userAgent)) {
     throw new \RuntimeException('Required OAuth configuration variables are not defined');
 }
-
-use function OAuth\JWT\create_jwt;
-use MediaWiki\OAuthClient\Client;
-use MediaWiki\OAuthClient\ClientConfig;
-use MediaWiki\OAuthClient\Consumer;
-use MediaWiki\OAuthClient\Token;
-use function OAuth\Helps\add_to_cookies;
-use function OAuth\AccessHelps\add_access_to_db;
-use function OAuth\AccessHelps\sql_add_user;
-use function OAuth\Utils\create_state;
 
 /**
  * Display a user-facing error message in a red-bordered box, optionally with a link, then terminate execution.
@@ -31,15 +27,14 @@ use function OAuth\Utils\create_state;
  */
 function showErrorAndExit(string $message, ?string $linkUrl = null, ?string $linkText = null)
 {
-    // Log the error to server error log
-    // The detailed message is logged before this function is called.
-    // This log entry provides context that a user-facing error was shown.
+    // The detailed error should be logged before calling this function.
+    // This log entry confirms that a user-facing error was displayed.
     error_log("[OAuth Error] User was shown the following message: " . $message);
 
     echo "<div style='border:1px solid red; padding:10px; background:#ffe6e6; color:#900;'>";
-    echo $message;
+    echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
     if ($linkUrl && $linkText) {
-        echo "<br><a href='" . $linkUrl . "'>" . $linkText . "</a>";
+        echo "<br><a href='" . htmlspecialchars($linkUrl, ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($linkText, ENT_QUOTES, 'UTF-8') . "</a>";
     }
     echo "</div>";
     exit;
@@ -69,6 +64,7 @@ $requestToken = null;
 $accessToken1 = null;
 $ident = null;
 
+// Configure the OAuth client with the URL and consumer details.
 try {
     $conf = new ClientConfig($settings->oauthUrl);
     $conf->setConsumer(new Consumer($settings->consumerKey, $settings->consumerSecret));
@@ -119,18 +115,15 @@ if ($client === null || $accessToken1 === null || $ident === null) {
     showErrorAndExit("Authentication failed. Please try logging in again.", "login.php", "Try again");
 }
 
+$currentUser = CurrentUser::getInstance();
 try {
-    $_SESSION['username'] = $ident->username;
-    $jwt = create_jwt($ident->username);
-    add_to_cookies('jwt_token', $jwt);
-    add_to_cookies('username', $ident->username);
+    $currentUser->addUsernameToCookies($ident->username);
 
     if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
         $_SESSION['csrf_tokens'] = [];
     }
 
-    add_access_to_db($ident->username, $accessToken1->key, $accessToken1->secret);
-    sql_add_user($ident->username);
+    $currentUser->addUserData($ident->username, $accessToken1->key, $accessToken1->secret);
 } catch (\Exception $e) {
     // Log the detailed error.
     error_log("OAuth Error: Failed to store user session data or update database: " . $e->getMessage());

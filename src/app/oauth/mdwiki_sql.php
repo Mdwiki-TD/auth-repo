@@ -1,18 +1,7 @@
 <?php
 
 namespace OAuth\MdwikiSql;
-/*
-Usage:
-use function OAuth\MdwikiSql\fetch_query;
-use function OAuth\MdwikiSql\execute_query;
-*/
 
-if (isset($_REQUEST['test'])) {
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-};
-//---
 use PDO;
 use PDOException;
 
@@ -81,7 +70,7 @@ class Database
             }
         }
     }
-    public function executequery($sql_query, $params = null)
+    public function executequery($sql_query, $params = null): bool
     {
         try {
             $this->disableFullGroupByMode($sql_query);
@@ -93,23 +82,14 @@ class Database
                 $q->execute();
             }
 
-            // Check if the query starts with "SELECT"
-            $query_type = strtoupper(substr(trim((string) $sql_query), 0, 6));
-            if ($query_type === 'SELECT') {
-                // Fetch the results if it's a SELECT query
-                $result = $q->fetchAll(PDO::FETCH_ASSOC);
-                return $result;
-            } else {
-                // Otherwise, return null
-                return [];
-            }
+            return true;
         } catch (PDOException $e) {
             // In testing mode, re-throw to allow tests to skip
             if (getenv('APP_ENV') === 'testing') {
                 throw $e;
             }
             echo "sql error:" . $e->getMessage() . "<br>" . $sql_query;
-            return [];
+            return false;
         }
     }
 

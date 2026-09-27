@@ -1,7 +1,8 @@
 <?php
 
-use function OAuth\Utils\create_return_to;
 use OAuth\Settings\Settings;
+
+use function OAuth\Utils\create_return_to;
 
 $settings = Settings::getInstance();
 $domain = $settings->domain;
@@ -23,7 +24,7 @@ $cookieOpts = [
     'samesite' => 'Lax',
 ];
 
-foreach (['jwt_token', 'username'] as $name) {
+foreach (['username'] as $name) {
     setcookie($name, '', $cookieOpts);
 }
 

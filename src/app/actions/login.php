@@ -1,11 +1,9 @@
 <?php
 
+use OAuth\Settings\Settings;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
-use OAuth\Settings\Settings;
-
-
 use function OAuth\Utils\create_state;
 use function OAuth\Utils\create_return_to;
 
@@ -56,7 +54,7 @@ try {
     $conf->setUserAgent($settings->userAgent);
     $client = new Client($conf);
 } catch (\Exception $e) {
-    // Log the detailed, internal error message.
+    // Log the detailed, internal error message for debugging.
     error_log("OAuth Error: Failed to initialize OAuth client: " . $e->getMessage());
     // Show a generic, user-friendly error message.
     showErrorAndExit("An internal error occurred while preparing the authentication service. Please try again later.");
@@ -118,7 +116,7 @@ try {
         $_SESSION['request_secret'] = $token->secret;
     }
 } catch (\Exception $e) {
-    // Log the detailed exception.
+    // Log the detailed error.
     error_log("OAuth Error: Exception during OAuth initiation: " . $e->getMessage());
     // Show a generic error.
     showErrorAndExit("An error occurred while starting the authentication process. Please try again.");
