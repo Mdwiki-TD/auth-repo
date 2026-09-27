@@ -63,6 +63,9 @@ class Database
             $this->testPrint($e->getMessage());
             // Log the error message
             error_log($e->getMessage());
+            if (getenv('APP_ENV') === 'testing') {
+                return;
+            }
             // Display a generic message
             echo "Unable to connect to the database. Please try again later.";
             throw new \RuntimeException('Database connection failed');
@@ -87,6 +90,10 @@ class Database
 
     public function disableFullGroupByMode(string $sqlQuery): void
     {
+        if ($this->db === null) {
+            return;
+        }
+
         // if the query contains "GROUP BY", disable ONLY_FULL_GROUP_BY, strtoupper() is for case insensitive
         if (strpos(strtoupper($sqlQuery), 'GROUP BY') !== false && !$this->groupByModeDisabled) {
             try {

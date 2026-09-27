@@ -12,7 +12,7 @@ function create_state($keys)
     $state = [];
 
     foreach ($keys as $key) {
-        $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
+        $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
         if (!empty($da)) {
             $state[$key] = $da;
         }
