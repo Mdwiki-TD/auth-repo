@@ -193,7 +193,7 @@ class CallbackController
                 $_SESSION['csrf_tokens'] = [];
             }
 
-            $currentUser->addUserData($ident->username, $accessToken1->key, $accessToken1->secret);
+            $currentUser->saveUserData($ident->username, $accessToken1->key, $accessToken1->secret);
         } catch (\Exception $e) {
             // Log the detailed error.
             error_log("OAuth Error: Failed to store user session data or update database: " . $e->getMessage());
