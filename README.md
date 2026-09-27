@@ -63,7 +63,7 @@ auth_repo/
 │   │   ├── utils.php             # State building, alerts, return-to validation
 │   │   └── index.php             # Empty (placeholder)
 │   └── dev/                      # Development-only utilities
-│       ├── dev_login.php         # Bypasses OAuth on localhost
+│       ├── DevLoginController.php         # Bypasses OAuth on localhost
 │       └── load_env.php          # Loads .env vars via putenv() for local dev
 ├── tests/                        # PHPUnit test suite
 │   ├── bootstrap.php             # Test environment setup (keys, DB, server vars)
@@ -164,7 +164,7 @@ The project uses a **function-based architecture with namespaced modules** rathe
 
 3. **OAuth flow error handling** — Both `login.php` and `callback.php` wrap every step in try/catch with user-friendly error messages and server-side logging. This is exemplary error handling for an OAuth integration.
 
-4. **Environment-aware behavior** — The system cleanly separates development/production/testing modes. Local development bypass (`dev_login.php`) avoids the OAuth round-trip during development.
+4. **Environment-aware behavior** — The system cleanly separates development/production/testing modes. Local development bypass (`DevLoginController.php`) avoids the OAuth round-trip during development.
 
 5. **State parameter preservation** — The `cat`, `code`, `camp`, and `return_to` parameters are properly threaded through the OAuth flow via session and URL parameters.
 
