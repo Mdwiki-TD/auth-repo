@@ -40,7 +40,7 @@ class LoginController
         [$authUrl, $token] = $this->initiateAuth($client);
 
         // Defensive check in case control ever reaches here with invalid values
-        if ($client === null || $authUrl === null) {
+        if ($authUrl === null) {
             $this->showErrorAndExit("Authentication initialization failed. Please try again.");
             exit;
         }
@@ -68,11 +68,6 @@ class LoginController
      */
     private function createClient(): Client
     {
-        // Initialize variables to satisfy static analysis
-        $client = null;
-        $authUrl = null;
-        $token = null;
-
         // Configure the OAuth client with the URL and consumer details.
         try {
             $conf = new ClientConfig($this->settings->oauthUrl);
