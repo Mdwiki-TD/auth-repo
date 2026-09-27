@@ -51,4 +51,10 @@ class CurrentUserTest extends TestCase
 
         $this->assertEmpty($_SESSION);
     }
+
+    public function testEnsureSessionStarted(): void
+    {
+        CurrentUser::ensureSessionStarted();
+        $this->assertNotEquals(PHP_SESSION_NONE, session_status());
+    }
 }

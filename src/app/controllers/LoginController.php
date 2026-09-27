@@ -7,6 +7,7 @@ use OAuth\Settings\Settings;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
+use OAuth\User\CurrentUser;
 use function OAuth\Utils\create_state;
 use function OAuth\Utils\create_return_to;
 
@@ -160,13 +161,14 @@ class LoginController
      */
     private function storeRequestToken(object $token): void
     {
-        // Store the Request Token in the session.
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        CurrentUser::ensureSessionStarted();
 
         $_SESSION['request_key'] = $token->key;
         $_SESSION['request_secret'] = $token->secret;
+
+        $host = php_uname('n');
+        $sessId = session_id();
+        error_log("OAuth debug (storeRequestToken): host={$host} | session_id={$sessId}");
     }
 
     /**

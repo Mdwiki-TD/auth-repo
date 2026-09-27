@@ -68,7 +68,7 @@ class CurrentUser
     // Internal helpers
     // ------------------------------------------------------------------
 
-    private function ensureSessionStarted(): void
+    public static function ensureSessionStarted(): void
     {
         if (session_status() !== PHP_SESSION_NONE) {
             return;
@@ -86,9 +86,16 @@ class CurrentUser
         if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") {
             $sessionOptions["cookie_secure"] = true;
         }
-        // Start the PHP session
-        if (!headers_sent()) {
-            session_start($sessionOptions);
+
+        if (headers_sent()) {
+            error_log("OAuth Error: Cannot start session, headers already sent.");
+            return;
+        }
+
+        session_start($sessionOptions);
+
+        if (session_id() === '') {
+            error_log("OAuth Error: Session failed to start.");
         }
     }
 
@@ -193,8 +200,8 @@ class CurrentUser
                 "path"     => "/",
                 "domain"   => $this->settings->domain,
                 "secure"   => $secure,
-                "httponly" => $secure,
-                "samesite" => "Strict",
+                "httponly" => true,
+                "samesite" => "Lax",
             ]
         );
 
