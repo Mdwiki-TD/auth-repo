@@ -1,17 +1,17 @@
 <?php
 
+use OAuth\Settings\Settings;
 use function OAuth\Helps\get_from_cookies;
 use function OAuth\AccessHelps\get_access_from_db;
 use function OAuth\Utils\ba_alert;
-use OAuth\Settings\Settings;
-//---
+
 include_once __DIR__ . '/../include_all.php';
-//---
+
 $settings = Settings::getInstance();
-//---
+
 $cookieDomain = $settings->domain;
 $secure = ($cookieDomain === 'localhost') ? false : true;
-// ---
+
 if ($cookieDomain != 'localhost') {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_name("mdwikitoolforgeoauth");
@@ -20,17 +20,16 @@ if ($cookieDomain != 'localhost') {
 	}
 }
 
-//---
 if (session_status() === PHP_SESSION_NONE) session_start();
-//---
+
 $username = get_from_cookies('username');
-//---
+
 if ($settings->domain == 'localhost') {
 	$username = $_SESSION['username'] ?? '';
 } elseif (!empty($username)) {
-	// ---
+
 	$access = get_access_from_db($username);
-	// ---
+
 	if (empty($access)) {
 		echo ba_alert("No access keys found. Login again.");
 		setcookie('username', '', [
@@ -45,7 +44,7 @@ if ($settings->domain == 'localhost') {
 		unset($_SESSION['username']);
 	}
 }
-//---
+
 $global_username = $username;
-//---
+
 define('global_username', $username);
