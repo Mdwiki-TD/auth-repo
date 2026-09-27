@@ -1,4 +1,5 @@
 <?php
+// src/vendor_load.php
 
 // NOTE: This file is used in publish-repo
 

@@ -1,5 +1,8 @@
 <?php
+// src/logout.php
+
+use OAuth\Controllers\LogoutController;
 
 include_once __DIR__ . '/include_all.php';
 
-include_once __DIR__ . '/actions/logout.php';
+(new LogoutController())->handle();

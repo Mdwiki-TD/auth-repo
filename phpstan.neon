@@ -3,11 +3,16 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src/
+        - tests/
 
     excludePaths:
         - *_old.php
 
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#OAuth\\Controllers\\DevLoginController#'
+
     # Scan files for class definitions
     scanFiles:
         - src/vendor_load.php
-        - src/oauth/settings.php
+        - src/include_all.php

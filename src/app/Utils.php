@@ -1,4 +1,5 @@
 <?php
+// src/app/Utils.php
 
 namespace OAuth\Utils;
 
@@ -11,23 +12,12 @@ function create_state($keys)
     $state = [];
 
     foreach ($keys as $key) {
-        $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_STRING);
+        $da = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
         if (!empty($da)) {
             $state[$key] = $da;
         }
     }
     return $state;
-}
-
-function ba_alert($text)
-{
-    return <<<HTML
-	<div class='container'>
-		<div class="alert alert-danger" role="alert">
-			<i class="bi bi-exclamation-triangle"></i> $text
-		</div>
-	</div>
-	HTML;
 }
 
 function create_return_to($http_referer)

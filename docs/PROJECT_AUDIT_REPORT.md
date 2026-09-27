@@ -189,7 +189,7 @@ All database operations use PDO prepared statements with parameter binding. Ther
 
 ### 5. Environment-Aware Behavior
 
-The system cleanly separates development, production, and testing modes. The localhost OAuth bypass (`dev_login.php`) eliminates the OAuth round-trip during local development, significantly improving developer experience.
+The system cleanly separates development, production, and testing modes. The localhost OAuth bypass (`DevLoginController.php`) eliminates the OAuth round-trip during local development, significantly improving developer experience.
 
 ### 6. Return-To URL Validation
 
