@@ -10,14 +10,15 @@
  * Any structural or behavioral changes made to this file must be synchronized
  * and reflected in the referenced file to avoid breaking external functionality.
  */
+# TODO: restrict this to isDevelopment()/isTesting() (or a cookie-based dev flag) so it can't be enabled on production.
+$env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 
-if (isset($_REQUEST['test'])) {
+if (isset($_REQUEST['test']) && $env !=== "production") {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 };
 
-$env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 
 if ($env === 'development' && file_exists(__DIR__ . '/dev/load_env.php')) {
     include_once __DIR__ . '/dev/load_env.php';
