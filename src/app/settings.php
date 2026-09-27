@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace OAuth\Settings;
 
+use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Key;
 
 /**
@@ -174,7 +175,38 @@ final class Settings
 
         return self::$instance;
     }
+    public function getKey(string $keyType = "cookie"): ?Key
+    {
+        return $keyType === "decrypt"
+            ? $this->decryptKey
+            : $this->cookieKey;
+    }
 
+
+    public function decodeValue(string $value, ?Key $useKey): string
+    {
+        if ($useKey === null || trim($value) === "") {
+            return "";
+        }
+
+        try {
+            return Crypto::decrypt($value, $useKey);
+        } catch (\Throwable $e) {
+            return "";
+        }
+    }
+    public function encodeValue(string $value, ?Key $useKey): string
+    {
+        if ($useKey === null || trim($value) === "") {
+            return "";
+        }
+
+        try {
+            return Crypto::encrypt($value, $useKey);
+        } catch (\Throwable $e) {
+            return "";
+        }
+    }
     // Prevent cloning and unserialization of the singleton instance
     private function __clone() {}
 

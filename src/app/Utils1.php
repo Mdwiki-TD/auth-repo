@@ -1,5 +1,5 @@
 <?php
-// src/app/utils.php
+// src/app/Utils.php
 
 namespace OAuth\Utils;
 

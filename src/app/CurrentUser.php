@@ -3,21 +3,21 @@
 
 namespace OAuth\User;
 
-use Defuse\Crypto\Crypto;
-use Defuse\Crypto\Key;
 use OAuth\Settings\Settings;
-use function OAuth\MdwikiSql\fetch_query;
-use function OAuth\MdwikiSql\execute_query;
+use OAuth\MdwikiSql\Database;
+
 /**
  * Represents the current user: handles session initialization, reading
  * identity from cookies/session, validating access in the database,
  * and determining coordinator status.
  */
+
 class CurrentUser
 {
     private static ?self $instance = null;
 
     private Settings $settings;
+    private Database $db;
 
     private string $username = "";
     private ?string $alertMessage = null;
@@ -25,6 +25,7 @@ class CurrentUser
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;
+        $this->db = new Database('DB_NAME');
         $this->ensureSessionStarted();
         $this->resolveUsername();
         self::$instance = $this;
@@ -91,44 +92,14 @@ class CurrentUser
         }
     }
 
-    private function getKey(string $keyType = "cookie"): ?Key
-    {
-        return $keyType === "decrypt"
-            ? $this->settings->decryptKey
-            : $this->settings->cookieKey;
-    }
-
-    private function decodeValue(string $value, ?Key $useKey): string
-    {
-        if ($useKey === null || trim($value) === "") {
-            return "";
-        }
-
-        try {
-            return Crypto::decrypt($value, $useKey);
-        } catch (\Throwable $e) {
-            return "";
-        }
-    }
-    private function encodeValue(string $value, ?Key $useKey): string
-    {
-        if ($useKey === null || trim($value) === "") {
-            return "";
-        }
-
-        try {
-            return Crypto::encrypt($value, $useKey);
-        } catch (\Throwable $e) {
-            return "";
-        }
-    }
-    private function getFromCookies(string $key, ?Key $cookieKey): string
+    private function getFromCookies(string $key): string
     {
         if (!isset($_COOKIE[$key])) {
             return "";
         }
 
-        $value = $this->decodeValue($_COOKIE[$key], $cookieKey);
+        $cookieKey = $this->settings->getKey("cookie");
+        $value = $this->settings->decodeValue($_COOKIE[$key], $cookieKey);
 
         if ($key === "username") {
             $value = str_replace("+", " ", $value);
@@ -137,7 +108,7 @@ class CurrentUser
         return $value;
     }
 
-    private function getAccessFromDb(string $user, ?Key $decryptKey): array
+    private function getAccessFromDb(string $user): array
     {
         $user = trim($user);
 
@@ -147,15 +118,16 @@ class CurrentUser
             WHERE user_name = ? or user_name_hash = ?;
         SQL;
 
-        $result = fetch_query($query, [$user, hash("sha256", $user)], true);
+        $result = $this->db->fetchquery($query, [$user, hash("sha256", $user)]);
 
         if (!$result) {
             return [];
         }
 
+        $decryptKey = $this->settings->getKey("decrypt");
         return [
-            "access_key"    => $this->decodeValue($result[0]["access_key"], $decryptKey),
-            "access_secret" => $this->decodeValue($result[0]["access_secret"], $decryptKey),
+            "access_key"    => $this->settings->decodeValue($result[0]["access_key"], $decryptKey),
+            "access_secret" => $this->settings->decodeValue($result[0]["access_secret"], $decryptKey),
         ];
     }
 
@@ -173,16 +145,14 @@ class CurrentUser
 
     private function resolveUsername(): void
     {
-        $cookieKey = $this->getKey("cookie");
-        $username   = $this->getFromCookies("username", $cookieKey);
+        $username   = $this->getFromCookies("username");
 
         if ($this->settings->isDevelopment()) {
             $username = $_SESSION["username"] ?? $username;
         }
 
         if ($this->settings->isProduction() && $username !== "") {
-            $decryptKey = $this->getKey("decrypt");
-            $access      = $this->getAccessFromDb($username, $decryptKey);
+            $access      = $this->getAccessFromDb($username);
 
             if (empty($access)) {
                 $this->alertMessage = "No access keys found. Login again.";
@@ -198,8 +168,8 @@ class CurrentUser
     {
         $_SESSION["username"] = $username;
 
-        $cookieKey = $this->getKey("cookie");
-        $value      = $this->encodeValue($username, $cookieKey);
+        $cookieKey = $this->settings->getKey("cookie");
+        $value      = $this->settings->encodeValue($username, $cookieKey);
 
         if ($value === "") {
             return;
@@ -230,18 +200,18 @@ class CurrentUser
             WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = ?)
         SQL;
 
-        return execute_query($query, [$userName, $userName]);
+        return $this->db->executequery($query, [$userName, $userName]);
     }
 
     private function addAccessToDb(string $user, string $accessKey, string $accessSecret): void
     {
-        $decryptKey = $this->getKey("decrypt");
+        $decryptKey = $this->settings->getKey("decrypt");
 
         $params = [
             $user,
             hash("sha256", $user),
-            $this->encodeValue($accessKey, $decryptKey),
-            $this->encodeValue($accessSecret, $decryptKey),
+            $this->settings->encodeValue($accessKey, $decryptKey),
+            $this->settings->encodeValue($accessSecret, $decryptKey),
         ];
 
         // ---
@@ -256,7 +226,7 @@ class CurrentUser
                 updated_at = NOW();
         SQL;
 
-        execute_query($query, $params);
+        $this->db->executequery($query, $params);
     }
 
     public function addUserData(string $user, string $accessKey, string $accessSecret): void
