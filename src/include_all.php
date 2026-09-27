@@ -13,7 +13,7 @@
 # TODO: restrict this to isDevelopment()/isTesting() (or a cookie-based dev flag) so it can't be enabled on production.
 $env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 
-if (isset($_REQUEST['test']) && $env !=== "production") {
+if (isset($_REQUEST['test']) && $env !== "production") {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
