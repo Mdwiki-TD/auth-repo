@@ -50,22 +50,24 @@ final class Settings
         $decryptKey     = $this->envVar('DECRYPT_KEY');
         $jwtKey         = $this->envVar('JWT_KEY');
 
-        if (getenv('APP_ENV') === 'production' && (
+        if ($appEnv === 'production' && (
             empty($consumerKey) || empty($consumerSecret) ||
             empty($cookieKey)   || empty($decryptKey)     || empty($jwtKey)
         )) {
             http_response_code(500);
             error_log('Required configuration directives not found in environment variables!');
             echo 'Required configuration directives not found';
-            exit(0);
+            // exit(0);
+            throw new \RuntimeException('Required configuration directives not found in environment variables!');
         }
 
         $this->appEnv    = $appEnv;
         $this->consumerKey    = $consumerKey;
         $this->consumerSecret = $consumerSecret;
-        $this->jwtKey         = $jwtKey;
         $this->cookieKey      = $cookieKey  ? Key::loadFromAsciiSafeString($cookieKey)  : null;
         $this->decryptKey     = $decryptKey ? Key::loadFromAsciiSafeString($decryptKey) : null;
+
+        $this->jwtKey         = $jwtKey;
     }
 
     /**
@@ -98,15 +100,15 @@ final class Settings
     }
     /**
      */
-    public function is_development()
+    public function isDevelopment()
     {
         return $this->appEnv === "development";
     }
-    public function is_production()
+    public function isProduction()
     {
         return $this->appEnv === "production";
     }
-    public function is_testing()
+    public function isTesting()
     {
         return $this->appEnv === "testing";
     }

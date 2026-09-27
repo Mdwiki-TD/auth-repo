@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for the helps.php utility functions
- * 
+ *
  * These tests cover:
  * - Encryption/decryption of values using Defuse Crypto
  * - Cookie retrieval functionality
@@ -54,14 +54,14 @@ class HelpsTest extends TestCase
     public function testEncryptionDecryptionRoundTrip(): void
     {
         $original = 'test_value_123';
-        
+
         // Encrypt the value
         $encrypted = \OAuth\Helps\encode_value($original);
-        
+
         // Should not be empty and should be different from original
         $this->assertNotEmpty($encrypted);
         $this->assertNotEquals($original, $encrypted);
-        
+
         // Decrypt and verify
         $decrypted = \OAuth\Helps\decode_value($encrypted);
         $this->assertEquals($original, $decrypted);
@@ -73,42 +73,42 @@ class HelpsTest extends TestCase
     public function testEncryptionWithDecryptKeyType(): void
     {
         $original = 'test_with_decrypt_key';
-        
+
         // Encrypt with decrypt key type
         $encrypted = \OAuth\Helps\encode_value($original, 'decrypt');
-        
+
         // Should not be empty
         $this->assertNotEmpty($encrypted);
-        
+
         // Decrypt with same key type
         $decrypted = \OAuth\Helps\decode_value($encrypted, 'decrypt');
         $this->assertEquals($original, $decrypted);
     }
 
     /**
-     * Test get_from_cookies returns empty string when cookie doesn't exist
+     * Test getFromCookies returns empty string when cookie doesn't exist
      */
     public function testGetFromCookiesReturnsEmptyForNonExistentCookie(): void
     {
-        $result = \OAuth\Helps\get_from_cookies('non_existent_cookie');
+        $result = \OAuth\Helps\getFromCookies('non_existent_cookie');
         $this->assertEquals('', $result);
     }
 
     /**
-     * Test get_from_cookies handles username with plus signs
+     * Test getFromCookies handles username with plus signs
      */
     public function testGetFromCookiesReplacesPlusInUsername(): void
     {
         // Simulate a cookie value (would be encrypted in real scenario)
         $_COOKIE['username'] = 'test+user+name';
-        
+
         // Since we can't easily mock decode_value, we test the plus replacement logic
         // by checking if the function runs without error
-        $result = \OAuth\Helps\get_from_cookies('username');
-        
+        $result = \OAuth\Helps\getFromCookies('username');
+
         // Clean up
         unset($_COOKIE['username']);
-        
+
         // Result should be empty since the encrypted value is invalid
         // but the function should execute without throwing
         $this->assertIsString($result);

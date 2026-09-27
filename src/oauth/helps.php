@@ -4,7 +4,7 @@ namespace OAuth\Helps;
 /*
 Usage:
 use function OAuth\Helps\add_to_cookies;
-use function OAuth\Helps\get_from_cookies;
+use function OAuth\Helps\getFromCookies;
 use function OAuth\Helps\decode_value;
 use function OAuth\Helps\encode_value;
 */
@@ -67,7 +67,7 @@ function add_to_cookies($key, $value, $age = 0)
     );
 }
 
-function get_from_cookies($key)
+function getFromCookies($key)
 {
     if (isset($_COOKIE[$key])) {
         $value = decode_value($_COOKIE[$key], "cookie");
