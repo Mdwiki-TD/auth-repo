@@ -54,7 +54,7 @@ auth_repo/
 │   │   ├── callback.php          # Completes OAuth, stores tokens, sets cookies
 │   │   └── logout.php            # Clears session and cookies
 │   ├── oauth/                    # Core OAuth module (namespaced classes/functions)
-│   │   ├── settings.php          # Singleton config — OAuth\Settings\Settings
+│   │   ├── settings.php          # Singleton config — OAuth\Settings
 │   │   ├── mdwiki_sql.php        # Database layer — OAuth\MdwikiSql\Database
 │   │   ├── access_helps.php      # Token CRUD — OAuth\AccessHelps\*
 │   │   ├── helps.php             # Encryption + cookie helpers — OAuth\Helps\*
@@ -160,7 +160,7 @@ The project uses a **function-based architecture with namespaced modules** rathe
 
 1. **Strong encryption approach** — Uses `defuse/php-encryption` (industry-standard symmetric encryption) for both cookies and stored tokens. Keys are loaded from environment variables, never hardcoded in production.
 
-2. **Well-structured Settings singleton** — `OAuth\Settings\Settings` is properly immutable (read-only via `__set()` override), environment-aware, and validates required keys in production.
+2. **Well-structured Settings singleton** — `OAuth\Settings` is properly immutable (read-only via `__set()` override), environment-aware, and validates required keys in production.
 
 3. **OAuth flow error handling** — Both `login.php` and `callback.php` wrap every step in try/catch with user-friendly error messages and server-side logging. This is exemplary error handling for an OAuth integration.
 
