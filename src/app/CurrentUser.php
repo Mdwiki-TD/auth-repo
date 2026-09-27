@@ -79,7 +79,7 @@ class CurrentUser
             "use_cookies"       => true,
             "use_only_cookies"  => true,
             "cookie_httponly"   => true,
-            "cookie_samesite"   => "Strict",
+            "cookie_samesite"   => "Lax",
         ];
 
         // Enable secure flag in production (HTTPS)
