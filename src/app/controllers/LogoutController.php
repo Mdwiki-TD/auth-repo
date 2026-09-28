@@ -15,7 +15,7 @@ class LogoutController
     public function handle(): void
     {
         $currentUser = CurrentUser::getInstance();
-        $currentUser->Logout();
+        $currentUser->destroy();
 
         $return_to = $this->getReturnTo();
 

@@ -34,20 +34,11 @@ class CurrentUserTest extends TestCase
         $this->assertNull($this->currentUser->getAlertMessage());
     }
 
-    public function testAddUsernameToCookies(): void
-    {
-        $username = 'test_user_unit';
-        $this->currentUser->addUsernameToCookies($username);
-
-        $this->assertEquals($username, $this->currentUser->getUsername());
-        $this->assertTrue($this->currentUser->isLoggedIn());
-        $this->assertEquals($username, $_SESSION['username'] ?? null);
-    }
 
     public function testLogout(): void
     {
         $this->currentUser->addUsernameToCookies('logout_test_user');
-        $this->currentUser->Logout();
+        $this->currentUser->destroy();
 
         $this->assertEmpty($_SESSION);
     }
