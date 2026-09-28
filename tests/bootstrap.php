@@ -24,10 +24,12 @@ putenv('CONSUMER_SECRET=test_consumer_secret');
 
 putenv('COOKIE_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString());
 putenv('DECRYPT_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString());
+putenv('ENCRYPT_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString());
 
 // Also set in $_ENV for compatibility
 $_ENV['COOKIE_KEY'] = getenv('COOKIE_KEY');
 $_ENV['DECRYPT_KEY'] = getenv('DECRYPT_KEY');
+$_ENV['ENCRYPT_KEY'] = getenv('ENCRYPT_KEY');
 $_ENV['CONSUMER_KEY'] = getenv('CONSUMER_KEY');
 $_ENV['CONSUMER_SECRET'] = getenv('CONSUMER_SECRET');
 $_ENV['APP_ENV'] = 'testing';
