@@ -37,7 +37,6 @@ Handles the redirect back from Wikimedia after the user authorizes the applicati
 2. Validates that request token exists in the session
 3. Exchanges the request token + verifier for an access token via `$client->complete()`
 4. Identifies the user via `$client->identify()`
-5. Creates a JWT token and stores it in an encrypted cookie
 6. Stores the encrypted access token/key in the database
 7. Registers the user in the `users` table if not present
 8. Redirects to the application with preserved state parameters
@@ -45,7 +44,7 @@ Handles the redirect back from Wikimedia after the user authorizes the applicati
 **Key functions:**
 - `showErrorAndExit()` — User-facing error display (duplicated from `login.php`)
 
-**Dependencies:** `OAuth\Settings`, `OAuth\JWT\create_jwt`, `OAuth\Helps\add_to_cookies`, `OAuth\AccessHelps\add_access_to_db`, `OAuth\AccessHelps\sql_add_user`, `OAuth\Utils\create_state`, `MediaWiki\OAuthClient\*`
+**Dependencies:** `OAuth\Settings`, `OAuth\Helps\add_to_cookies`, `OAuth\AccessHelps\add_access_to_db`, `OAuth\AccessHelps\sql_add_user`, `OAuth\Utils\create_state`, `MediaWiki\OAuthClient\*`
 
 **Known issues:**
 - `showErrorAndExit()` does not escape HTML in the `$message` parameter (potential XSS)
@@ -59,7 +58,7 @@ Clears all authentication state.
 
 **Flow:**
 1. Destroys the PHP session
-2. Clears `jwt_token` and `username` cookies (sets expiry to past)
+2. Clears  `username` cookies (sets expiry to past)
 3. Redirects to the HTTP referer (if valid) or a default page
 
 **Dependencies:** `OAuth\Settings`, `OAuth\Utils\create_return_to`
