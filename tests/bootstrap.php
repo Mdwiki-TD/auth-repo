@@ -21,12 +21,13 @@ putenv('CONSUMER_SECRET=test_consumer_secret');
 
 // Set encryption keys directly (these must be set before loading config)
 // These are test keys generated for Defuse Crypto
-putenv('COOKIE_KEY=def000008f0992fd44f7b71bc86a13c50ffa0295fabd0b8b008fc19d75774746ae6ef19e0328d36d9b457496158ae01fa22dc7638759aadf6c45fd4cda76edb865b0222f');
-putenv('DECRYPT_KEY=def000005b2df5554c4d4f3edb8dffbb27da983f3bd3e121aedf49608a799d973f840ce936bd8570b334d5fab61e2121d9252d55dbb79f02f0bf6f5262590c149438e60b');
+
+putenv('COOKIE_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString());
+putenv('CRYPTO_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString());
 
 // Also set in $_ENV for compatibility
 $_ENV['COOKIE_KEY'] = getenv('COOKIE_KEY');
-$_ENV['DECRYPT_KEY'] = getenv('DECRYPT_KEY');
+$_ENV['CRYPTO_KEY'] = getenv('CRYPTO_KEY');
 $_ENV['CONSUMER_KEY'] = getenv('CONSUMER_KEY');
 $_ENV['CONSUMER_SECRET'] = getenv('CONSUMER_SECRET');
 $_ENV['APP_ENV'] = 'testing';

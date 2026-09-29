@@ -45,10 +45,10 @@ class SettingsTest extends TestCase
     public function testGetKey(): void
     {
         $cookieKey = $this->settings->getKey('cookie');
-        $decryptKey = $this->settings->getKey('decrypt');
+        $cryptKey = $this->settings->getKey('crypt');
 
         $this->assertInstanceOf(Key::class, $cookieKey);
-        $this->assertInstanceOf(Key::class, $decryptKey);
+        $this->assertInstanceOf(Key::class, $cryptKey);
     }
 
     public function testEncodeAndDecodeValue(): void

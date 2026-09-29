@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a PHP-based OAuth 1.0 authentication system for MediaWiki. It provides user authentication via Wikimedia's OAuth service, storing access tokens and managing user sessions with JWT and encrypted cookies.
+This is a PHP-based OAuth 1.0 authentication system for MediaWiki. It provides user authentication via Wikimedia's OAuth service, storing access tokens and managing user sessions with encrypted cookies.
 
 ## Key Commands
 
@@ -38,14 +38,12 @@ php -S localhost:8000
 | `user_infos.php`   | Retrieves and exposes authenticated user info                         |
 | `api.php`          | API endpoint for external tool authentication                         |
 | `helps.php`        | Cookie encryption/decryption utilities (uses `defuse/php-encryption`) |
-| `jwt_config.php`   | JWT token creation/validation (uses `firebase/php-jwt`)               |
 | `mdwiki_sql.php`   | PDO database wrapper for MySQL (Toolforge or localhost)               |
 | `access_helps.php` | Token storage/retrieval from database (dual implementations)          |
 
 ### Dependencies (via Composer)
 
 -   `mediawiki/oauthclient` - OAuth 1.0 client for MediaWiki
--   `firebase/php-jwt` - JWT token generation/validation
 -   `defuse/php-encryption` - Symmetric encryption for cookies and stored tokens
 
 ### Configuration
@@ -54,7 +52,6 @@ Configuration is loaded from environment variables. Required keys:
 
 -   `agent`, `$CONSUMER_KEY`, `$CONSUMER_SECRET` - OAuth credentials
 -   `cookie_key`, `decrypt_key` - Defuse encryption keys (ASCII-safe format)
--   `jwt_key` - Secret for JWT signing
 
 ### Database Tables
 

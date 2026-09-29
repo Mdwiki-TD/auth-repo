@@ -4,12 +4,11 @@
 
 ## Project Overview
 
-A standalone PHP-based OAuth 1.0 authentication service for MediaWiki-powered sites. It handles the full OAuth lifecycle — initiating login via Wikimedia's OAuth endpoint, exchanging tokens on callback, storing encrypted access tokens in MySQL, issuing JWT session tokens, and managing encrypted cookies. Designed to serve as a shared authentication layer for multiple tools under the `mdwiki.toolforge.org` domain.
+A standalone PHP-based OAuth 1.0 authentication service for MediaWiki-powered sites. It handles the full OAuth lifecycle — initiating login via Wikimedia's OAuth endpoint, exchanging tokens on callback, storing encrypted access tokens in MySQL, managing encrypted cookies. Designed to serve as a shared authentication layer for multiple tools under the `mdwiki.toolforge.org` domain.
 
 ### Main Features
 
 -   **OAuth 1.0a flow** with Wikimedia (meta.wikimedia.org) via `mediawiki/oauthclient`
--   **JWT-based session tokens** (HS256, 1-hour expiry) via `firebase/php-jwt`
 -   **Symmetric encryption** of cookies and stored tokens via `defuse/php-encryption`
 -   **Persistent token storage** in MySQL with encrypted access keys/secrets
 -   **Environment-aware configuration** — separate behavior for development, production, and testing
@@ -23,7 +22,6 @@ A standalone PHP-based OAuth 1.0 authentication service for MediaWiki-powered si
 | ---------------------------- | ---------------------------------------------------- |
 | PHP 8.0+                     | Runtime (uses `match`, named arguments, union types) |
 | `mediawiki/oauthclient` ^1.2 | OAuth 1.0a client for MediaWiki                      |
-| `firebase/php-jwt` 7.0.0     | JWT creation and verification                        |
 | `defuse/php-encryption` ^2.4 | Symmetric encryption for cookies and tokens          |
 | PDO / MySQL                  | Token and user storage                               |
 | PHPUnit 10.x                 | Unit testing                                         |
@@ -58,7 +56,6 @@ auth_repo/
 │   │   ├── mdwiki_sql.php        # Database layer — OAuth\MdwikiSql\Database
 │   │   ├── access_helps.php      # Token CRUD — OAuth\AccessHelps\*
 │   │   ├── helps.php             # Encryption + cookie helpers — OAuth\Helps\*
-│   │   ├── jwt_config.php        # JWT operations — OAuth\JWT\*
 │   │   ├── user_infos.php        # Session/cookie-based user identification
 │   │   ├── utils.php             # State building, alerts, return-to validation
 │   │   └── index.php             # Empty (placeholder)
@@ -68,7 +65,6 @@ auth_repo/
 ├── tests/                        # PHPUnit test suite
 │   ├── bootstrap.php             # Test environment setup (keys, DB, server vars)
 │   ├── HelpsTest.php             # Tests for encryption/decryption helpers
-│   └── JwtConfigTest.php         # Tests for JWT create/verify
 ├── auths_tests/                  # Manual browser-based test scripts (legacy)
 ├── docs/                         # Documentation
 │   └── new-structure-oc.md       # Proposed refactoring plan
@@ -87,13 +83,13 @@ auth_repo/
 
 ### Architecture Layers
 
-| Layer             | Files                                                                  | Responsibility                                 |
-| ----------------- | ---------------------------------------------------------------------- | ---------------------------------------------- |
-| **Entry Points**  | `index.php`, `login.php`, `callback.php`, `logout.php`, `get_user.php` | HTTP routing and delegation                    |
-| **Actions**       | `src/actions/*.php`                                                    | Business logic for each OAuth step             |
-| **Core Module**   | `src/oauth/*.php`                                                      | Namespaced utilities (DB, crypto, JWT, config) |
-| **Configuration** | `settings.php`, `load_env.php`                                         | Environment-driven settings singleton          |
-| **Presentation**  | `view.php`                                                             | Minimal HTML UI with Bootstrap cards           |
+| Layer             | Files                                                                  | Responsibility                            |
+| ----------------- | ---------------------------------------------------------------------- | ----------------------------------------- |
+| **Entry Points**  | `index.php`, `login.php`, `callback.php`, `logout.php`, `get_user.php` | HTTP routing and delegation               |
+| **Actions**       | `src/actions/*.php`                                                    | Business logic for each OAuth step        |
+| **Core Module**   | `src/oauth/*.php`                                                      | Namespaced utilities (DB, crypto, config) |
+| **Configuration** | `settings.php`, `load_env.php`                                         | Environment-driven settings singleton     |
+| **Presentation**  | `view.php`                                                             | Minimal HTML UI with Bootstrap cards      |
 
 ---
 
@@ -277,7 +273,6 @@ Database error messages and raw SQL queries are echoed directly to the user, lea
 
 ### Outdated Packages
 
--   `firebase/php-jwt` is pinned to `7.0.0` — consider using `^7.0` to receive patch updates
 -   `FILTER_SANITIZE_STRING` will break on PHP 8.2+
 
 ### Missing Environment Configuration
@@ -328,10 +323,9 @@ Database error messages and raw SQL queries are echoed directly to the user, lea
 
 1. **Introduce PSR-7/PSR-15 HTTP layer** — Replace raw `header()` calls and `echo` output with proper request/response objects
 2. **Adopt PSR-11 container** — Replace `Settings::getInstance()` with dependency injection
-3. **Add refresh token mechanism** — Implement JWT refresh flow instead of relying on 2-year cookies
-4. **Create a proper router** — Replace the `$_GET['a']` dispatch in `index.php` with a lightweight router
-5. **Add structured logging** — Use PSR-3 logger (e.g., Monolog) with request correlation IDs
-6. **Separate the auth service from specific app redirects** — Make redirect targets configurable rather than hardcoding `/Translation_Dashboard/index.php`
+3. **Create a proper router** — Replace the `$_GET['a']` dispatch in `index.php` with a lightweight router
+4. **Add structured logging** — Use PSR-3 logger (e.g., Monolog) with request correlation IDs
+5. **Separate the auth service from specific app redirects** — Make redirect targets configurable rather than hardcoding `/Translation_Dashboard/index.php`
 
 ### Security Hardening
 
@@ -339,8 +333,7 @@ Database error messages and raw SQL queries are echoed directly to the user, lea
 2. Implement rate limiting on OAuth endpoints
 3. Add `httponly` and `secure` flags explicitly on all cookies (already done in most places)
 4. Rotate encryption keys periodically — document key rotation procedure
-5. Validate JWT `iss` claim during verification (currently only checks signature and expiry)
-6. Add audit logging for authentication events (login, logout, token refresh)
+5. Add audit logging for authentication events (login, logout, token refresh)
 
 ---
 
@@ -397,10 +390,8 @@ CONSUMER_SECRET=your_consumer_secret
 # Generate Defuse encryption keys via:
 #   php -r "require 'vendor/autoload.php'; echo \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString();"
 COOKIE_KEY=def00000...
-DECRYPT_KEY=def00000...
+CRYPTO_KEY=def00000...
 
-# JWT signing secret (random alphanumeric string, 32+ characters)
-JWT_KEY=your_random_jwt_secret_here
 ```
 
 ### Database Setup
@@ -492,7 +483,7 @@ sequenceDiagram
     actions/callback.php->>Wikimedia: complete() → accessToken
     Wikimedia-->>actions/callback.php: accessToken + identity
     actions/callback.php->>Database: Store encrypted access token
-    actions/callback.php->>Cookie: Set JWT + username cookies
+    actions/callback.php->>Cookie: Set username cookies
     actions/callback.php-->>User: Redirect to application
 ```
 
