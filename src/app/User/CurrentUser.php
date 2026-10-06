@@ -148,4 +148,8 @@ class CurrentUser
     {
         $this->accessKeys->saveUserData($user, $accessKey, $accessSecret);
     }
+    public function getUserAccessKeys(): array
+    {
+        return $this->accessKeys->findByUser($this->username);
+    }
 }
