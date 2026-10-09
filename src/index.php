@@ -1,7 +1,7 @@
 <?php
 // src/index.php
 
-include_once __DIR__ . '/include_all.php';
+include_once __DIR__ . '/bootstrap.php';
 
 $ye = count($_GET) == 1 && isset($_GET['test']);
 

@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace OAuth\Tests;
 
-use OAuth\Settings;
 use Defuse\Crypto\Key;
+use OAuth\Settings;
 use PHPUnit\Framework\TestCase;
 
 class SettingsTest extends TestCase
@@ -45,7 +45,7 @@ class SettingsTest extends TestCase
     public function testGetKey(): void
     {
         $cookieKey = $this->settings->getKey('cookie');
-        $cryptKey = $this->settings->getKey('crypt');
+        $cryptKey  = $this->settings->getKey('crypt');
 
         $this->assertInstanceOf(Key::class, $cookieKey);
         $this->assertInstanceOf(Key::class, $cryptKey);
@@ -53,7 +53,7 @@ class SettingsTest extends TestCase
 
     public function testEncodeAndDecodeValue(): void
     {
-        $key = $this->settings->getKey('cookie');
+        $key      = $this->settings->getKey('cookie');
         $original = 'sensitive_data_123';
 
         $encoded = $this->settings->encodeValue($original, $key);
@@ -75,7 +75,7 @@ class SettingsTest extends TestCase
 
     public function testSpecialCharactersEncryption(): void
     {
-        $key = $this->settings->getKey('cookie');
+        $key            = $this->settings->getKey('cookie');
         $specialStrings = [
             'test@example.com',
             'user+name',

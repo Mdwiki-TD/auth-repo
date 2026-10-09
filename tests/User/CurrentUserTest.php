@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace OAuth\Tests;
 
@@ -14,7 +14,7 @@ class CurrentUserTest extends TestCase
 
     protected function setUp(): void
     {
-        $settings = Settings::getInstance();
+        $settings          = Settings::getInstance();
         $this->currentUser = CurrentUser::getInstance($settings);
     }
 
@@ -33,7 +33,6 @@ class CurrentUserTest extends TestCase
         $this->assertFalse($this->currentUser->isLoggedIn());
         $this->assertNull($this->currentUser->getAlertMessage());
     }
-
 
     public function testLogout(): void
     {

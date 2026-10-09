@@ -3,13 +3,12 @@
 
 namespace OAuth\User;
 
-use OAuth\Settings;
 use OAuth\MdwikiSql\Database;
-
-use OAuth\User\UserCookieService;
-use OAuth\User\SessionManager;
+use OAuth\Settings;
 use OAuth\User\AccessKeyRepository;
 use OAuth\User\CoordinatorRepository;
+use OAuth\User\SessionManager;
+use OAuth\User\UserCookieService;
 
 /**
  * Represents the current user. Coordinates SessionManager, UserCookieService,
@@ -26,8 +25,8 @@ class CurrentUser
     private AccessKeyRepository $accessKeys;
     private CoordinatorRepository $coordinators;
 
-    private string $username = "";
-    private bool $isCoordinator = false;
+    private string $username      = "";
+    private bool $isCoordinator   = false;
     private ?string $alertMessage = null;
 
     public function __construct(
@@ -40,7 +39,7 @@ class CurrentUser
 
         // Collaborators are injectable (for testing) but default to the
         // real implementations so existing call sites keep working.
-        $db = new Database('DB_NAME');
+        $db                 = new Database('DB_NAME');
         $this->cookies      = $cookies ?? new UserCookieService($settings);
         $this->accessKeys   = $accessKeys ?? new AccessKeyRepository($db, $settings);
         $this->coordinators = $coordinators ?? new CoordinatorRepository($db);
@@ -55,7 +54,7 @@ class CurrentUser
     public static function getInstance(?Settings $settings = null): self
     {
         if (self::$instance === null) {
-            $settings = $settings ?? Settings::getInstance();
+            $settings       = $settings ?? Settings::getInstance();
             self::$instance = new self($settings);
         }
         return self::$instance;
@@ -103,7 +102,7 @@ class CurrentUser
     {
         SessionManager::destroy();
         $this->cookies->clear();
-        $this->username = "";
+        $this->username      = "";
         $this->isCoordinator = false;
     }
 
@@ -147,5 +146,9 @@ class CurrentUser
     public function saveUserData(string $user, string $accessKey, string $accessSecret): void
     {
         $this->accessKeys->saveUserData($user, $accessKey, $accessSecret);
+    }
+    public function getUserAccessKeys(): array
+    {
+        return $this->accessKeys->findByUser($this->username);
     }
 }

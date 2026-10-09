@@ -40,7 +40,7 @@ PHP 8.0 or higher (strict types used throughout; `declare(strict_types=1)` in al
 auth_repo/
 ├── src/                          # Application source code
 │   ├── index.php                 # Entry point — routes to view or action
-│   ├── include_all.php           # Bootstrap — loads vendor, DB, settings, helpers
+│   ├── bootstrap.php           # Bootstrap — loads vendor, DB, settings, helpers
 │   ├── vendor_load.php           # Composer autoloader resolution
 │   ├── view.php                  # HTML UI — shows login/logout status
 │   ├── login.php                 # Login entry — delegates to actions/login.php
@@ -164,7 +164,7 @@ The project uses a **function-based architecture with namespaced modules** rathe
 
 5. **State parameter preservation** — The `cat`, `code`, `camp`, and `return_to` parameters are properly threaded through the OAuth flow via session and URL parameters.
 
-6. **Return-to validation** — `create_return_to()` validates the referer against an allowlist of domains and rejects `/auth/` paths, preventing open redirect vulnerabilities.
+6. **Return-to validation** — `Utils::create_return_to()` validates the referer against an allowlist of domains and rejects `/auth/` paths, preventing open redirect vulnerabilities.
 
 7. **Parameterized SQL queries** — All database queries use PDO prepared statements with parameter binding, eliminating SQL injection risk.
 

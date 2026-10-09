@@ -15,4 +15,4 @@ parameters:
     # Scan files for class definitions
     scanFiles:
         - src/vendor_load.php
-        - src/include_all.php
+        - src/bootstrap.php

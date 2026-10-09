@@ -1,12 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace OAuth\Tests;
 
+use OAuth\Controllers\CallbackController;
 use OAuth\Controllers\LoginController;
 use OAuth\Controllers\LogoutController;
-use OAuth\Controllers\CallbackController;
 use PHPUnit\Framework\TestCase;
 
 class ControllersTest extends TestCase

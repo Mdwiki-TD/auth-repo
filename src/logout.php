@@ -3,6 +3,6 @@
 
 use OAuth\Controllers\LogoutController;
 
-include_once __DIR__ . '/include_all.php';
+include_once __DIR__ . '/bootstrap.php';
 
 (new LogoutController())->handle();

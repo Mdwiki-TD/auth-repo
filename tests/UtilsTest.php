@@ -1,25 +1,24 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace OAuth\Tests;
 
+use OAuth\Utils;
 use PHPUnit\Framework\TestCase;
-use function OAuth\Utils\create_state;
-use function OAuth\Utils\create_return_to;
 
 class UtilsTest extends TestCase
 {
     public function testCreateStateReturnsEmptyArrayWhenNoGetParams(): void
     {
-        $state = create_state(['camp', 'cat', 'code']);
+        $state = Utils::create_state(['camp', 'cat', 'code']);
         $this->assertIsArray($state);
     }
 
     public function testCreateReturnToEmptyReferer(): void
     {
-        $this->assertEquals('', create_return_to(''));
-        $this->assertEquals('', create_return_to(null));
+        $this->assertEquals('', Utils::create_return_to(''));
+        $this->assertEquals('', Utils::create_return_to(null));
     }
 
     public function testCreateReturnToValidDomains(): void
@@ -27,8 +26,8 @@ class UtilsTest extends TestCase
         $valid1 = 'https://mdwiki.toolforge.org/Translation_Dashboard/index.php';
         $valid2 = 'http://localhost:8000/some/path';
 
-        $this->assertEquals($valid1, create_return_to($valid1));
-        $this->assertEquals($valid2, create_return_to($valid2));
+        $this->assertEquals($valid1, Utils::create_return_to($valid1));
+        $this->assertEquals($valid2, Utils::create_return_to($valid2));
     }
 
     public function testCreateReturnToDisallowedDomains(): void
@@ -36,8 +35,8 @@ class UtilsTest extends TestCase
         $invalid1 = 'https://evil.com/phishing';
         $invalid2 = 'https://wikimedia.org/index.php';
 
-        $this->assertEquals('', create_return_to($invalid1));
-        $this->assertEquals('', create_return_to($invalid2));
+        $this->assertEquals('', Utils::create_return_to($invalid1));
+        $this->assertEquals('', Utils::create_return_to($invalid2));
     }
 
     public function testCreateReturnToRejectsAuthPaths(): void
@@ -45,7 +44,7 @@ class UtilsTest extends TestCase
         $authUrl1 = 'https://mdwiki.toolforge.org/auth/login.php';
         $authUrl2 = 'http://localhost/auth/callback.php';
 
-        $this->assertEquals('', create_return_to($authUrl1));
-        $this->assertEquals('', create_return_to($authUrl2));
+        $this->assertEquals('', Utils::create_return_to($authUrl1));
+        $this->assertEquals('', Utils::create_return_to($authUrl2));
     }
 }

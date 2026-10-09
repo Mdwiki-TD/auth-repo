@@ -10,7 +10,6 @@ namespace OAuth\MdwikiSql;
 
 use PDO;
 use PDOException;
-use RuntimeException;
 
 /**
  * Database Connection and Query Management Class
@@ -57,13 +56,13 @@ class Database
         $this->dbname = $this->envVar($dbnameVar);
 
         // Build the PDO Data Source Name (DSN) string for MySQL connection
-        return "mysql:host={$this->host};dbname={$this->dbname}";
+        return "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
     }
 
     private function hasValidCredentials(): bool
     {
         // Check whether all required connection credentials are present
-        return !empty($this->host) && !empty($this->dbname) && !empty($this->user) && !empty($this->password);
+        return ! empty($this->host) && ! empty($this->dbname) && ! empty($this->user) && ! empty($this->password);
     }
 
     private function setDb(string $dbnameVar)
@@ -77,7 +76,7 @@ class Database
 
         // If any required credential is missing, skip the connection attempt entirely
         // instead of letting PDO fail with a connection error
-        if (!$this->hasValidCredentials()) {
+        if (! $this->hasValidCredentials()) {
             $this->db = null;
             error_log('Database credentials are not fully configured; skipping DB connection.');
             $this->testPrint('Database credentials are not fully configured; skipping DB connection.');
@@ -124,7 +123,7 @@ class Database
         }
 
         // if the query contains "GROUP BY", disable ONLY_FULL_GROUP_BY, strtoupper() is for case insensitive
-        if (strpos(strtoupper($sqlQuery), 'GROUP BY') !== false && !$this->groupByModeDisabled) {
+        if (strpos(strtoupper($sqlQuery), 'GROUP BY') !== false && ! $this->groupByModeDisabled) {
             try {
                 // More precise SQL mode modification
                 $this->db->exec("SET SESSION sql_mode=(SELECT REPLACE(@@SESSION.sql_mode,'ONLY_FULL_GROUP_BY',''))");
@@ -141,7 +140,7 @@ class Database
         if ($this->db === null) {
             error_log("Database connection is not established.");
             return [];
-        };
+        }
 
         try {
             $this->disableFullGroupByMode($sqlQuery);
@@ -171,7 +170,7 @@ class Database
         if ($this->db === null) {
             error_log("Database connection is not established.");
             return false;
-        };
+        }
         try {
             $this->disableFullGroupByMode($sqlQuery);
 
@@ -227,7 +226,7 @@ class Database
 
     public function commit(): bool
     {
-        if ($this->db === null || !$this->db->inTransaction()) {
+        if ($this->db === null || ! $this->db->inTransaction()) {
             return false;
         }
 
@@ -244,7 +243,7 @@ class Database
 
     public function rollback(): bool
     {
-        if ($this->db === null || !$this->db->inTransaction()) {
+        if ($this->db === null || ! $this->db->inTransaction()) {
             return false;
         }
 

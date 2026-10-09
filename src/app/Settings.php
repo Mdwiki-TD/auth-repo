@@ -1,7 +1,7 @@
 <?php
 // src/app/Settings.php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace OAuth;
 
@@ -31,8 +31,8 @@ final class Settings
     public string $consumerKey;
     public string $consumerSecret;
     public string $appEnv;
-    public ?Key   $cookieKey;
-    public ?Key   $cryptKey;
+    public ?Key $cookieKey;
+    public ?Key $cryptKey;
     public string $TablesPath;
 
     private static ?self $instance = null;
@@ -50,11 +50,11 @@ final class Settings
         $consumerSecret = $this->envVar('CONSUMER_SECRET');
         $cookieKey      = $this->envVar('COOKIE_KEY');
         $cryptKey       = $this->envVar('CRYPTO_KEY');
-        $TablesPath = $this->envVar('TABLES_PATH');
+        $TablesPath     = $this->envVar('TABLES_PATH');
 
         if ($appEnv === 'production' && (
             empty($consumerKey) || empty($consumerSecret) ||
-            empty($cookieKey)   || empty($cryptKey)
+            empty($cookieKey) || empty($cryptKey)
         )) {
             http_response_code(500);
             error_log('Required configuration directives not found in environment variables!');
@@ -64,10 +64,10 @@ final class Settings
             throw new \RuntimeException('Required configuration directives not found in environment variables!');
         }
 
-        $this->appEnv    = $appEnv;
+        $this->appEnv         = $appEnv;
         $this->consumerKey    = $consumerKey;
         $this->consumerSecret = $consumerSecret;
-        $this->cookieKey      = $cookieKey  ? Key::loadFromAsciiSafeString($cookieKey)  : null;
+        $this->cookieKey      = $cookieKey ? Key::loadFromAsciiSafeString($cookieKey) : null;
         $this->cryptKey       = $cryptKey ? Key::loadFromAsciiSafeString($cryptKey) : null;
 
         $this->TablesPath = $TablesPath;
@@ -86,7 +86,7 @@ final class Settings
         // 1. Detect Protocol: Works for local development and production proxies
         $protocol = 'http';
 
-        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        if (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
             // Standard SSL detection
             $protocol = 'https';
         } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
@@ -187,7 +187,6 @@ final class Settings
             : $this->cookieKey;
     }
 
-
     public function decodeValue(string $value, ?Key $useKey): string
     {
         if ($useKey === null || trim($value) === "") {
@@ -213,7 +212,8 @@ final class Settings
         }
     }
     // Prevent cloning and unserialization of the singleton instance
-    private function __clone() {}
+    private function __clone()
+    {}
 
     public function __wakeup(): void
     {

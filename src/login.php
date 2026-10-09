@@ -3,7 +3,7 @@
 
 use OAuth\Controllers\LoginController;
 
-include_once __DIR__ . '/include_all.php';
+include_once __DIR__ . '/bootstrap.php';
 
 $env = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
 

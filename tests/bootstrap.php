@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -26,15 +26,15 @@ putenv('COOKIE_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafe
 putenv('CRYPTO_KEY=' . \Defuse\Crypto\Key::createNewRandomKey()->saveToAsciiSafeString());
 
 // Also set in $_ENV for compatibility
-$_ENV['COOKIE_KEY'] = getenv('COOKIE_KEY');
-$_ENV['CRYPTO_KEY'] = getenv('CRYPTO_KEY');
-$_ENV['CONSUMER_KEY'] = getenv('CONSUMER_KEY');
+$_ENV['COOKIE_KEY']      = getenv('COOKIE_KEY');
+$_ENV['CRYPTO_KEY']      = getenv('CRYPTO_KEY');
+$_ENV['CONSUMER_KEY']    = getenv('CONSUMER_KEY');
 $_ENV['CONSUMER_SECRET'] = getenv('CONSUMER_SECRET');
-$_ENV['APP_ENV'] = 'testing';
+$_ENV['APP_ENV']         = 'testing';
 
 // Set server variables for testing
 $_SERVER['SERVER_NAME'] = 'localhost';
-$_SERVER['HTTP_HOST'] = 'localhost';
+$_SERVER['HTTP_HOST']   = 'localhost';
 
 // Load vendor autoloader
-require_once dirname(__DIR__) . '/src/include_all.php';
+require_once dirname(__DIR__) . '/src/bootstrap.php';
