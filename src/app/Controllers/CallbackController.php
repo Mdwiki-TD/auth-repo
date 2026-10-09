@@ -3,13 +3,13 @@
 
 namespace OAuth\Controllers;
 
-use function OAuth\Utils\create_state;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 use OAuth\Settings;
 use OAuth\User\CurrentUser;
+use OAuth\Utils;
 
 class CallbackController
 {
@@ -239,7 +239,7 @@ class CallbackController
         if (! empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
             $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
         } else {
-            $state  = create_state(['camp', 'cat', 'code']);
+            $state  = Utils::create_state(['camp', 'cat', 'code']);
             $state  = http_build_query($state);
             $newurl = "/Translation_Dashboard/index.php?$state";
         }

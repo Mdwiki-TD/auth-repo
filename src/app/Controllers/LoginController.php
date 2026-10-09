@@ -3,8 +3,7 @@
 
 namespace OAuth\Controllers;
 
-use function OAuth\Utils\create_return_to;
-use function OAuth\Utils\create_state;
+use OAuth\Utils;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
@@ -98,9 +97,9 @@ class LoginController
      */
     private function addCallbackState(string $url): string
     {
-        $state = create_state(['camp', 'cat', 'code', 'test']);
+        $state = Utils::create_state(['camp', 'cat', 'code', 'test']);
 
-        $return_to = create_return_to($_SERVER['HTTP_REFERER'] ?? '');
+        $return_to = Utils::create_return_to($_SERVER['HTTP_REFERER'] ?? '');
         if (! empty($return_to)) {
             $state['return_to'] = $return_to;
         }

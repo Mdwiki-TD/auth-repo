@@ -13,6 +13,7 @@ These files are **not standalone endpoints** — they are included via `include_
 Initiates the OAuth 1.0a authorization flow with Wikimedia.
 
 **Flow:**
+
 1. Validates that `consumerKey` and `consumerSecret` are configured
 2. Creates an OAuth `Client` with the configured consumer credentials
 3. Builds a callback URL with state parameters (`camp`, `cat`, `code`, `test`, `return_to`)
@@ -21,10 +22,11 @@ Initiates the OAuth 1.0a authorization flow with Wikimedia.
 6. Redirects user to Wikimedia's authorization page (or shows link on localhost)
 
 **Key functions:**
-- `showErrorAndExit()` — Displays a user-facing error and logs it
-- `add_callback_state()` — Appends preserved state parameters to the callback URL
 
-**Dependencies:** `OAuth\Settings`, `OAuth\Utils\create_state`, `OAuth\Utils\create_return_to`, `MediaWiki\OAuthClient\*`
+-   `showErrorAndExit()` — Displays a user-facing error and logs it
+-   `add_callback_state()` — Appends preserved state parameters to the callback URL
+
+**Dependencies:** `OAuth\Settings`, `OAuth\Utils\Utils::create_state`, `OAuth\Utils\Utils::create_return_to`, `MediaWiki\OAuthClient\*`
 
 ---
 
@@ -33,22 +35,25 @@ Initiates the OAuth 1.0a authorization flow with Wikimedia.
 Handles the redirect back from Wikimedia after the user authorizes the application.
 
 **Flow:**
+
 1. Validates that `oauth_verifier` is present in the query string
 2. Validates that request token exists in the session
 3. Exchanges the request token + verifier for an access token via `$client->complete()`
 4. Identifies the user via `$client->identify()`
-6. Stores the encrypted access token/key in the database
-7. Registers the user in the `users` table if not present
-8. Redirects to the application with preserved state parameters
+5. Stores the encrypted access token/key in the database
+6. Registers the user in the `users` table if not present
+7. Redirects to the application with preserved state parameters
 
 **Key functions:**
-- `showErrorAndExit()` — User-facing error display (duplicated from `login.php`)
 
-**Dependencies:** `OAuth\Settings`, `OAuth\Helps\add_to_cookies`, `OAuth\AccessHelps\add_access_to_db`, `OAuth\AccessHelps\sql_add_user`, `OAuth\Utils\create_state`, `MediaWiki\OAuthClient\*`
+-   `showErrorAndExit()` — User-facing error display (duplicated from `login.php`)
+
+**Dependencies:** `OAuth\Settings`, `OAuth\Helps\add_to_cookies`, `OAuth\AccessHelps\add_access_to_db`, `OAuth\AccessHelps\sql_add_user`, `OAuth\Utils\Utils::create_state`, `MediaWiki\OAuthClient\*`
 
 **Known issues:**
-- `showErrorAndExit()` does not escape HTML in the `$message` parameter (potential XSS)
-- Hardcodes `/Translation_Dashboard/index.php` as the default redirect target
+
+-   `showErrorAndExit()` does not escape HTML in the `$message` parameter (potential XSS)
+-   Hardcodes `/Translation_Dashboard/index.php` as the default redirect target
 
 ---
 
@@ -57,17 +62,18 @@ Handles the redirect back from Wikimedia after the user authorizes the applicati
 Clears all authentication state.
 
 **Flow:**
+
 1. Destroys the PHP session
-2. Clears  `username` cookies (sets expiry to past)
+2. Clears `username` cookies (sets expiry to past)
 3. Redirects to the HTTP referer (if valid) or a default page
 
-**Dependencies:** `OAuth\Settings`, `OAuth\Utils\create_return_to`
+**Dependencies:** `OAuth\Settings`, `OAuth\Utils\Utils::create_return_to`
 
 ---
 
 ## Architecture Notes
 
-- All action files depend on `bootstrap.php` being loaded first by their parent entry points
-- Error handling follows a consistent pattern: try/catch with `error_log()` + `showErrorAndExit()`
-- The `showErrorAndExit()` function is duplicated between `login.php` and `callback.php` — this should be extracted to a shared utility
-- State parameters (`cat`, `code`, `camp`, `return_to`) are preserved across the OAuth flow via a combination of URL parameters and session storage
+-   All action files depend on `bootstrap.php` being loaded first by their parent entry points
+-   Error handling follows a consistent pattern: try/catch with `error_log()` + `showErrorAndExit()`
+-   The `showErrorAndExit()` function is duplicated between `login.php` and `callback.php` — this should be extracted to a shared utility
+-   State parameters (`cat`, `code`, `camp`, `return_to`) are preserved across the OAuth flow via a combination of URL parameters and session storage

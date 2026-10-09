@@ -3,7 +3,7 @@
 
 namespace OAuth\Controllers;
 
-use function OAuth\Utils\create_return_to;
+use OAuth\Utils;
 use OAuth\User\CurrentUser;
 
 class LogoutController
@@ -29,6 +29,6 @@ class LogoutController
     {
         $referer = $_SERVER['HTTP_REFERER'] ?? '';
 
-        return create_return_to($referer) ?: '/Translation_Dashboard/index.php';
+        return Utils::create_return_to($referer) ?: '/Translation_Dashboard/index.php';
     }
 }
