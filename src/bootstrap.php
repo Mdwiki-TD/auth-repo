@@ -1,12 +1,12 @@
 <?php
-// src/include_all.php
+// src/bootstrap.php
 
 /**
  * WARNING / DEPENDENCY NOTICE:
  *
  * The file used in:
  * https://github.com/Mdwiki-TD/mdwiki.toolforge.org/blob/main/src/public_html/userinfos_wrap.php
- *  - ```include_once __DIR__ . '/auth/include_all.php';```
+ *  - ```include_once __DIR__ . '/auth/bootstrap.php';```
  * Any structural or behavioral changes made to this file must be synchronized
  * and reflected in the referenced file to avoid breaking external functionality.
  */
@@ -24,6 +24,6 @@ if ($env === 'development' && file_exists(__DIR__ . '/dev/load_env.php')) {
 }
 
 include_once __DIR__ . '/vendor_load.php';
-include_once __DIR__ . '/app/include.php';
+include_once __DIR__ . '/app/bootstrap.php';
 
 \OAuth\User\CurrentUser::ensureSessionStarted();

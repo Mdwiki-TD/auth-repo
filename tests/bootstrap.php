@@ -37,4 +37,4 @@ $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['HTTP_HOST'] = 'localhost';
 
 // Load vendor autoloader
-require_once dirname(__DIR__) . '/src/include_all.php';
+require_once dirname(__DIR__) . '/src/bootstrap.php';

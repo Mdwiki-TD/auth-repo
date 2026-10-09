@@ -40,7 +40,7 @@ PHP 8.0 or higher (strict types used throughout; `declare(strict_types=1)` in al
 auth_repo/
 ├── src/                          # Application source code
 │   ├── index.php                 # Entry point — routes to view or action
-│   ├── include_all.php           # Bootstrap — loads vendor, DB, settings, helpers
+│   ├── bootstrap.php           # Bootstrap — loads vendor, DB, settings, helpers
 │   ├── vendor_load.php           # Composer autoloader resolution
 │   ├── view.php                  # HTML UI — shows login/logout status
 │   ├── login.php                 # Login entry — delegates to actions/login.php

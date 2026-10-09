@@ -1,11 +1,10 @@
 <?php
-// src/app/controllers/LogoutController.php
+// src/app/Controllers/LogoutController.php
 
 namespace OAuth\Controllers;
 
-use OAuth\User\CurrentUser;
-
 use function OAuth\Utils\create_return_to;
+use OAuth\User\CurrentUser;
 
 class LogoutController
 {

@@ -4,7 +4,7 @@
 
 The `actions/` directory contains the business logic handlers for each step of the OAuth authentication flow. Each file corresponds to a single user-facing action and is included by the top-level entry point files (`src/login.php`, `src/callback.php`, `src/logout.php`).
 
-These files are **not standalone endpoints** — they are included via `include_once` from the parent entry points after the bootstrap (`include_all.php`) has loaded all dependencies.
+These files are **not standalone endpoints** — they are included via `include_once` from the parent entry points after the bootstrap (`bootstrap.php`) has loaded all dependencies.
 
 ## Files
 
@@ -67,7 +67,7 @@ Clears all authentication state.
 
 ## Architecture Notes
 
-- All action files depend on `include_all.php` being loaded first by their parent entry points
+- All action files depend on `bootstrap.php` being loaded first by their parent entry points
 - Error handling follows a consistent pattern: try/catch with `error_log()` + `showErrorAndExit()`
 - The `showErrorAndExit()` function is duplicated between `login.php` and `callback.php` — this should be extracted to a shared utility
 - State parameters (`cat`, `code`, `camp`, `return_to`) are preserved across the OAuth flow via a combination of URL parameters and session storage

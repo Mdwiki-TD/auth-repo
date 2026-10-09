@@ -1,15 +1,15 @@
 <?php
-// src/app/controllers/CallbackController.php
+// src/app/Controllers/CallbackController.php
 
 namespace OAuth\Controllers;
 
-use OAuth\Settings;
-use OAuth\User\CurrentUser;
-use MediaWiki\OAuthClient\Token;
+use function OAuth\Utils\create_state;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
-use function OAuth\Utils\create_state;
+use MediaWiki\OAuthClient\Token;
+use OAuth\Settings;
+use OAuth\User\CurrentUser;
 
 class CallbackController
 {
@@ -34,10 +34,10 @@ class CallbackController
         $this->validateVerifierPresent();
         $this->validateSessionTokens();
 
-        $client = $this->createClient();
+        $client       = $this->createClient();
         $requestToken = $this->createRequestToken();
         $accessToken1 = $this->completeAuth($client, $requestToken);
-        $ident = $this->identifyUser($client, $accessToken1);
+        $ident        = $this->identifyUser($client, $accessToken1);
 
         $this->persistUserSession($ident, $accessToken1);
 
@@ -63,7 +63,7 @@ class CallbackController
      */
     private function validateVerifierPresent(): void
     {
-        if (!isset($_GET['oauth_verifier'])) {
+        if (! isset($_GET['oauth_verifier'])) {
             $this->showErrorAndExit(
                 "This page should only be accessed after redirection back from the wiki.",
                 "login.php",
@@ -78,12 +78,12 @@ class CallbackController
      */
     private function validateSessionTokens(): void
     {
-        if (!isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
-            $host = php_uname('n');
-            $sessId = session_id();
-            $sessStatus = session_status();
-            $cookieName = session_name();
-            $hasCookie = isset($_COOKIE[$cookieName]) ? 'yes' : 'no';
+        if (! isset($_SESSION['request_key'], $_SESSION['request_secret'])) {
+            $host        = php_uname('n');
+            $sessId      = session_id();
+            $sessStatus  = session_status();
+            $cookieName  = session_name();
+            $hasCookie   = isset($_COOKIE[$cookieName]) ? 'yes' : 'no';
             $sessionKeys = implode(',', array_keys($_SESSION));
 
             error_log(
@@ -189,7 +189,7 @@ class CallbackController
         try {
             $currentUser->addUsernameToCookies($ident->username);
 
-            if (!isset($_SESSION['csrf_tokens']) || !is_array($_SESSION['csrf_tokens'])) {
+            if (! isset($_SESSION['csrf_tokens']) || ! is_array($_SESSION['csrf_tokens'])) {
                 $_SESSION['csrf_tokens'] = [];
             }
 
@@ -209,16 +209,16 @@ class CallbackController
     private function resolveRedirectUrl(): string
     {
         $return_to = $_GET['return_to'] ?? '';
-        $newurl = "/Translation_Dashboard/index.php";
+        $newurl    = "/Translation_Dashboard/index.php";
 
-        if (!empty($return_to)) {
+        if (! empty($return_to)) {
             $parsedReturn = parse_url($return_to);
             $parsedServer = parse_url($this->settings->ServerUrl);
 
             $returnScheme = isset($parsedReturn['scheme']) ? strtolower($parsedReturn['scheme']) : '';
-            $returnHost = isset($parsedReturn['host']) ? strtolower($parsedReturn['host']) : '';
+            $returnHost   = isset($parsedReturn['host']) ? strtolower($parsedReturn['host']) : '';
             $serverScheme = isset($parsedServer['scheme']) ? strtolower($parsedServer['scheme']) : '';
-            $serverHost = isset($parsedServer['host']) ? strtolower($parsedServer['host']) : '';
+            $serverHost   = isset($parsedServer['host']) ? strtolower($parsedServer['host']) : '';
 
             $returnPort = $parsedReturn['port'] ?? null;
             $serverPort = $parsedServer['port'] ?? null;
@@ -236,11 +236,11 @@ class CallbackController
             }
         }
 
-        if (!empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
+        if (! empty($return_to) && (strpos($return_to, '/Translation_Dashboard/index.php') === false)) {
             $newurl = filter_var($return_to, FILTER_VALIDATE_URL) ? $return_to : '/Translation_Dashboard/index.php';
         } else {
-            $state = create_state(['camp', 'cat', 'code']);
-            $state = http_build_query($state);
+            $state  = create_state(['camp', 'cat', 'code']);
+            $state  = http_build_query($state);
             $newurl = "/Translation_Dashboard/index.php?$state";
         }
 
@@ -253,10 +253,10 @@ class CallbackController
      */
     private function renderResult(object $ident): void
     {
-        $test = $_GET['test'] ?? '';
-        $newurl = $this->resolveRedirectUrl();
+        $test       = $_GET['test'] ?? '';
+        $newurl     = $this->resolveRedirectUrl();
         $newurlAttr = htmlspecialchars($newurl, ENT_QUOTES, 'UTF-8');
-        $newurlJs = json_encode($newurl);
+        $newurlJs   = json_encode($newurl);
 
         if (empty($test)) {
             echo <<<HTML

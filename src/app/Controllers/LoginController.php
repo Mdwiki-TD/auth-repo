@@ -1,15 +1,15 @@
 <?php
-// src/app/controllers/LoginController.php
+// src/app/Controllers/LoginController.php
 
 namespace OAuth\Controllers;
 
-use OAuth\Settings;
+use function OAuth\Utils\create_return_to;
+use function OAuth\Utils\create_state;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
+use OAuth\Settings;
 use OAuth\User\CurrentUser;
-use function OAuth\Utils\create_state;
-use function OAuth\Utils\create_return_to;
 
 class LoginController
 {
@@ -101,13 +101,13 @@ class LoginController
         $state = create_state(['camp', 'cat', 'code', 'test']);
 
         $return_to = create_return_to($_SERVER['HTTP_REFERER'] ?? '');
-        if (!empty($return_to)) {
+        if (! empty($return_to)) {
             $state['return_to'] = $return_to;
         }
 
-        if (!empty($state)) {
-            $separator = (strpos($url, '?') !== false) ? '&' : '?';
-            $url .= $separator . http_build_query($state);
+        if (! empty($state)) {
+            $separator  = (strpos($url, '?') !== false) ? '&' : '?';
+            $url       .= $separator . http_build_query($state);
         }
 
         return $url;
@@ -139,7 +139,7 @@ class LoginController
         try {
             [$authUrl, $token] = $client->initiate();
 
-            if (!$authUrl || !$token) {
+            if (! $authUrl || ! $token) {
                 // Log this specific failure case.
                 error_log("OAuth Error: client->initiate() returned empty authUrl or token.");
                 $this->showErrorAndExit("Failed to initiate the authentication process with the wiki. Please try again.");
@@ -163,10 +163,10 @@ class LoginController
     {
         CurrentUser::ensureSessionStarted();
 
-        $_SESSION['request_key'] = $token->key;
+        $_SESSION['request_key']    = $token->key;
         $_SESSION['request_secret'] = $token->secret;
 
-        $host = php_uname('n');
+        $host   = php_uname('n');
         $sessId = session_id();
         error_log("OAuth debug (storeRequestToken): host={$host} | session_id={$sessId}");
     }
